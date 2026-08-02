@@ -601,7 +601,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
                       />
                       <div>
                         <span className="text-xs font-bold block text-rose-700 dark:text-rose-300">Implantei para Outro Vendedor (A Repassar)</span>
-                        <span className="text-[11px] text-slate-600 dark:text-slate-400 block">Comissão entra na minha conta -> Devo repassar ao vendedor.</span>
+                        <span className="text-[11px] text-slate-600 dark:text-slate-400 block">Comissão entra na minha conta — Devo repassar ao vendedor.</span>
                       </div>
                     </label>
 
@@ -623,7 +623,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
                       />
                       <div>
                         <span className="text-xs font-bold block text-emerald-800 dark:text-emerald-300">Outro Vendedor Implantou p/ Mim (A Receber)</span>
-                        <span className="text-[11px] text-slate-600 dark:text-slate-400 block">Comissão caiu na conta dele -> Tenho a receber do vendedor.</span>
+                        <span className="text-[11px] text-slate-600 dark:text-slate-400 block">Comissão caiu na conta dele — Tenho a receber do vendedor.</span>
                       </div>
                     </label>
                   </div>
