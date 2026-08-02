@@ -125,42 +125,50 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     }
   };
 
-  // Copy WhatsApp proposal message
+  // Client name for proposal greeting
+  const [clientName, setClientName] = useState('');
+
+  // Copy WhatsApp proposal message with icons & custom greeting
   const generateMessageText = () => {
-    let msg = `*Orçamento Assistente Show — Show Tecnologia / Omnilink*\n\n`;
-    msg += `*Equipamentos Selecionados:*\n`;
+    const greeting = clientName.trim()
+      ? `Olá *${clientName.trim()}*, seu orçamento da *Show Tecnologia / Omnilink* está pronto! 🚀\n\n`
+      : `*Orçamento — Show Tecnologia / Omnilink* 🚀\n\n`;
+
+    let msg = greeting;
+
+    msg += `📦 *Equipamentos Selecionados:*\n`;
     cart.forEach((i) => {
       msg += `• ${i.quantity}x ${i.product.name} — R$ ${(i.product.default_price * i.quantity).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     });
 
     if (discountPercent > 0) {
-      msg += `\n*Desconto Aplicado:* ${discountPercent}% (-R$ ${discountAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })})\n`;
+      msg += `\n🏷️ *Desconto Especial (${discountPercent}%):* -R$ ${discountAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     }
 
-    msg += `\n*Total Equipamentos (À vista):* R$ ${finalEquipmentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+    msg += `\n💰 *Total Equipamentos (À Vista):* R$ ${finalEquipmentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
 
     if (totalMonthlyFee > 0) {
-      msg += `*Mensalidade de Serviços:* R$ ${totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês\n`;
+      msg += `📡 *Mensalidade de Serviços & Telemetria:* R$ ${totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês\n`;
     }
 
-    msg += `\n*Opções de Pagamento Facilidades:*\n`;
+    msg += `\n💳 *Opções de Pagamento & Facilidades:*\n`;
 
     if (payPix) {
       const pixTotal = finalEquipmentPrice;
-      msg += `• PIX à vista — R$ ${pixTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `⚡ *PIX à vista:* R$ ${pixTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     }
 
     if (payBoleto && boletoInstallments > 0) {
       const boletoVal = finalEquipmentPrice / boletoInstallments;
-      msg += `• ${boletoInstallments}x no boleto sem juros — ${boletoInstallments}x de R$ ${boletoVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `📄 *Boleto Sem Juros:* ${boletoInstallments}x de R$ ${boletoVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     }
 
     if (payCard && cardInstallments > 0) {
       const cardVal = finalEquipmentPrice / cardInstallments;
-      msg += `• ${cardInstallments}x no cartão sem juros — ${cardInstallments}x de R$ ${cardVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `💳 *Cartão de Crédito:* ${cardInstallments}x de R$ ${cardVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     }
 
-    msg += `\nCaso tenha qualquer dúvida, fico à disposição.`;
+    msg += `\nQualquer dúvida ou ajuste, estou à inteira disposição!`;
     return msg;
   };
 
@@ -425,6 +433,20 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                 <span>Salvar Kit</span>
               </button>
             )}
+          </div>
+
+          {/* Client Name Input for Personalized Greeting */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Nome do Cliente (Personalizar Mensagem)
+            </label>
+            <input
+              type="text"
+              placeholder="ex: Carlos (Alfa Logística)"
+              value={clientName}
+              onChange={(e) => setClientName(e.target.value)}
+              className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500"
+            />
           </div>
 
           {/* Cart Items List */}

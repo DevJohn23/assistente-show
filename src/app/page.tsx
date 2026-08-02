@@ -211,7 +211,7 @@ export default function Home() {
     },
     catalog: {
       title: 'Catálogo & Gerador de Orçamentos',
-      description: 'Monte orçamentos personalizados em segundos e envie direto ao cliente',
+      description: '',
     },
   };
 
