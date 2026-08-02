@@ -85,11 +85,19 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     return cart.some((i) => i.product.id === productId);
   };
 
-  // Filter products directly without floating box
+  // Helper to normalize accents (ignore diacritics like ~ ^ ´ ` ç)
+  const normalizeText = (str: string) => {
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+
+  // Filter products directly without floating box & ignoring accents
   const searchResults = products.filter((p) => {
-    const term = searchTerm.toLowerCase();
-    const nameMatch = (p.name || '').toLowerCase().includes(term);
-    const descMatch = (p.description || '').toLowerCase().includes(term);
+    const term = normalizeText(searchTerm);
+    const nameMatch = normalizeText(p.name || '').includes(term);
+    const descMatch = normalizeText(p.description || '').includes(term);
     return nameMatch || descMatch;
   });
 
@@ -283,7 +291,6 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                         </div>
 
                         <h4 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">{product.name}</h4>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{product.description}</p>
                       </div>
 
                       <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
@@ -371,7 +378,6 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                         </div>
 
                         <h4 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">{product.name}</h4>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{product.description}</p>
                       </div>
 
                       <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
