@@ -18,7 +18,9 @@ import {
   QrCode,
   FileText,
   CheckCircle,
-  Eye
+  Eye,
+  Radio,
+  Wrench
 } from 'lucide-react';
 
 interface CatalogQuoteViewProps {
@@ -33,7 +35,6 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   onSaveTemplate,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
   
   // Cart state
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -58,14 +59,12 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
   // Cart operations
   const toggleCartItem = (product: Product) => {
-    setCart((prev) => {
-      const exists = prev.find((item) => item.product.id === product.id);
-      if (exists) {
-        return prev.filter((item) => item.product.id !== product.id);
-      } else {
-        return [...prev, { product, quantity: 1 }];
-      }
-    });
+    const existingIndex = cart.findIndex((i) => i.product.id === product.id);
+    if (existingIndex > -1) {
+      setCart((prev) => prev.filter((i) => i.product.id !== product.id));
+    } else {
+      setCart((prev) => [...prev, { product, quantity: 1 }]);
+    }
   };
 
   const updateQuantity = (productId: string, delta: number) => {
@@ -83,84 +82,80 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   };
 
   const isProductInCart = (productId: string) => {
-    return cart.some((item) => item.product.id === productId);
+    return cart.some((i) => i.product.id === productId);
   };
 
-  // Search & Suggestions
+  // Filter products directly without floating box
   const searchResults = products.filter((p) => {
-    const matchesSearch =
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (p.description && p.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesSearch;
+    const term = searchTerm.toLowerCase();
+    return p.name.toLowerCase().includes(term) || p.description.toLowerCase().includes(term);
   });
 
-  const suggestions = searchTerm.trim().length > 0
-    ? products.filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    : [];
+  // Categorized products matching the PRD
+  const trackerProducts = searchResults.filter((p) => p.category_id === 'cat-1');
+  const accessoryProducts = searchResults.filter((p) => p.category_id === 'cat-2');
 
-  // Totals calculations
-  const subtotalEquipment = cart.reduce((acc, item) => acc + item.product.default_price * item.quantity, 0);
+  // Total Calculations
+  const rawEquipmentTotal = cart.reduce((acc, item) => acc + item.product.default_price * item.quantity, 0);
   const totalMonthlyFee = cart.reduce((acc, item) => acc + (item.product.monthly_fee || 0) * item.quantity, 0);
-  
-  const discountAmount = (subtotalEquipment * (discountPercent || 0)) / 100;
-  const finalEquipmentPrice = subtotalEquipment - discountAmount;
 
-  // Simulator logic (Parcela Desejada)
-  const handleCalculateSimulator = () => {
+  const discountAmount = (rawEquipmentTotal * (discountPercent || 0)) / 100;
+  const finalEquipmentPrice = Math.max(0, rawEquipmentTotal - discountAmount);
+
+  // Simulate Ideal Installment
+  const handleSimulateInstallment = () => {
     const target = parseFloat(targetInstallment);
-    if (!target || target <= 0 || finalEquipmentPrice <= 0) return;
-
-    let bestInstallments = 1;
-    for (let i = 1; i <= 12; i++) {
-      const installmentValue = finalEquipmentPrice / i;
-      if (installmentValue <= target) {
-        bestInstallments = i;
-        break;
-      }
+    if (!target || target <= 0 || finalEquipmentPrice <= 0) {
+      setSimulationResult(null);
+      return;
     }
 
-    if (bestInstallments === 1 && finalEquipmentPrice / 12 > target) {
-      setSimulationResult("Será necessário financiamento.");
+    const calculatedInstallments = Math.ceil(finalEquipmentPrice / target);
+    if (calculatedInstallments <= 12) {
+      const actualInstallmentVal = finalEquipmentPrice / calculatedInstallments;
+      setSimulationResult(
+        `Para parcelas de ~R$ ${target.toFixed(2)}, o ideal é parcelar em ${calculatedInstallments}x de R$ ${actualInstallmentVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} no cartão.`
+      );
     } else {
-      const val = finalEquipmentPrice / bestInstallments;
-      setSimulationResult(`${bestInstallments}x de R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`);
+      setSimulationResult(
+        `O valor limite é de 12x de R$ ${(finalEquipmentPrice / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}.`
+      );
     }
   };
 
-  // Generate Message Text
+  // Copy WhatsApp proposal message
   const generateMessageText = () => {
-    if (cart.length === 0) return "Adicione produtos ao orçamento para gerar a mensagem.";
-
-    let msg = `Olá!\n\nSegue o orçamento solicitado.\n\nProdutos:\n`;
-    cart.forEach((item) => {
-      msg += `• ${item.quantity}x ${item.product.name} - R$ ${(item.product.default_price * item.quantity).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+    let msg = `*Orçamento Assistente Show — Show Tecnologia / Omnilink*\n\n`;
+    msg += `*Equipamentos Selecionados:*\n`;
+    cart.forEach((i) => {
+      msg += `• ${i.quantity}x ${i.product.name} — R$ ${(i.product.default_price * i.quantity).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     });
 
-    if (totalMonthlyFee > 0) {
-      msg += `\nMensalidades dos serviços:\nR$ ${totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês\n`;
-    }
-
-    msg += `\nValor total dos equipamentos:\nR$ ${subtotalEquipment.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
-
     if (discountPercent > 0) {
-      msg += `\n🎁 Desconto especial aplicado: ${discountPercent}%.\n`;
+      msg += `\n*Desconto Aplicado:* ${discountPercent}% (-R$ ${discountAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })})\n`;
     }
 
-    msg += `\nFormas de pagamento:\n`;
+    msg += `\n*Total Equipamentos (À vista):* R$ ${finalEquipmentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+
+    if (totalMonthlyFee > 0) {
+      msg += `*Mensalidade de Serviços:* R$ ${totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês\n`;
+    }
+
+    msg += `\n*Opções de Pagamento Facilidades:*\n`;
 
     if (payPix) {
       const pixTotal = finalEquipmentPrice;
-      msg += `• PIX à vista - R$ ${pixTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `• PIX à vista — R$ ${pixTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     }
 
     if (payBoleto && boletoInstallments > 0) {
       const boletoVal = finalEquipmentPrice / boletoInstallments;
-      msg += `• ${boletoInstallments}x no boleto sem juros - ${boletoInstallments}x de R$ ${boletoVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `• ${boletoInstallments}x no boleto sem juros — ${boletoInstallments}x de R$ ${boletoVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     }
 
     if (payCard && cardInstallments > 0) {
       const cardVal = finalEquipmentPrice / cardInstallments;
-      msg += `• ${cardInstallments}x no cartão sem juros - ${cardInstallments}x de R$ ${cardVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `• ${cardInstallments}x no cartão sem juros — ${cardInstallments}x de R$ ${cardVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     }
 
     msg += `\nCaso tenha qualquer dúvida, fico à disposição.`;
@@ -200,47 +195,22 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   return (
     <div className="space-y-5">
       {/* Search & Kit Templates Bar */}
-      <div className="clean-card p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3 relative">
-        {/* Autocomplete Search Input */}
+      <div className="clean-card p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3">
+        {/* Direct Search Input without floating box */}
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
           <input
             type="text"
-            placeholder="Buscar equipamento por nome ou descrição..."
+            placeholder="Pesquisar por equipamento ou acessório..."
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500"
           />
-
-          {/* Autocomplete Suggestions Box */}
-          {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute left-0 right-0 top-11 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-40 overflow-hidden max-h-56 overflow-y-auto">
-              {suggestions.map((sug) => (
-                <div
-                  key={sug.id}
-                  onClick={() => {
-                    setSearchTerm(sug.name);
-                    setShowSuggestions(false);
-                  }}
-                  className="px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-between text-xs border-b border-slate-100 dark:border-slate-800/60 last:border-none"
-                >
-                  <span className="font-semibold text-slate-900 dark:text-white">{sug.name}</span>
-                  <span className="text-[11px] text-sky-600 dark:text-sky-400 font-mono">
-                    R$ {sug.default_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Load Template Buttons */}
         <div className="flex items-center gap-1.5 overflow-x-auto">
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">Kits:</span>
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">Kits Prontos:</span>
           {templates.map((tpl) => (
             <button
               key={tpl.id}
@@ -256,85 +226,183 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
       {/* Main Grid + Cart Drawer Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
-        {/* Left Column: Products Grid */}
-        <div className="lg:col-span-2 space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-slate-900 dark:text-white text-base font-outfit">Catálogo de Equipamentos Omnilink</h3>
-            <span className="text-xs text-slate-400">{searchResults.length} produtos</span>
+        {/* Left Column: Products Categorized Sections */}
+        <div className="lg:col-span-2 space-y-6">
+          
+          {/* Section 1: Rastreadores */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-slate-800">
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm font-outfit flex items-center gap-2">
+                <Radio className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                Rastreadores Omnilink
+              </h3>
+              <span className="text-xs text-slate-400">{trackerProducts.length} itens</span>
+            </div>
+
+            {trackerProducts.length === 0 ? (
+              <p className="text-xs text-slate-400 py-4 text-center">Nenhum rastreador encontrado para a pesquisa.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3.5">
+                {trackerProducts.map((product) => {
+                  const inCart = isProductInCart(product.id);
+                  return (
+                    <div
+                      key={product.id}
+                      className={`clean-card rounded-2xl p-3.5 flex flex-col justify-between transition-all ${
+                        inCart ? 'border-sky-500 dark:border-sky-500/60 bg-sky-50/30 dark:bg-sky-950/20' : ''
+                      }`}
+                    >
+                      <div>
+                        {/* Image */}
+                        <div className="w-full h-32 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative mb-2.5">
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                          />
+                          {product.monthly_fee && product.monthly_fee > 0 ? (
+                            <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/80 backdrop-blur-md text-[10px] font-semibold text-emerald-400 border border-emerald-500/30">
+                              R$ {product.monthly_fee.toFixed(2)}/mês
+                            </span>
+                          ) : null}
+                        </div>
+
+                        <h4 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">{product.name}</h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{product.description}</p>
+                      </div>
+
+                      <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] text-slate-400 block font-medium">À Vista</span>
+                          <span className="text-sm font-bold text-slate-900 dark:text-white font-outfit">
+                            R$ {product.default_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => setDetailProduct(product)}
+                            title="Ver Detalhes"
+                            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button
+                            onClick={() => toggleCartItem(product)}
+                            className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
+                              inCart
+                                ? 'bg-emerald-600 text-white shadow-sm'
+                                : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sm'
+                            }`}
+                          >
+                            {inCart ? (
+                              <>
+                                <Check className="w-3.5 h-3.5" />
+                                <span>Adicionado</span>
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="w-3.5 h-3.5" />
+                                <span>Adicionar</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          {/* Product Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3.5">
-            {searchResults.map((product) => {
-              const inCart = isProductInCart(product.id);
-              return (
-                <div
-                  key={product.id}
-                  className={`clean-card rounded-2xl p-3.5 flex flex-col justify-between transition-all ${
-                    inCart ? 'border-sky-500 dark:border-sky-500/60 bg-sky-50/30 dark:bg-sky-950/20' : ''
-                  }`}
-                >
-                  <div>
-                    {/* Image */}
-                    <div className="w-full h-32 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative mb-2.5">
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                      {product.monthly_fee && product.monthly_fee > 0 ? (
-                        <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/80 backdrop-blur-md text-[10px] font-semibold text-emerald-400 border border-emerald-500/30">
-                          R$ {product.monthly_fee.toFixed(2)}/mês
-                        </span>
-                      ) : null}
+          {/* Section 2: Acessórios & Sensores */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-slate-800">
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm font-outfit flex items-center gap-2">
+                <Wrench className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                Acessórios & Sensores
+              </h3>
+              <span className="text-xs text-slate-400">{accessoryProducts.length} itens</span>
+            </div>
+
+            {accessoryProducts.length === 0 ? (
+              <p className="text-xs text-slate-400 py-4 text-center">Nenhum acessório encontrado para a pesquisa.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3.5">
+                {accessoryProducts.map((product) => {
+                  const inCart = isProductInCart(product.id);
+                  return (
+                    <div
+                      key={product.id}
+                      className={`clean-card rounded-2xl p-3.5 flex flex-col justify-between transition-all ${
+                        inCart ? 'border-sky-500 dark:border-sky-500/60 bg-sky-50/30 dark:bg-sky-950/20' : ''
+                      }`}
+                    >
+                      <div>
+                        {/* Image */}
+                        <div className="w-full h-32 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative mb-2.5">
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                          />
+                          {product.monthly_fee && product.monthly_fee > 0 ? (
+                            <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/80 backdrop-blur-md text-[10px] font-semibold text-emerald-400 border border-emerald-500/30">
+                              R$ {product.monthly_fee.toFixed(2)}/mês
+                            </span>
+                          ) : null}
+                        </div>
+
+                        <h4 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">{product.name}</h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{product.description}</p>
+                      </div>
+
+                      <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] text-slate-400 block font-medium">À Vista</span>
+                          <span className="text-sm font-bold text-slate-900 dark:text-white font-outfit">
+                            R$ {product.default_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => setDetailProduct(product)}
+                            title="Ver Detalhes"
+                            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button
+                            onClick={() => toggleCartItem(product)}
+                            className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
+                              inCart
+                                ? 'bg-emerald-600 text-white shadow-sm'
+                                : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sm'
+                            }`}
+                          >
+                            {inCart ? (
+                              <>
+                                <Check className="w-3.5 h-3.5" />
+                                <span>Adicionado</span>
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="w-3.5 h-3.5" />
+                                <span>Adicionar</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
                     </div>
-
-                    <h4 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">{product.name}</h4>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{product.description}</p>
-                  </div>
-
-                  <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] text-slate-400 block font-medium">À Vista</span>
-                      <span className="text-sm font-bold text-slate-900 dark:text-white font-outfit">
-                        R$ {product.default_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => setDetailProduct(product)}
-                        title="Ver Detalhes"
-                        className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                      </button>
-
-                      <button
-                        onClick={() => toggleCartItem(product)}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
-                          inCart
-                            ? 'bg-emerald-600 text-white shadow-sm'
-                            : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sm'
-                        }`}
-                      >
-                        {inCart ? (
-                          <>
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Adicionado</span>
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="w-3.5 h-3.5" />
-                            <span>Adicionar</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
@@ -406,12 +474,12 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
             </div>
           )}
 
-          {/* Subtotal & Discount */}
+          {/* Totals Summary Box */}
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
-            <div className="flex items-center justify-between text-slate-700 dark:text-slate-300">
-              <span>Subtotal Equipamentos:</span>
-              <span className="font-bold font-mono text-slate-900 dark:text-white">
-                R$ {subtotalEquipment.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
+              <span>Equipamentos (Bruto):</span>
+              <span className="font-semibold font-mono">
+                R$ {rawEquipmentTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
             </div>
 
@@ -533,55 +601,51 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
             </div>
           </div>
 
-          {/* Simulador de Parcela Ideal */}
+          {/* Simulator Box */}
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
-            <div className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 font-bold">
-              <Calculator className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
+              <Calculator className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
               <span>Simulador de Parcela Ideal</span>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <input
                 type="number"
-                placeholder="Parcela desejada (ex: 700)"
+                placeholder="R$ parcela desejada"
                 value={targetInstallment}
                 onChange={(e) => setTargetInstallment(e.target.value)}
-                className="flex-1 px-2.5 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white text-xs"
+                className="flex-1 px-2.5 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
               />
               <button
-                onClick={handleCalculateSimulator}
-                className="px-3 py-1 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs"
+                onClick={handleSimulateInstallment}
+                className="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg text-xs shadow-sm"
               >
-                Calcular
+                Simular
               </button>
             </div>
 
             {simulationResult && (
-              <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 p-1.5 rounded-lg border border-emerald-200 dark:border-emerald-500/20">
-                Resultado: {simulationResult}
+              <p className="text-[11px] text-sky-600 dark:text-sky-300 leading-snug font-medium pt-1 border-t border-slate-200 dark:border-slate-800">
+                {simulationResult}
               </p>
             )}
           </div>
 
-          {/* Action: Copy WhatsApp Message */}
+          {/* Copy Proposal Action Button */}
           <button
             onClick={handleCopyMessage}
             disabled={cart.length === 0}
-            className={`w-full py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
-              cart.length > 0
-                ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm'
-                : 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
-            }`}
+            className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-all"
           >
             {copiedNotification ? (
               <>
-                <CheckCircle className="w-4 h-4 text-white" />
-                <span>Mensagem Copiada! 🚀</span>
+                <CheckCircle className="w-4 h-4" />
+                <span>Proposta Copiada!</span>
               </>
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                <span>Gerar e Copiar Mensagem</span>
+                <span>Copiar Mensagem WhatsApp</span>
               </>
             )}
           </button>
