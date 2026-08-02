@@ -221,7 +221,7 @@ export default function Home() {
   const opportunitiesDueToday = opportunities.filter((o) => o.expiration_date === todayStr).length;
 
   return (
-    <div className="flex min-h-screen bg-[#0b0f19] text-slate-100 transition-colors duration-200">
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#0b0f19] text-slate-100 transition-colors duration-200">
       {/* Sidebar */}
       <Sidebar
         activeTab={activeTab}
