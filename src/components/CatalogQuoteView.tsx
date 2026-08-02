@@ -88,7 +88,9 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   // Filter products directly without floating box
   const searchResults = products.filter((p) => {
     const term = searchTerm.toLowerCase();
-    return p.name.toLowerCase().includes(term) || p.description.toLowerCase().includes(term);
+    const nameMatch = (p.name || '').toLowerCase().includes(term);
+    const descMatch = (p.description || '').toLowerCase().includes(term);
+    return nameMatch || descMatch;
   });
 
   // Categorized products matching the PRD
