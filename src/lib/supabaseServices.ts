@@ -144,13 +144,13 @@ export async function fetchSellers(userId: string): Promise<string[]> {
       .eq('user_id', userId);
 
     if (error || !data || data.length === 0) {
-      return INITIAL_SELLERS;
+      return [];
     }
 
     const fetchedNames = data.map((s) => s.name);
-    return Array.from(new Set([...INITIAL_SELLERS, ...fetchedNames])).sort();
+    return Array.from(new Set(fetchedNames)).sort();
   } catch (err) {
-    return INITIAL_SELLERS;
+    return [];
   }
 }
 
