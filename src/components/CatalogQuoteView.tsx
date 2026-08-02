@@ -128,11 +128,11 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   // Client name for proposal greeting
   const [clientName, setClientName] = useState('');
 
-  // Copy WhatsApp proposal message with icons & custom greeting
+  // Copy WhatsApp proposal message with exact requested template & Benefits
   const generateMessageText = () => {
     const greeting = clientName.trim()
-      ? `Olá *${clientName.trim()}*, seu orçamento da *Show Tecnologia / Omnilink* está pronto! 🚀\n\n`
-      : `*Orçamento — Show Tecnologia / Omnilink* 🚀\n\n`;
+      ? `Olá *${clientName.trim()}*, seu orçamento está pronto!\n\n`
+      : `Olá, seu orçamento da *Show Tecnologia / Omnilink* está pronto!\n\n`;
 
     let msg = greeting;
 
@@ -155,18 +155,23 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
     if (payPix) {
       const pixTotal = finalEquipmentPrice;
-      msg += `⚡ *PIX à vista:* R$ ${pixTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `• *PIX à vista:* R$ ${pixTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     }
 
     if (payBoleto && boletoInstallments > 0) {
       const boletoVal = finalEquipmentPrice / boletoInstallments;
-      msg += `📄 *Boleto Sem Juros:* ${boletoInstallments}x de R$ ${boletoVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `• *Boleto Sem Juros:* ${boletoInstallments}x de R$ ${boletoVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     }
 
     if (payCard && cardInstallments > 0) {
       const cardVal = finalEquipmentPrice / cardInstallments;
-      msg += `💳 *Cartão de Crédito:* ${cardInstallments}x de R$ ${cardVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `• *Cartão de Crédito:* ${cardInstallments}x de R$ ${cardVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     }
+
+    msg += `\n✨ *Benefícios Incluídos:*\n`;
+    msg += `• Garantia de 12 meses\n`;
+    msg += `• Entrega e instalação gratuita\n`;
+    msg += `• Treinamento completo para uso dos equipamentos e sistema\n`;
 
     msg += `\nQualquer dúvida ou ajuste, estou à inteira disposição!`;
     return msg;
