@@ -20,7 +20,8 @@ import {
   CheckCircle,
   Eye,
   Radio,
-  Wrench
+  Wrench,
+  Landmark
 } from 'lucide-react';
 
 interface CatalogQuoteViewProps {
@@ -46,6 +47,17 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const [boletoInstallments, setBoletoInstallments] = useState(3);
   const [payCard, setPayCard] = useState(true);
   const [cardInstallments, setCardInstallments] = useState(10);
+  const [payFinancing, setPayFinancing] = useState(false);
+  const [financingInstallments, setFinancingInstallments] = useState(36);
+
+  // Bank Simulator Financing Formula (Exact CET Price coefficient matching bank simulator)
+  const calculateFinancingInstallment = (principal: number, n: number) => {
+    if (principal <= 0 || n <= 0) return 0;
+    const exactRate = 0.048858;
+    const factor = Math.pow(1 + exactRate, n);
+    const pmt = principal * ((exactRate * factor) / (factor - 1));
+    return pmt;
+  };
   
   // Ideal Installment Simulator State
   const [targetInstallment, setTargetInstallment] = useState<string>('');
@@ -159,7 +171,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
       msg += `📡 *Mensalidade de Serviços & Telemetria:* R$ ${totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês\n`;
     }
 
-    msg += `\n💳 *Opções de Pagamento & Facilidades:*\n`;
+    msg += `\n💳 *Formas de Pagamento:*\n`;
 
     if (payPix) {
       const pixTotal = finalEquipmentPrice;
@@ -173,7 +185,12 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
     if (payCard && cardInstallments > 0) {
       const cardVal = finalEquipmentPrice / cardInstallments;
-      msg += `• *Cartão de Crédito:* ${cardInstallments}x de R$ ${cardVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `• *Cartão Sem Juros:* ${cardInstallments}x de R$ ${cardVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+    }
+
+    if (payFinancing && financingInstallments > 0) {
+      const financingVal = calculateFinancingInstallment(finalEquipmentPrice, financingInstallments);
+      msg += `• *Financiamento:* ${financingInstallments}x de R$ ${financingVal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n`;
     }
 
     msg += `\n✨ *Benefícios Incluídos:*\n`;
@@ -618,7 +635,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                     className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
                   />
                   <CreditCard className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                  <span className="font-medium text-slate-800 dark:text-slate-200">Cartão de Crédito</span>
+                  <span className="font-medium text-slate-800 dark:text-slate-200">Cartão Sem Juros</span>
                 </label>
 
                 {payCard && (
@@ -633,6 +650,42 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                   </select>
                 )}
               </div>
+            </div>
+
+            {/* Financiamento (até 36x) */}
+            <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={payFinancing}
+                    onChange={(e) => setPayFinancing(e.target.checked)}
+                    className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
+                  />
+                  <Landmark className="w-3.5 h-3.5 text-blue-500" />
+                  <span className="font-medium text-slate-800 dark:text-slate-200">Financiamento</span>
+                </label>
+
+                {payFinancing && (
+                  <select
+                    value={financingInstallments}
+                    onChange={(e) => setFinancingInstallments(parseInt(e.target.value))}
+                    className="px-2 py-0.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white font-mono"
+                  >
+                    {Array.from({ length: 36 }, (_, idx) => idx + 1).map((n) => (
+                      <option key={n} value={n}>{n}x</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+              {payFinancing && (
+                <div className="mt-1.5 pt-1.5 border-t border-slate-200 dark:border-slate-800/60 flex items-center justify-between text-[11px]">
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">Parcela Financiada:</span>
+                  <span className="font-bold text-sky-600 dark:text-sky-400 font-mono">
+                    {financingInstallments}x de R$ {calculateFinancingInstallment(finalEquipmentPrice, financingInstallments).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
