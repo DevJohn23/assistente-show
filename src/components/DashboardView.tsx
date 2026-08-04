@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Opportunity, Commission } from '@/types';
+import { useAuth } from '@/context/AuthContext';
 import { 
   AlertTriangle, 
   Hourglass, 
@@ -26,6 +27,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   setActiveTab,
   onNewOpportunity,
 }) => {
+  const { user } = useAuth();
+
+  // Dynamic user first name
+  const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Vendedor';
+  const rawFirstName = fullName.trim().split(' ')[0];
+  const firstName = rawFirstName.charAt(0).toUpperCase() + rawFirstName.slice(1);
+
+  // Time-based greeting (Bom dia / Boa tarde / Boa noite)
+  const currentHour = new Date().getHours();
+  let greetingText = 'Bom dia';
+  if (currentHour >= 12 && currentHour < 18) {
+    greetingText = 'Boa tarde';
+  } else if (currentHour >= 18 || currentHour < 5) {
+    greetingText = 'Boa noite';
+  }
   // Calculations
   const todayStr = new Date().toISOString().split('T')[0];
   const tomorrowObj = new Date();
@@ -57,7 +73,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
-              Bom dia, Marcos 👋
+              {greetingText}, {firstName} 👋
             </h2>
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-xl">
               Confira seus lembretes de renovação de clientes e acompanhe o fechamento das suas comissões deste mês.

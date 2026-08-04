@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUpWithEmail = async (email: string, pass: string, fullName: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password: pass,
         options: {
@@ -63,7 +63,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           },
         },
       });
-      return { error };
+
+      if (error) {
+        return { error };
+      }
+
+      // Supabase returns user with empty identities array if user email already exists
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        return { 
+          error: new Error('Este e-mail já está cadastrado no sistema. Por favor, faça login ou utilize outro e-mail.') 
+        };
+      }
+
+      return { error: null };
     } catch (err: any) {
       return { error: err as Error };
     }

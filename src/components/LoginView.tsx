@@ -43,7 +43,12 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
       const { error } = await signUpWithEmail(email, password, fullName);
       setIsLoading(false);
       if (error) {
-        setErrorMsg(error.message || 'Erro ao criar conta. Verifique os dados fornecidos.');
+        const msg = error.message.toLowerCase().includes('already') || 
+                    error.message.toLowerCase().includes('cadastrado') || 
+                    error.message.toLowerCase().includes('exists')
+          ? 'Este e-mail já está cadastrado no sistema. Por favor, faça login ou utilize outro e-mail.'
+          : error.message || 'Erro ao criar conta. Verifique os dados fornecidos.';
+        setErrorMsg(msg);
       } else {
         setSuccessMsg('Conta criada com sucesso! Verifique seu e-mail ou faça login para continuar.');
         setMode('login');
