@@ -143,12 +143,15 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
       }
     }
 
+    const installerOpt = regTypeSelect === 'implanted_for_other' ? 'me' : 'other';
+
     if (editingComm) {
       onEditCommission(editingComm.id, {
         client_name: clientName,
         sale_amount: numericSale,
         commission_amount: numericComm,
         sale_date: saleDate,
+        installer_option: installerOpt,
         registration_type: regTypeSelect,
         other_installer_name: finalOtherInstaller,
         notes: notes || undefined,
@@ -159,8 +162,10 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
         sale_amount: numericSale,
         commission_amount: numericComm,
         sale_date: saleDate,
+        installer_option: installerOpt,
         registration_type: regTypeSelect,
         other_installer_name: finalOtherInstaller,
+        status: 'pending',
         notes: notes || undefined,
       });
     }
