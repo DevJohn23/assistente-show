@@ -9,7 +9,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 6930.00,
     pix_price: 6930.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-1.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -28,7 +28,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 4830.00,
     pix_price: 4830.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-2.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -47,7 +47,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 275.25,
     pix_price: 275.25,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-3.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -66,7 +66,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 2236.06,
     pix_price: 2236.06,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-4.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -85,7 +85,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 4189.50,
     pix_price: 4189.50,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-5.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -104,7 +104,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 756.00,
     pix_price: 756.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-6.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -123,7 +123,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 5563.95,
     pix_price: 5563.95,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-7.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -142,7 +142,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 7663.95,
     pix_price: 7663.95,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-8.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -161,7 +161,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 309.75,
     pix_price: 309.75,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-9.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -180,7 +180,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 309.75,
     pix_price: 309.75,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-10.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -199,7 +199,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 257.25,
     pix_price: 257.25,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-11.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -218,7 +218,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1260.00,
     pix_price: 1260.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-12.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -237,7 +237,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 5880.00,
     pix_price: 5880.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-13.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -256,7 +256,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 3780.00,
     pix_price: 3780.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-14.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -275,7 +275,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 5517.75,
     pix_price: 5517.75,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-15.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -294,7 +294,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 330.75,
     pix_price: 330.75,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-16.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -313,7 +313,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 99.00,
     pix_price: 99.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-17.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -332,7 +332,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 6126.75,
     pix_price: 6126.75,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-18.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -351,7 +351,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 474.00,
     pix_price: 474.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-19.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -370,7 +370,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 103.95,
     pix_price: 103.95,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-20.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -389,7 +389,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 103.95,
     pix_price: 103.95,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-21.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -408,7 +408,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 6762.00,
     pix_price: 6762.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-22.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -427,7 +427,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1600.00,
     pix_price: 1600.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-23.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -446,7 +446,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 3200.00,
     pix_price: 3200.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-24.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -465,7 +465,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 990.00,
     pix_price: 990.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-25.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -484,7 +484,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 3700.00,
     pix_price: 3700.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-26.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -503,7 +503,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 330.75,
     pix_price: 330.75,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-27.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -522,7 +522,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 6930.00,
     pix_price: 6930.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-28.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -541,7 +541,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 5880.00,
     pix_price: 5880.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-29.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -560,7 +560,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 6448.53,
     pix_price: 6448.53,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-30.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -579,7 +579,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 5094.02,
     pix_price: 5094.02,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-31.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -598,7 +598,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 4830.00,
     pix_price: 4830.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-32.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -617,7 +617,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 6930.00,
     pix_price: 6930.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-33.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -636,7 +636,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 487.20,
     pix_price: 487.20,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-34.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -655,7 +655,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 260.40,
     pix_price: 260.40,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-35.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -674,7 +674,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1504.65,
     pix_price: 1504.65,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-36.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -693,7 +693,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 243.60,
     pix_price: 243.60,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-37.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -712,7 +712,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 408.45,
     pix_price: 408.45,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-38.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -731,7 +731,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 408.45,
     pix_price: 408.45,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-39.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -750,7 +750,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1871.10,
     pix_price: 1871.10,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-40.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -769,7 +769,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1304.10,
     pix_price: 1304.10,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-41.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -788,7 +788,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1462.65,
     pix_price: 1462.65,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-42.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -807,7 +807,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1554.00,
     pix_price: 1554.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-43.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -826,7 +826,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 475.00,
     pix_price: 475.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-44.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -845,7 +845,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1000.65,
     pix_price: 1000.65,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-45.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -864,7 +864,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1748.25,
     pix_price: 1748.25,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-46.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -883,7 +883,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 15.75,
     pix_price: 15.75,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-47.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -902,7 +902,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 291.90,
     pix_price: 291.90,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-48.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -921,7 +921,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 316.05,
     pix_price: 316.05,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-49.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -940,7 +940,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1278.90,
     pix_price: 1278.90,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-50.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -959,7 +959,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 6.00,
     pix_price: 6.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-51.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -978,7 +978,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 27.00,
     pix_price: 27.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-52.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -997,7 +997,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 27.00,
     pix_price: 27.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-53.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1016,7 +1016,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 29.00,
     pix_price: 29.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-54.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1035,7 +1035,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 86.00,
     pix_price: 86.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-55.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1054,7 +1054,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 130.00,
     pix_price: 130.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-56.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1073,7 +1073,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 43.00,
     pix_price: 43.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-57.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1092,7 +1092,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 408.45,
     pix_price: 408.45,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-58.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1111,7 +1111,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 521.85,
     pix_price: 521.85,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-59.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1130,7 +1130,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1347.15,
     pix_price: 1347.15,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-60.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1149,7 +1149,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 164.85,
     pix_price: 164.85,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-61.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1168,7 +1168,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 371.55,
     pix_price: 371.55,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-62.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1187,7 +1187,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 731.10,
     pix_price: 731.10,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-63.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1206,7 +1206,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1116.15,
     pix_price: 1116.15,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-64.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1225,7 +1225,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1283.00,
     pix_price: 1283.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-65.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1244,7 +1244,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1504.65,
     pix_price: 1504.65,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-66.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1263,7 +1263,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1040.55,
     pix_price: 1040.55,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-67.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1282,7 +1282,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 661.50,
     pix_price: 661.50,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-68.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1301,7 +1301,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 280.35,
     pix_price: 280.35,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-69.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1320,7 +1320,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 92.40,
     pix_price: 92.40,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-70.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1339,7 +1339,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 39.00,
     pix_price: 39.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-71.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1358,7 +1358,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 59.00,
     pix_price: 59.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-72.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1377,7 +1377,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 38.00,
     pix_price: 38.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-73.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1396,7 +1396,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 27.00,
     pix_price: 27.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-74.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1415,7 +1415,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 18.00,
     pix_price: 18.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-75.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1434,7 +1434,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 86.00,
     pix_price: 86.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-76.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1453,7 +1453,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 86.00,
     pix_price: 86.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-77.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1472,7 +1472,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 49.00,
     pix_price: 49.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-78.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1491,7 +1491,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 85.05,
     pix_price: 85.05,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-79.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1510,7 +1510,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 86.00,
     pix_price: 86.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-80.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1529,7 +1529,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 86.00,
     pix_price: 86.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-81.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1548,7 +1548,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 58.00,
     pix_price: 58.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-82.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1567,7 +1567,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 683.55,
     pix_price: 683.55,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-83.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1586,7 +1586,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 862.05,
     pix_price: 862.05,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-84.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1605,7 +1605,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 847.35,
     pix_price: 847.35,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-85.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1624,7 +1624,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 2800.00,
     pix_price: 2800.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-86.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1643,7 +1643,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 3061.80,
     pix_price: 3061.80,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-87.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1662,7 +1662,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1050.00,
     pix_price: 1050.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-88.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1681,7 +1681,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 139.65,
     pix_price: 139.65,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-1.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1700,7 +1700,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 249.38,
     pix_price: 249.38,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-2.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1719,7 +1719,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 136.50,
     pix_price: 136.50,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-3.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1738,7 +1738,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 115.50,
     pix_price: 115.50,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-4.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1757,7 +1757,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 236.25,
     pix_price: 236.25,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-5.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1776,7 +1776,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 236.25,
     pix_price: 236.25,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-6.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1795,7 +1795,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 404.25,
     pix_price: 404.25,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-7.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1814,7 +1814,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 400.00,
     pix_price: 400.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-8.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1833,7 +1833,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1275.75,
     pix_price: 1275.75,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-9.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1852,7 +1852,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 47.25,
     pix_price: 47.25,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-10.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1871,7 +1871,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 270.00,
     pix_price: 270.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-11.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1890,7 +1890,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 39.00,
     pix_price: 39.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-12.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1909,7 +1909,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 12.60,
     pix_price: 12.60,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-13.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1928,7 +1928,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 19.95,
     pix_price: 19.95,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-14.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1947,7 +1947,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 324.00,
     pix_price: 324.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-15.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1966,7 +1966,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 4074.00,
     pix_price: 4074.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-16.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -1985,7 +1985,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 420.00,
     pix_price: 420.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-17.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2004,7 +2004,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 410.00,
     pix_price: 410.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-18.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2023,7 +2023,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 236.25,
     pix_price: 236.25,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-19.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2042,7 +2042,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1900.00,
     pix_price: 1900.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-20.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2061,7 +2061,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 816.90,
     pix_price: 816.90,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-21.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2080,7 +2080,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 684.00,
     pix_price: 684.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-22.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2099,7 +2099,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 469.35,
     pix_price: 469.35,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-23.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2118,7 +2118,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 43.05,
     pix_price: 43.05,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-24.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2137,7 +2137,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 85.05,
     pix_price: 85.05,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-25.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2156,7 +2156,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 956.34,
     pix_price: 956.34,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-26.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2175,7 +2175,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 578.55,
     pix_price: 578.55,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-27.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2194,7 +2194,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 19.95,
     pix_price: 19.95,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-28.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2213,7 +2213,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 241.88,
     pix_price: 241.88,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-29.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2232,7 +2232,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 266.70,
     pix_price: 266.70,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-30.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2251,7 +2251,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1800.00,
     pix_price: 1800.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-31.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2270,7 +2270,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1507.80,
     pix_price: 1507.80,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-32.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2289,7 +2289,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1564.50,
     pix_price: 1564.50,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-33.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2308,7 +2308,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1757.70,
     pix_price: 1757.70,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-34.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2327,7 +2327,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 59.85,
     pix_price: 59.85,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-35.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2346,7 +2346,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 195.30,
     pix_price: 195.30,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-36.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2365,7 +2365,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 130.00,
     pix_price: 130.00,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-37.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2384,7 +2384,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 95.90,
     pix_price: 95.90,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-38.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2403,7 +2403,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 58.95,
     pix_price: 58.95,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-39.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,
@@ -2422,7 +2422,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     default_price: 1417.50,
     pix_price: 1417.50,
     monthly_fee: 0.00,
-    image_url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&auto=format&fit=crop&q=80',
+    image_url: '/products/prod-img-40.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,

@@ -26,6 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { user, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Marcos (Vendedor)';
   const userInitial = userName.charAt(0).toUpperCase();
@@ -63,6 +64,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setMobileOpen(false);
   };
 
+  const isExpanded = isHovered || mobileOpen;
+
   return (
     <>
       {/* Mobile Top Header Bar (< md) */}
@@ -94,37 +97,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
       )}
 
-      {/* Sidebar Container (Desktop Sidebar + Mobile Drawer) */}
+      {/* Sidebar Container (Hover Expandable on Desktop + Mobile Drawer) */}
       <aside 
-        className={`fixed md:sticky top-0 z-50 md:z-30 w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between h-screen select-none transition-all duration-300 ${
-          mobileOpen ? 'left-0' : '-left-64 md:left-0'
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`fixed md:sticky top-0 z-50 md:z-30 bg-slate-900 border-r border-slate-800 flex flex-col justify-between h-screen select-none transition-all duration-300 ease-in-out shadow-2xl md:shadow-none overflow-hidden ${
+          mobileOpen ? 'left-0 w-64' : '-left-64 md:left-0'
+        } ${
+          isHovered ? 'md:w-64' : 'md:w-20'
         }`}
       >
-        <div>
-          {/* App Logo & Header */}
-          <div className="p-5 border-b border-slate-800 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-md shadow-sky-500/20">
+        <div className="w-full">
+          {/* App Logo & Header - Fixed height to avoid vertical shift */}
+          <div className="h-[72px] px-4 border-b border-slate-800 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-md shadow-sky-500/20 shrink-0">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <div>
-                <h1 className="font-bold text-base text-white tracking-wide font-outfit">Assistente Show</h1>
-                <p className="text-[11px] text-slate-400 font-medium">Show Tecnologia • Omnilink</p>
+              
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap ${
+                isExpanded ? 'opacity-100 max-w-[180px]' : 'opacity-0 max-w-0'
+              }`}>
+                <h1 className="font-bold text-base text-white tracking-wide font-outfit truncate">Assistente Show</h1>
+                <p className="text-[11px] text-slate-400 font-medium truncate">Show Tecnologia • Omnilink</p>
               </div>
             </div>
 
             {/* Mobile close button */}
             <button 
               onClick={() => setMobileOpen(false)}
-              className="md:hidden p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+              className="md:hidden p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 shrink-0"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="p-3.5 space-y-1">
-            <p className="px-3 text-[10px] font-semibold tracking-wider text-slate-500 uppercase mb-2">Menu Principal</p>
+          {/* Navigation Links - Fixed vertical padding without Menu Principal header */}
+          <nav className="p-3 space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -132,18 +141,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   key={item.id}
                   onClick={() => handleTabClick(item.id)}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-150 ${
+                  title={!isExpanded ? item.label : undefined}
+                  className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
                     isActive
-                      ? 'bg-sky-600 text-white font-semibold shadow-sm'
+                      ? 'bg-sky-600 text-white font-semibold shadow-md shadow-sky-600/20'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                    <span>{item.label}</span>
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                    <span className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap text-left ${
+                      isExpanded ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0'
+                    }`}>
+                      {item.label}
+                    </span>
                   </div>
+
                   {item.badge && (
-                    <span className={`text-[11px] px-2 py-0.5 rounded-full border font-bold ${item.badgeColor}`}>
+                    <span className={`transition-all duration-300 ease-in-out text-[11px] px-2 py-0.5 rounded-full border font-bold shrink-0 ${item.badgeColor} ${
+                      isExpanded ? 'opacity-100 max-w-[50px]' : 'opacity-0 max-w-0 overflow-hidden'
+                    }`}>
                       {item.badge}
                     </span>
                   )}
@@ -153,14 +170,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </nav>
         </div>
 
-        {/* User Info & Logout Footer */}
-        <div className="p-3.5 border-t border-slate-800 bg-slate-950/40">
-          <div className="flex items-center justify-between px-2 py-1">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-sky-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+        {/* User Info & Logout Footer - Fixed height */}
+        <div className="h-[68px] px-3.5 border-t border-slate-800 bg-slate-950/40 flex items-center shrink-0">
+          <div className="w-full flex items-center justify-between">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 rounded-full bg-sky-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
                 {userInitial}
               </div>
-              <div className="min-w-0">
+
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap ${
+                isExpanded ? 'opacity-100 max-w-[140px]' : 'opacity-0 max-w-0'
+              }`}>
                 <p className="text-xs font-semibold text-slate-200 truncate">{userName}</p>
                 <p className="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
@@ -172,7 +192,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               onClick={() => signOut()}
               title="Sair da Conta"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors"
+              className={`transition-all duration-300 ease-in-out p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 shrink-0 ${
+                isExpanded ? 'opacity-100 max-w-[40px]' : 'opacity-0 max-w-0 overflow-hidden pointer-events-none'
+              }`}
             >
               <LogOut className="w-4 h-4" />
             </button>
