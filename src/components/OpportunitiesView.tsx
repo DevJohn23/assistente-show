@@ -487,8 +487,9 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                      Data de Cadastro
+                    <label className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
+                      <CalendarIcon className="w-3.5 h-3.5 text-sky-400" />
+                      <span>Data de Cadastro</span>
                     </label>
                     <input
                       type="date"
@@ -499,8 +500,9 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                      Data de Vencimento *
+                    <label className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
+                      <CalendarIcon className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Data de Vencimento *</span>
                     </label>
                     <input
                       type="date"

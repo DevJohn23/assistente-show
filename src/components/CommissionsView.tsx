@@ -15,7 +15,9 @@ import {
   UserPlus,
   FileText,
   Eye,
-  Check
+  Check,
+  Coins,
+  Calendar
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { ConfirmModal } from './ConfirmModal';
@@ -126,36 +128,41 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientName || !saleAmount || !commissionAmount) return;
 
-    let finalSellerName = '';
-    if (regTypeSelect !== 'own') {
-      if (isAddingNewSellerInline || selectedSeller === 'NEW') {
-        finalSellerName = newSellerInput.trim();
-        if (finalSellerName) {
-          onAddSeller(finalSellerName);
-        }
+    const numericSale = parseFloat(saleAmount) || 0;
+    const numericComm = parseFloat(commissionAmount) || 0;
+
+    if (!clientName.trim()) return;
+
+    let finalOtherInstaller: string | undefined = undefined;
+    if (regTypeSelect === 'implanted_for_other' || regTypeSelect === 'other_implanted_for_me') {
+      if (isAddingNewSellerInline) {
+        finalOtherInstaller = newSellerInput.trim() || undefined;
       } else {
-        finalSellerName = selectedSeller;
+        finalOtherInstaller = selectedSeller || undefined;
       }
     }
 
-    const payload = {
-      client_name: clientName,
-      sale_amount: parseFloat(saleAmount),
-      commission_amount: parseFloat(commissionAmount),
-      sale_date: saleDate,
-      installer_option: regTypeSelect === 'implanted_for_other' ? ('me' as const) : ('other' as const),
-      other_installer_name: regTypeSelect !== 'own' ? (finalSellerName || undefined) : undefined,
-      registration_type: regTypeSelect,
-      status: editingComm ? editingComm.status : ('pending' as const),
-      notes,
-    };
-
     if (editingComm) {
-      onEditCommission(editingComm.id, payload);
+      onEditCommission(editingComm.id, {
+        client_name: clientName,
+        sale_amount: numericSale,
+        commission_amount: numericComm,
+        sale_date: saleDate,
+        registration_type: regTypeSelect,
+        other_installer_name: finalOtherInstaller,
+        notes: notes || undefined,
+      });
     } else {
-      onAddCommission(payload);
+      onAddCommission({
+        client_name: clientName,
+        sale_amount: numericSale,
+        commission_amount: numericComm,
+        sale_date: saleDate,
+        registration_type: regTypeSelect,
+        other_installer_name: finalOtherInstaller,
+        notes: notes || undefined,
+      });
     }
 
     setIsModalOpen(false);
@@ -165,18 +172,16 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
   const filteredCommissions = commissions.filter((c) => {
     const matchesSearch =
       c.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (c.other_installer_name && c.other_installer_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (c.notes && c.notes.toLowerCase().includes(searchTerm.toLowerCase()));
+      (c.other_installer_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (c.notes || '').toLowerCase().includes(searchTerm.toLowerCase());
 
-    if (!matchesSearch) return false;
+    const matchesStartDate = !startDate || c.sale_date >= startDate;
+    const matchesEndDate = !endDate || c.sale_date <= endDate;
 
-    if (startDate && c.sale_date < startDate) return false;
-    if (endDate && c.sale_date > endDate) return false;
-
-    return true;
+    return matchesSearch && matchesStartDate && matchesEndDate;
   });
 
-  // Financial Balances
+  // Calculate totals
   const totalOwnCommissions = filteredCommissions
     .filter((c) => c.registration_type === 'own')
     .reduce((acc, c) => acc + c.commission_amount, 0);
@@ -206,9 +211,10 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
     }
   });
 
-  // Export Excel
+  // Export Excel with summary rows right below the last record
   const handleExportExcel = () => {
-    const dataToExport = filteredCommissions.map((c) => ({
+    // 1. Individual sales records
+    const salesData = filteredCommissions.map((c) => ({
       Cliente: c.client_name,
       'Valor Venda': c.sale_amount,
       'Comissão (R$)': c.commission_amount,
@@ -224,7 +230,53 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
       Observações: c.notes || '',
     }));
 
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const worksheet = XLSX.utils.json_to_sheet(salesData);
+
+    // 2. Summary rows appended right below the last record
+    const summaryRows: any[] = [
+      {}, // Empty row space
+      { Cliente: '=== RESUMO DE REPASSES E RECEBIMENTOS POR VENDEDOR ===' },
+    ];
+
+    // Values to receive from each seller
+    Object.entries(receberPorPessoa).forEach(([name, amount]) => {
+      summaryRows.push({
+        Cliente: `[A RECEBER DE] ${name}`,
+        'Comissão (R$)': amount,
+        'Tipo de Registro': 'A Receber de Outro Vendedor',
+      });
+    });
+
+    // Values to send / repass to each seller
+    Object.entries(pagarPorPessoa).forEach(([name, amount]) => {
+      summaryRows.push({
+        Cliente: `[A REPASSAR / ENVIAR PARA] ${name}`,
+        'Comissão (R$)': amount,
+        'Tipo de Registro': 'A Repassar para Outro Vendedor',
+      });
+    });
+
+    // Grand totals
+    summaryRows.push({});
+    summaryRows.push({
+      Cliente: 'TOTAL A RECEBER DE OUTROS',
+      'Comissão (R$)': totalReceber,
+    });
+    summaryRows.push({
+      Cliente: 'TOTAL A REPASSAR A OUTROS',
+      'Comissão (R$)': totalPagar,
+    });
+    summaryRows.push({
+      Cliente: 'SALDO LÍQUIDO FINAL',
+      'Comissão (R$)': saldoLiquido,
+    });
+
+    // Append summary rows directly below the last row of the sheet
+    XLSX.utils.sheet_add_json(worksheet, summaryRows, {
+      skipHeader: true,
+      origin: -1,
+    });
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Comissões');
     XLSX.writeFile(workbook, `Relatorio_Comissoes_Show_${new Date().toISOString().split('T')[0]}.xlsx`);
@@ -545,7 +597,10 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">Data da Venda</label>
+                  <label className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
+                    <Calendar className="w-3.5 h-3.5 text-sky-400" />
+                    <span>Data da Venda</span>
+                  </label>
                   <input
                     type="date"
                     value={saleDate}

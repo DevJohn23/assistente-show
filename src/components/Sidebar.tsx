@@ -36,12 +36,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'dashboard',
       label: 'Dashboard',
       icon: LayoutDashboard,
+      iconColor: 'text-sky-400',
       badge: null,
     },
     {
       id: 'opportunities',
       label: 'Oportunidades',
       icon: CalendarClock,
+      iconColor: 'text-sky-400',
       badge: opportunitiesCountToday > 0 ? opportunitiesCountToday : null,
       badgeColor: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
     },
@@ -49,12 +51,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'commissions',
       label: 'Comissões',
       icon: Wallet,
+      iconColor: 'text-emerald-400',
       badge: null,
     },
     {
       id: 'catalog',
       label: 'Catálogo / Orçamento',
       icon: ShoppingBag,
+      iconColor: 'text-amber-400',
       badge: null,
     },
   ];
@@ -149,7 +153,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }`}
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : item.iconColor}`} />
                     <span className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap text-left ${
                       isExpanded ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0'
                     }`}>
