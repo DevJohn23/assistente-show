@@ -47,28 +47,37 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [renewingOpp, setRenewingOpp] = useState<Opportunity | null>(null);
 
+  const calcExpirationDate = (clientType: ClientType, startDateStr: string) => {
+    const days = clientType === 'PF' ? 15 : 30;
+    const d = new Date(startDateStr + 'T00:00:00');
+    d.setDate(d.getDate() + days);
+    return d.toISOString().split('T')[0];
+  };
+
   // Form State
+  const initialToday = new Date().toISOString().split('T')[0];
   const [formData, setFormData] = useState({
     client_name: '',
     cpf_cnpj: '',
     type: 'PF' as ClientType,
     phone: '',
     company_name: '',
-    registration_date: new Date().toISOString().split('T')[0],
-    expiration_date: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+    registration_date: initialToday,
+    expiration_date: calcExpirationDate('PF', initialToday),
     notes: '',
   });
 
   const handleOpenAddModal = () => {
     setEditingOpp(null);
+    const today = new Date().toISOString().split('T')[0];
     setFormData({
       client_name: '',
       cpf_cnpj: '',
       type: 'PF',
       phone: '',
       company_name: '',
-      registration_date: new Date().toISOString().split('T')[0],
-      expiration_date: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+      registration_date: today,
+      expiration_date: calcExpirationDate('PF', today),
       notes: '',
     });
     setIsModalOpen(true);
@@ -331,7 +340,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
                             {/* Renovar */}
                             <button
                               onClick={() => setRenewingOpp(opp)}
-                              title="Renovar Oportunidade (+30 dias)"
+                              title={`Renovar Oportunidade (+${opp.type === 'PF' ? '15' : '30'} dias)`}
                               className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-500/10 hover:bg-sky-600 text-sky-700 dark:text-sky-400 hover:text-white border border-sky-300 dark:border-sky-500/20 transition-all"
                             >
                               <RefreshCw className="w-3.5 h-3.5" />
@@ -433,11 +442,18 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
                     </label>
                     <select
                       value={formData.type}
-                      onChange={(e) => setFormData({ ...formData, type: e.target.value as ClientType })}
+                      onChange={(e) => {
+                        const newType = e.target.value as ClientType;
+                        setFormData((prev) => ({
+                          ...prev,
+                          type: newType,
+                          expiration_date: calcExpirationDate(newType, prev.registration_date),
+                        }));
+                      }}
                       className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
                     >
-                      <option value="PF">Pessoa Física (PF)</option>
-                      <option value="PJ">Pessoa Jurídica (PJ)</option>
+                      <option value="PF">Pessoa Física (15 dias)</option>
+                      <option value="PJ">Pessoa Jurídica (30 dias)</option>
                     </select>
                   </div>
 
@@ -494,7 +510,14 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
                     <input
                       type="date"
                       value={formData.registration_date}
-                      onChange={(e) => setFormData({ ...formData, registration_date: e.target.value })}
+                      onChange={(e) => {
+                        const newRegDate = e.target.value;
+                        setFormData((prev) => ({
+                          ...prev,
+                          registration_date: newRegDate,
+                          expiration_date: calcExpirationDate(prev.type, newRegDate),
+                        }));
+                      }}
                       className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
                     />
                   </div>
@@ -554,7 +577,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
         <ConfirmModal
           isOpen={!!renewingOpp}
           title="Renovar Oportunidade"
-          message={`Deseja renovar a oportunidade de "${renewingOpp.client_name}" por mais 30 dias?`}
+          message={`Deseja renovar a oportunidade de "${renewingOpp.client_name}" (${renewingOpp.type}) por mais ${renewingOpp.type === 'PF' ? 15 : 30} dias?`}
           onConfirm={() => {
             onRenewOpportunity(renewingOpp.id);
             setRenewingOpp(null);

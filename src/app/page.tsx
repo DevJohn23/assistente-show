@@ -131,8 +131,9 @@ export default function Home() {
     const opp = opportunities.find((o) => o.id === id);
     if (!opp) return;
 
-    const currentExp = new Date(opp.expiration_date);
-    currentExp.setDate(currentExp.getDate() + 30);
+    const daysToAdd = opp.type === 'PF' ? 15 : 30;
+    const currentExp = new Date(opp.expiration_date + 'T00:00:00');
+    currentExp.setDate(currentExp.getDate() + daysToAdd);
     const newExp = currentExp.toISOString().split('T')[0];
 
     const updated = { expiration_date: newExp, status: 'renewed' as const };
@@ -140,7 +141,7 @@ export default function Home() {
       prev.map((o) => (o.id === id ? { ...o, ...updated } : o))
     );
     await updateOpportunity(id, updated);
-    showToast('Oportunidade renovada com sucesso!');
+    showToast(`Oportunidade renovada (+${daysToAdd} dias para ${opp.type})!`);
   };
 
   // Commission Handlers

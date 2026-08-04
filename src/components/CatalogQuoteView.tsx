@@ -46,7 +46,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const [payBoleto, setPayBoleto] = useState(true);
   const [boletoInstallments, setBoletoInstallments] = useState(3);
   const [payCard, setPayCard] = useState(true);
-  const [cardInstallments, setCardInstallments] = useState(10);
+  const [cardInstallments, setCardInstallments] = useState(12);
   const [payFinancing, setPayFinancing] = useState(false);
   const [financingInstallments, setFinancingInstallments] = useState(36);
 
@@ -58,10 +58,6 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     const pmt = principal * ((exactRate * factor) / (factor - 1));
     return pmt;
   };
-  
-  // Ideal Installment Simulator State
-  const [targetInstallment, setTargetInstallment] = useState<string>('');
-  const [simulationResult, setSimulationResult] = useState<string | null>(null);
 
   // Modals state
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
@@ -124,27 +120,6 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const discountAmount = (rawEquipmentTotal * (discountPercent || 0)) / 100;
   const finalEquipmentPrice = Math.max(0, rawEquipmentTotal - discountAmount);
 
-  // Simulate Ideal Installment
-  const handleSimulateInstallment = () => {
-    const target = parseFloat(targetInstallment);
-    if (!target || target <= 0 || finalEquipmentPrice <= 0) {
-      setSimulationResult(null);
-      return;
-    }
-
-    const calculatedInstallments = Math.ceil(finalEquipmentPrice / target);
-    if (calculatedInstallments <= 12) {
-      const actualInstallmentVal = finalEquipmentPrice / calculatedInstallments;
-      setSimulationResult(
-        `Para parcelas de ~R$ ${target.toFixed(2)}, o ideal é parcelar em ${calculatedInstallments}x de R$ ${actualInstallmentVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} no cartão.`
-      );
-    } else {
-      setSimulationResult(
-        `O valor limite é de 12x de R$ ${(finalEquipmentPrice / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}.`
-      );
-    }
-  };
-
   // Client name for proposal greeting
   const [clientName, setClientName] = useState('');
 
@@ -189,8 +164,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     }
 
     if (payFinancing && financingInstallments > 0) {
-      const financingVal = calculateFinancingInstallment(finalEquipmentPrice, financingInstallments);
-      msg += `• *Financiamento:* ${financingInstallments}x de R$ ${financingVal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n`;
+      msg += `• *Financiamento:* em até ${financingInstallments}x (com juros sob consulta)\n`;
     }
 
     msg += `\n✨ *Benefícios Incluídos:*\n`;
@@ -680,43 +654,13 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               </div>
               {payFinancing && (
                 <div className="mt-1.5 pt-1.5 border-t border-slate-200 dark:border-slate-800/60 flex items-center justify-between text-[11px]">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Parcela Financiada:</span>
-                  <span className="font-bold text-sky-600 dark:text-sky-400 font-mono">
-                    {financingInstallments}x de R$ {calculateFinancingInstallment(finalEquipmentPrice, financingInstallments).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">Condição Financiada:</span>
+                  <span className="font-bold text-sky-600 dark:text-sky-400">
+                    Em até {financingInstallments}x (com juros sob consulta)
                   </span>
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Simulator Box */}
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
-            <div className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
-              <Calculator className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-              <span>Simulador de Parcela Ideal</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                placeholder="R$ parcela desejada"
-                value={targetInstallment}
-                onChange={(e) => setTargetInstallment(e.target.value)}
-                className="flex-1 px-2.5 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-              />
-              <button
-                onClick={handleSimulateInstallment}
-                className="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg text-xs shadow-sm"
-              >
-                Simular
-              </button>
-            </div>
-
-            {simulationResult && (
-              <p className="text-[11px] text-sky-600 dark:text-sky-300 leading-snug font-medium pt-1 border-t border-slate-200 dark:border-slate-800">
-                {simulationResult}
-              </p>
-            )}
           </div>
 
           {/* Copy Proposal Action Button */}
