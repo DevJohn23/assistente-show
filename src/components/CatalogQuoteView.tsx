@@ -272,13 +272,17 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                         inCart ? 'border-sky-500 dark:border-sky-500/60 bg-sky-50/30 dark:bg-sky-950/20' : ''
                       }`}
                     >
-                      <div>
+                      <div 
+                        onClick={() => setDetailProduct(product)}
+                        className="cursor-pointer group"
+                        title="Clique para ver os detalhes do produto"
+                      >
                         {/* Image */}
-                        <div className="w-full h-32 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative mb-2.5">
+                        <div className="w-full h-32 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative mb-2.5 group-hover:opacity-90 transition-opacity">
                           <img
                             src={product.image_url}
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                           {product.monthly_fee && product.monthly_fee > 0 ? (
                             <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/80 backdrop-blur-md text-[10px] font-semibold text-emerald-400 border border-emerald-500/30">
@@ -287,7 +291,9 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                           ) : null}
                         </div>
 
-                        <h4 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">{product.name}</h4>
+                        <h4 className="font-bold text-slate-900 dark:text-white text-sm font-outfit group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                          {product.name}
+                        </h4>
                       </div>
 
                       <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
@@ -298,36 +304,29 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => setDetailProduct(product)}
-                            title="Ver Detalhes"
-                            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-
-                          <button
-                            onClick={() => toggleCartItem(product)}
-                            className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
-                              inCart
-                                ? 'bg-emerald-600 text-white shadow-sm'
-                                : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sm'
-                            }`}
-                          >
-                            {inCart ? (
-                              <>
-                                <Check className="w-3.5 h-3.5" />
-                                <span>Adicionado</span>
-                              </>
-                            ) : (
-                              <>
-                                <Plus className="w-3.5 h-3.5" />
-                                <span>Adicionar</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleCartItem(product);
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                            inCart
+                              ? 'bg-emerald-600 text-white shadow-sm'
+                              : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sm'
+                          }`}
+                        >
+                          {inCart ? (
+                            <>
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Adicionado</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>Adicionar</span>
+                            </>
+                          )}
+                        </button>
                       </div>
                     </div>
                   );
@@ -359,13 +358,17 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                         inCart ? 'border-sky-500 dark:border-sky-500/60 bg-sky-50/30 dark:bg-sky-950/20' : ''
                       }`}
                     >
-                      <div>
+                      <div 
+                        onClick={() => setDetailProduct(product)}
+                        className="cursor-pointer group"
+                        title="Clique para ver os detalhes do produto"
+                      >
                         {/* Image */}
-                        <div className="w-full h-32 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative mb-2.5">
+                        <div className="w-full h-32 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative mb-2.5 group-hover:opacity-90 transition-opacity">
                           <img
                             src={product.image_url}
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                           {product.monthly_fee && product.monthly_fee > 0 ? (
                             <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/80 backdrop-blur-md text-[10px] font-semibold text-emerald-400 border border-emerald-500/30">
@@ -374,7 +377,9 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                           ) : null}
                         </div>
 
-                        <h4 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">{product.name}</h4>
+                        <h4 className="font-bold text-slate-900 dark:text-white text-sm font-outfit group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                          {product.name}
+                        </h4>
                       </div>
 
                       <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
@@ -385,36 +390,29 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => setDetailProduct(product)}
-                            title="Ver Detalhes"
-                            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-
-                          <button
-                            onClick={() => toggleCartItem(product)}
-                            className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
-                              inCart
-                                ? 'bg-emerald-600 text-white shadow-sm'
-                                : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sm'
-                            }`}
-                          >
-                            {inCart ? (
-                              <>
-                                <Check className="w-3.5 h-3.5" />
-                                <span>Adicionado</span>
-                              </>
-                            ) : (
-                              <>
-                                <Plus className="w-3.5 h-3.5" />
-                                <span>Adicionar</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleCartItem(product);
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                            inCart
+                              ? 'bg-emerald-600 text-white shadow-sm'
+                              : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sm'
+                          }`}
+                        >
+                          {inCart ? (
+                            <>
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Adicionado</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-3.5 h-3.5" />
+                              <span>Adicionar</span>
+                            </>
+                          )}
+                        </button>
                       </div>
                     </div>
                   );

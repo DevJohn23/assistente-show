@@ -108,7 +108,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         className={`fixed md:sticky top-0 z-50 md:z-30 bg-slate-900 border-r border-slate-800 flex flex-col justify-between h-screen select-none transition-all duration-300 ease-in-out shadow-2xl md:shadow-none overflow-hidden ${
           mobileOpen ? 'left-0 w-64' : '-left-64 md:left-0'
         } ${
-          isHovered ? 'md:w-64' : 'md:w-20'
+          isHovered ? 'md:w-64' : 'md:w-16'
         }`}
       >
         <div className="w-full">
@@ -137,7 +137,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           {/* Navigation Links - Fixed vertical padding without Menu Principal header */}
-          <nav className="p-3 space-y-2">
+          <nav className="p-2.5 space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -146,7 +146,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   key={item.id}
                   onClick={() => handleTabClick(item.id)}
                   title={!isExpanded ? item.label : undefined}
-                  className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
+                  className={`w-full flex items-center justify-between px-3 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
                     isActive
                       ? 'bg-sky-600 text-white font-semibold shadow-md shadow-sky-600/20'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
