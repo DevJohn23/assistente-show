@@ -39,6 +39,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   
   // Cart state
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [markupPercent, setMarkupPercent] = useState<number>(0);
   const [discountPercent, setDiscountPercent] = useState<number>(0);
   
   // Payment option toggles
@@ -117,8 +118,11 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const rawEquipmentTotal = cart.reduce((acc, item) => acc + item.product.default_price * item.quantity, 0);
   const totalMonthlyFee = cart.reduce((acc, item) => acc + (item.product.monthly_fee || 0) * item.quantity, 0);
 
-  const discountAmount = (rawEquipmentTotal * (discountPercent || 0)) / 100;
-  const finalEquipmentPrice = Math.max(0, rawEquipmentTotal - discountAmount);
+  const markupAmount = (rawEquipmentTotal * (markupPercent || 0)) / 100;
+  const subtotalWithMarkup = rawEquipmentTotal + markupAmount;
+
+  const discountAmount = (subtotalWithMarkup * (discountPercent || 0)) / 100;
+  const finalEquipmentPrice = Math.max(0, subtotalWithMarkup - discountAmount);
 
   // Client name for proposal greeting
   const [clientName, setClientName] = useState('');
@@ -133,7 +137,9 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
     msg += `📦 *Equipamentos Selecionados:*\n`;
     cart.forEach((i) => {
-      msg += `• ${i.quantity}x ${i.product.name} — R$ ${(i.product.default_price * i.quantity).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      const itemUnitPrice = i.product.default_price * (1 + (markupPercent || 0) / 100);
+      const itemTotal = itemUnitPrice * i.quantity;
+      msg += `• ${i.quantity}x ${i.product.name} — R$ ${itemTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
     });
 
     if (discountPercent > 0) {
@@ -515,6 +521,26 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                 <span className="font-bold font-mono">
                   R$ {totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês
                 </span>
+              </div>
+            )}
+
+            {/* Markup % Input */}
+            <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+              <label className="text-slate-500 dark:text-slate-400 font-medium">Aplicar Acréscimo (%):</label>
+              <input
+                type="number"
+                min="0"
+                placeholder="0"
+                value={markupPercent || ''}
+                onChange={(e) => setMarkupPercent(parseFloat(e.target.value) || 0)}
+                className="w-14 px-2 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-right font-mono text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 text-xs"
+              />
+            </div>
+
+            {markupPercent > 0 && (
+              <div className="flex items-center justify-between text-sky-600 dark:text-sky-400 font-semibold pt-0.5">
+                <span>Valor Acréscimo:</span>
+                <span className="font-mono">+ R$ {markupAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
               </div>
             )}
 
