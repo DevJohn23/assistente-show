@@ -8,7 +8,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNITURBO (Kit Omniturbo).',
     default_price: 6930.00,
     pix_price: 6930.00,
-    monthly_fee: 0.00,
+    monthly_fee: 205.86,
     image_url: '/products/prod-img-1.jpg',
     is_active: true,
     commercial_rules: {
@@ -27,7 +27,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNIDUAL.',
     default_price: 4830.00,
     pix_price: 4830.00,
-    monthly_fee: 0.00,
+    monthly_fee: 130.60,
     image_url: '/products/prod-img-2.jpg',
     is_active: true,
     commercial_rules: {
@@ -84,7 +84,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNISAFE - DASHCAM 4CH.',
     default_price: 4189.50,
     pix_price: 4189.50,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-5.jpg',
     is_active: true,
     commercial_rules: {
@@ -103,7 +103,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNILORA.',
     default_price: 756.00,
     pix_price: 756.00,
-    monthly_fee: 0.00,
+    monthly_fee: 20.00,
     image_url: '/products/prod-img-6.jpg',
     is_active: true,
     commercial_rules: {
@@ -122,7 +122,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNIDUAL + OMNILORA.',
     default_price: 5563.95,
     pix_price: 5563.95,
-    monthly_fee: 0.00,
+    monthly_fee: 130.60,
     image_url: '/products/prod-img-7.jpg',
     is_active: true,
     commercial_rules: {
@@ -141,7 +141,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNITURBO + OMNILORA.',
     default_price: 7663.95,
     pix_price: 7663.95,
-    monthly_fee: 0.00,
+    monthly_fee: 205.86,
     image_url: '/products/prod-img-8.jpg',
     is_active: true,
     commercial_rules: {
@@ -217,7 +217,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNICARRETA.',
     default_price: 1260.00,
     pix_price: 1260.00,
-    monthly_fee: 0.00,
+    monthly_fee: 59.00,
     image_url: '/products/prod-img-12.jpg',
     is_active: true,
     commercial_rules: {
@@ -236,7 +236,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNITURBO SEM TECLADO.',
     default_price: 5880.00,
     pix_price: 5880.00,
-    monthly_fee: 0.00,
+    monthly_fee: 205.86,
     image_url: '/products/prod-img-13.jpg',
     is_active: true,
     commercial_rules: {
@@ -255,7 +255,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNIDUAL SEM TECLADO.',
     default_price: 3780.00,
     pix_price: 3780.00,
-    monthly_fee: 0.00,
+    monthly_fee: 130.60,
     image_url: '/products/prod-img-14.jpg',
     is_active: true,
     commercial_rules: {
@@ -274,7 +274,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNISAFE PLUS MDVR 4CH I.A.',
     default_price: 5517.75,
     pix_price: 5517.75,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-15.jpg',
     is_active: true,
     commercial_rules: {
@@ -293,7 +293,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNICARGA 4G LORA COM GPS LI0650 DESCARTÁVEL.',
     default_price: 330.75,
     pix_price: 330.75,
-    monthly_fee: 0.00,
+    monthly_fee: 20.00,
     image_url: '/products/prod-img-16.jpg',
     is_active: true,
     commercial_rules: {
@@ -312,7 +312,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNICARGA 4G LORA COM GPS LI0650 - RETORNÁVEL.',
     default_price: 99.00,
     pix_price: 99.00,
-    monthly_fee: 0.00,
+    monthly_fee: 20.00,
     image_url: '/products/prod-img-17.jpg',
     is_active: true,
     commercial_rules: {
@@ -331,7 +331,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNISAFE PLUS MDVR 8CH I.A.',
     default_price: 6126.75,
     pix_price: 6126.75,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-18.jpg',
     is_active: true,
     commercial_rules: {
@@ -350,7 +350,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — Urbano Omnicarreta.',
     default_price: 474.00,
     pix_price: 474.00,
-    monthly_fee: 0.00,
+    monthly_fee: 59.00,
     image_url: '/products/prod-img-19.jpg',
     is_active: true,
     commercial_rules: {
@@ -407,7 +407,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNITURBO SEM TECLADO (BAU BLINDADO).',
     default_price: 6762.00,
     pix_price: 6762.00,
-    monthly_fee: 0.00,
+    monthly_fee: 205.86,
     image_url: '/products/prod-img-22.jpg',
     is_active: true,
     commercial_rules: {
@@ -426,7 +426,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNICARRETA COM PLACA SOLAR.',
     default_price: 1600.00,
     pix_price: 1600.00,
-    monthly_fee: 0.00,
+    monthly_fee: 59.00,
     image_url: '/products/prod-img-23.jpg',
     is_active: true,
     commercial_rules: {
@@ -502,7 +502,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNICARGA 4G LORA COM GPS COM IMÃ LI0650 DESCARTÁVEL.',
     default_price: 330.75,
     pix_price: 330.75,
-    monthly_fee: 0.00,
+    monthly_fee: 20.00,
     image_url: '/products/prod-img-27.jpg',
     is_active: true,
     commercial_rules: {
@@ -521,7 +521,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNITURBO - LT.',
     default_price: 6930.00,
     pix_price: 6930.00,
-    monthly_fee: 0.00,
+    monthly_fee: 205.86,
     image_url: '/products/prod-img-28.jpg',
     is_active: true,
     commercial_rules: {
@@ -540,7 +540,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNITURBO - LT SEM TECLADO.',
     default_price: 5880.00,
     pix_price: 5880.00,
-    monthly_fee: 0.00,
+    monthly_fee: 205.86,
     image_url: '/products/prod-img-29.jpg',
     is_active: true,
     commercial_rules: {
@@ -559,7 +559,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNISAFE - DASHCAM 5CH (ADAS + DSM + 1 câm. interna e 2 externas).',
     default_price: 6448.53,
     pix_price: 6448.53,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-30.jpg',
     is_active: true,
     commercial_rules: {
@@ -578,7 +578,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNISAFE - DASHCAM 5CH (ADAS + DSM).',
     default_price: 5094.02,
     pix_price: 5094.02,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-31.jpg',
     is_active: true,
     commercial_rules: {
@@ -597,7 +597,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNIDUAL - RI7454 - TESTES.',
     default_price: 4830.00,
     pix_price: 4830.00,
-    monthly_fee: 0.00,
+    monthly_fee: 130.60,
     image_url: '/products/prod-img-32.jpg',
     is_active: true,
     commercial_rules: {
@@ -616,7 +616,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNITURBO - RI7484 - TESTES.',
     default_price: 6930.00,
     pix_price: 6930.00,
-    monthly_fee: 0.00,
+    monthly_fee: 205.86,
     image_url: '/products/prod-img-33.jpg',
     is_active: true,
     commercial_rules: {
@@ -654,7 +654,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — TOMADA DE CONEXÃO DE CARRETA P&P.',
     default_price: 260.40,
     pix_price: 260.40,
-    monthly_fee: 0.00,
+    monthly_fee: 59.00,
     image_url: '/products/prod-img-35.jpg',
     is_active: true,
     commercial_rules: {
@@ -749,7 +749,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CJ TRAVA CARRETA FRIGORÍFICA - P. TRASEIRA.',
     default_price: 1871.10,
     pix_price: 1871.10,
-    monthly_fee: 0.00,
+    monthly_fee: 59.00,
     image_url: '/products/prod-img-40.jpg',
     is_active: true,
     commercial_rules: {
@@ -768,7 +768,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CJ TRAVA CARRETA - P. TRASEIRA ROLL UP.',
     default_price: 1304.10,
     pix_price: 1304.10,
-    monthly_fee: 0.00,
+    monthly_fee: 59.00,
     image_url: '/products/prod-img-41.jpg',
     is_active: true,
     commercial_rules: {
@@ -1243,7 +1243,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CJ TRAVA CARRETA - P. TRASEIRA DUPLA.',
     default_price: 1504.65,
     pix_price: 1504.65,
-    monthly_fee: 0.00,
+    monthly_fee: 59.00,
     image_url: '/products/prod-img-66.jpg',
     is_active: true,
     commercial_rules: {
@@ -1699,7 +1699,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CAMERA EXTERNA DASHCAM 720P OMNI-ES-WB720ES.',
     default_price: 249.38,
     pix_price: 249.38,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-2.jpg',
     is_active: true,
     commercial_rules: {
@@ -1718,7 +1718,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CABO EXTENSOR PARA CAMERAS OMNISAFE BLINDADO 8MT.',
     default_price: 136.50,
     pix_price: 136.50,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-3.jpg',
     is_active: true,
     commercial_rules: {
@@ -1737,7 +1737,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CABO EXTENSOR PARA CAMERAS OMNISAFE BLINDADO 5MT.',
     default_price: 115.50,
     pix_price: 115.50,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-4.jpg',
     is_active: true,
     commercial_rules: {
@@ -1775,7 +1775,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CAMERA INTERNA DASHCAM 720P OMNI-RM-WP720RM.',
     default_price: 236.25,
     pix_price: 236.25,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-6.jpg',
     is_active: true,
     commercial_rules: {
@@ -1946,7 +1946,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — KIT BLOQUEIO OMNISAFE.',
     default_price: 324.00,
     pix_price: 324.00,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-15.jpg',
     is_active: true,
     commercial_rules: {
@@ -1965,7 +1965,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — DASHCAM 4H I.A..',
     default_price: 4074.00,
     pix_price: 4074.00,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-16.jpg',
     is_active: true,
     commercial_rules: {
@@ -2022,7 +2022,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CAMERA INTERNA DASHCAM 720P OMNI-RM-WP720RM.',
     default_price: 236.25,
     pix_price: 236.25,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-19.jpg',
     is_active: true,
     commercial_rules: {
@@ -2041,7 +2041,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — MNT – MODULO DASHCAM T5504.',
     default_price: 1900.00,
     pix_price: 1900.00,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-20.jpg',
     is_active: true,
     commercial_rules: {
@@ -2060,7 +2060,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CONJUNTO CAVALO CARRETA OMNISAFE 4 CAMERAS.',
     default_price: 816.90,
     pix_price: 816.90,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-21.jpg',
     is_active: true,
     commercial_rules: {
@@ -2079,7 +2079,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — MONITOR INTERNO OMNISAFE MDVR 7 POLEGADAS.',
     default_price: 684.00,
     pix_price: 684.00,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-22.jpg',
     is_active: true,
     commercial_rules: {
@@ -2098,7 +2098,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CHICOTE ESP. SEN. CARRETA (CJ).',
     default_price: 469.35,
     pix_price: 469.35,
-    monthly_fee: 0.00,
+    monthly_fee: 59.00,
     image_url: '/products/prod-img-23.jpg',
     is_active: true,
     commercial_rules: {
@@ -2155,7 +2155,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — OMNISAFE - SENSOR DE BAFOMETRO.',
     default_price: 956.34,
     pix_price: 956.34,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-26.jpg',
     is_active: true,
     commercial_rules: {
@@ -2174,7 +2174,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CONTROLADOR DE TRAVA MOTORIZ. TURBO.',
     default_price: 578.55,
     pix_price: 578.55,
-    monthly_fee: 0.00,
+    monthly_fee: 205.86,
     image_url: '/products/prod-img-27.jpg',
     is_active: true,
     commercial_rules: {
@@ -2269,7 +2269,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CARTAO MICROSD 512GB - DASHCAM.',
     default_price: 1507.80,
     pix_price: 1507.80,
-    monthly_fee: 0.00,
+    monthly_fee: 130.00,
     image_url: '/products/prod-img-32.jpg',
     is_active: true,
     commercial_rules: {
@@ -2421,7 +2421,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Acessório e componente homologado Show Tecnologia / Omnilink — CJ TRAVA MOTORIZADA CARRETA P TRAS. 02 FOLHAS (LEGADO).',
     default_price: 1417.50,
     pix_price: 1417.50,
-    monthly_fee: 0.00,
+    monthly_fee: 59.00,
     image_url: '/products/prod-img-40.jpg',
     is_active: true,
     commercial_rules: {

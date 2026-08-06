@@ -43,6 +43,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const [discountPercent, setDiscountPercent] = useState<number>(0);
   
   // Payment option toggles
+  const [includeMonthlyFee, setIncludeMonthlyFee] = useState(true);
   const [payPix, setPayPix] = useState(true);
   const [payBoleto, setPayBoleto] = useState(true);
   const [boletoInstallments, setBoletoInstallments] = useState(3);
@@ -148,8 +149,8 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
     msg += `\n💰 *Total Equipamentos (À Vista):* R$ ${finalEquipmentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
 
-    if (totalMonthlyFee > 0) {
-      msg += `📡 *Mensalidade de Serviços & Telemetria:* R$ ${totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês\n`;
+    if (includeMonthlyFee && totalMonthlyFee > 0) {
+      msg += `\n📡 *Mensalidade de Serviços & Telemetria:* R$ ${totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês\n`;
     }
 
     msg += `\n💳 *Formas de Pagamento:*\n`;
@@ -513,7 +514,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               </span>
             </div>
 
-            {totalMonthlyFee > 0 && (
+            {includeMonthlyFee && totalMonthlyFee > 0 && (
               <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
                 <span>Mensalidades Totais:</span>
                 <span className="font-bold font-mono">
@@ -574,8 +575,22 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
           {/* Formas de Pagamento Options */}
           <div className="space-y-1.5 text-xs">
             <span className="font-semibold text-slate-500 dark:text-slate-400 block uppercase tracking-wider text-[10px]">
-              Formas de Pagamento no Orçamento
+              Opções do Orçamento
             </span>
+
+            {/* Mensalidade Toggle */}
+            <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={includeMonthlyFee}
+                  onChange={(e) => setIncludeMonthlyFee(e.target.checked)}
+                  className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
+                />
+                <Radio className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+                <span className="font-medium text-slate-800 dark:text-slate-200">Mensalidade de Serviços</span>
+              </div>
+            </label>
 
             {/* PIX */}
             <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer">
@@ -589,9 +604,6 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                 <QrCode className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span className="font-medium text-slate-800 dark:text-slate-200">PIX à Vista</span>
               </div>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-[11px]">
-                R$ {finalEquipmentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-              </span>
             </label>
 
             {/* Boleto */}
