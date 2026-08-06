@@ -222,7 +222,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     msg += `\n💰 *Total Equipamentos (À Vista):* R$ ${finalEquipmentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
 
     if (includeMonthlyFee && totalMonthlyFee > 0) {
-      msg += `\n📡 *Mensalidade de Serviços & Telemetria:* R$ ${totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês\n`;
+      msg += `\n📡 *Mensalidade de Serviços:* R$ ${totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês\n`;
     }
 
     msg += `\n💳 *Formas de Pagamento:*\n`;
@@ -500,7 +500,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
           <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">Carrinho do Orçamento</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">Orçamento</h3>
             </div>
             {cart.length > 0 && (
               <div className="flex items-center gap-3">

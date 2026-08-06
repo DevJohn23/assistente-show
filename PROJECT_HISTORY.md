@@ -16,12 +16,23 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 ---
 
 ## 📍 Ponto de Parada Atual
-- **Último Commit**: `72bddec`
-- **Descrição**: Persistência de estado ao recarregar a página (F5), mantendo a aba ativa, itens do carrinho do orçamento, dados do cliente e opções de pagamento intactos.
+- **Último Commit**: `PENDING_COMMIT`
+- **Descrição**: Título do painel ajustado para "Orçamento", remoção de "& Telemetria" da mensagem do WhatsApp e limitação das mensalidades aos equipamentos principais (removendo dos kits com +).
 
 ---
 
 ## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
+
+### 🟢 `PENDING_COMMIT` — Nome do Painel "Orçamento", WhatsApp Limpo e Mensalidades Estritas por Equipamento
+- **Título do Painel**: Alterado de "Carrinho do Orçamento" para simplesmente **"Orçamento"**.
+- **Texto da Proposta no WhatsApp**: Atualizado de `Mensalidade de Serviços & Telemetria` para simplesmente **`Mensalidade de Serviços`**.
+- **Mensalidades Estritas em Equipamentos Principais**:
+  - **TURBO**: R$ 205,86/mês (somente equipamentos principais OMNITURBO)
+  - **DUAL**: R$ 130,60/mês (somente equipamentos principais OMNIDUAL)
+  - **LORA**: R$ 20,00/mês (somente OMNILORA/OMNICARGA LORA principais)
+  - **OMNICARRETA**: R$ 59,00/mês (somente equipamentos OMNICARRETA principais)
+  - **DASHCAM**: R$ 130,00/mês (somente unidades principais DASHCAM/OMNISAFE)
+  - **Kits e Acessórios**: Removida a mensalidade de todos os produtos combinados em Kit (com `+`) e acessórios/cabos/travas (`monthly_fee: 0.00`).
 
 ### 🟢 `72bddec` — Persistência de Estado no Recarregamento da Página (F5)
 - **Aba Ativa (`activeTab`)**: Ao recarregar a página (F5), o sistema permanece exatamente na página onde o usuário estava (`catalog`, `opportunities`, `commissions`, etc.), em vez de voltar para o Dashboard.
