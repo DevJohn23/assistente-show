@@ -36,7 +36,21 @@ import { Sparkles } from 'lucide-react';
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('assistente_show_active_tab');
+      if (saved && ['dashboard', 'opportunities', 'commissions', 'catalog'].includes(saved)) {
+        return saved;
+      }
+    }
+    return 'dashboard';
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('assistente_show_active_tab', activeTab);
+    }
+  }, [activeTab]);
 
   // Application State
   const [opportunities, setOpportunities] = useState<Opportunity[]>(INITIAL_OPPORTUNITIES);

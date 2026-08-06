@@ -37,13 +37,42 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Cart state
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [markupPercent, setMarkupPercent] = useState<number>(0);
-  const [discountPercent, setDiscountPercent] = useState<number>(0);
-  
+  // Cart & Quote state with localStorage persistence
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('assistente_show_cart');
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) {}
+      }
+    }
+    return [];
+  });
+
+  const [markupPercent, setMarkupPercent] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('assistente_show_quote_markup');
+      if (saved) return parseFloat(saved) || 0;
+    }
+    return 0;
+  });
+
+  const [discountPercent, setDiscountPercent] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('assistente_show_quote_discount');
+      if (saved) return parseFloat(saved) || 0;
+    }
+    return 0;
+  });
+
   // Payment option toggles
-  const [includeMonthlyFee, setIncludeMonthlyFee] = useState(true);
+  const [includeMonthlyFee, setIncludeMonthlyFee] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('assistente_show_quote_include_monthly');
+      if (saved !== null) return saved === 'true';
+    }
+    return true;
+  });
+
   const [payPix, setPayPix] = useState(true);
   const [payBoleto, setPayBoleto] = useState(true);
   const [boletoInstallments, setBoletoInstallments] = useState(3);
@@ -51,6 +80,31 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const [cardInstallments, setCardInstallments] = useState(12);
   const [payFinancing, setPayFinancing] = useState(false);
   const [financingInstallments, setFinancingInstallments] = useState(36);
+
+  // Sync state to localStorage
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('assistente_show_cart', JSON.stringify(cart));
+    }
+  }, [cart]);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('assistente_show_quote_markup', markupPercent.toString());
+    }
+  }, [markupPercent]);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('assistente_show_quote_discount', discountPercent.toString());
+    }
+  }, [discountPercent]);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('assistente_show_quote_include_monthly', includeMonthlyFee.toString());
+    }
+  }, [includeMonthlyFee]);
 
   // Bank Simulator Financing Formula (Exact CET Price coefficient matching bank simulator)
   const calculateFinancingInstallment = (principal: number, n: number) => {
@@ -125,8 +179,26 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const discountAmount = (subtotalWithMarkup * (discountPercent || 0)) / 100;
   const finalEquipmentPrice = Math.max(0, subtotalWithMarkup - discountAmount);
 
-  // Client name for proposal greeting
-  const [clientName, setClientName] = useState('');
+  // Client name for proposal greeting with localStorage persistence
+  const [clientName, setClientName] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('assistente_show_quote_client_name') || '';
+    }
+    return '';
+  });
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('assistente_show_quote_client_name', clientName);
+    }
+  }, [clientName]);
+
+  const clearCart = () => {
+    setCart([]);
+    setMarkupPercent(0);
+    setDiscountPercent(0);
+    setClientName('');
+  };
 
   // Copy WhatsApp proposal message with exact requested template & Benefits
   const generateMessageText = () => {
@@ -431,14 +503,25 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               <h3 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">Carrinho do Orçamento</h3>
             </div>
             {cart.length > 0 && (
-              <button
-                onClick={() => setShowSaveTemplateModal(true)}
-                title="Salvar Combinação como Modelo"
-                className="text-xs text-sky-600 dark:text-sky-400 hover:underline font-semibold flex items-center gap-1"
-              >
-                <BookmarkPlus className="w-3.5 h-3.5" />
-                <span>Salvar Kit</span>
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={clearCart}
+                  title="Limpar Orçamento"
+                  className="text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 hover:underline font-semibold flex items-center gap-1"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Limpar</span>
+                </button>
+
+                <button
+                  onClick={() => setShowSaveTemplateModal(true)}
+                  title="Salvar Combinação como Modelo"
+                  className="text-xs text-sky-600 dark:text-sky-400 hover:underline font-semibold flex items-center gap-1"
+                >
+                  <BookmarkPlus className="w-3.5 h-3.5" />
+                  <span>Salvar Kit</span>
+                </button>
+              </div>
             )}
           </div>
 
