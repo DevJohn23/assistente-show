@@ -1,0 +1,89 @@
+# 📌 Histórico de Progresso & Changelog — Assistente Show
+
+Este documento mantém o histórico oficial de atualizações, funcionalidades comitadas e estado do projeto **Assistente Show** (Show Tecnologia • Omnilink).
+
+---
+
+## 🚀 Informações Gerais do Projeto
+
+- **Nome do Projeto**: Assistente Show
+- **Organização**: Show Tecnologia • Omnilink
+- **Tecnologias**: Next.js 14 (App Router), React, TypeScript, TailwindCSS, Supabase (PostgreSQL), Resend API, Vercel Cron.
+- **Link de Produção (Vercel)**: [https://assistente-show-qymy.vercel.app](https://assistente-show-qymy.vercel.app)
+- **Repositório GitHub**: [https://github.com/DevJohn23/assistente-show.git](https://github.com/DevJohn23/assistente-show.git)
+- **Estado Atual**: 100% Funcional e Sincronizado em Produção (`main`).
+
+---
+
+## 📍 Ponto de Parada Atual
+- **Último Commit**: `72bddec`
+- **Descrição**: Persistência de estado ao recarregar a página (F5), mantendo a aba ativa, itens do carrinho do orçamento, dados do cliente e opções de pagamento intactos.
+
+---
+
+## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
+
+### 🟢 `72bddec` — Persistência de Estado no Recarregamento da Página (F5)
+- **Aba Ativa (`activeTab`)**: Ao recarregar a página (F5), o sistema permanece exatamente na página onde o usuário estava (`catalog`, `opportunities`, `commissions`, etc.), em vez de voltar para o Dashboard.
+- **Estado do Orçamento**: Salva e restaura o carrinho de equipamentos, nome do cliente, acréscimo (%), desconto (%) e toggles de pagamento via `localStorage`.
+- **Botão Limpar Orçamento**: Adicionado botão de ação rápida "Limpar" no cabeçalho do carrinho para resetar o orçamento com 1 clique quando necessário.
+
+### 🟢 `b5af693` — Mapeamento de Mensalidades & UI Limpa nas Opções do Orçamento
+- **Valores de Mensalidade Mapeados**:
+  - Linhas **OMNITURBO**: R$ 205,86/mês
+  - Linhas **OMNIDUAL**: R$ 130,60/mês
+  - Linhas **OMNISAFE / DASHCAM**: R$ 130,00/mês
+  - Linhas **OMNICARRETA**: R$ 59,00/mês
+  - Linhas **OMNILORA**: R$ 20,00/mês
+- **Toggle `includeMonthlyFee`**: Adicionada a opção `Mensalidade de Serviços` nas opções do orçamento para incluir ou ocultar a mensalidade no WhatsApp.
+- **UI Minimalista**: Removidos os valores monetários repetidos dos botões de seleção de pagamento ("Opções do Orçamento"), eliminando redundâncias visuais.
+
+### 🟢 `54d2764` — Sidebar Enxuta (64px) & Cards Clicáveis no Catálogo
+- **Sidebar (Barra Lateral)**: Reduzida a largura recolhida para **64px** (`w-16`) mantendo os ícones centralizados e expansão fluída ao passar o mouse.
+- **Cards do Catálogo**: Imagem e título dos produtos tornaram-se clicáveis para abrir o modal de detalhes completos; removido o ícone redundante do olho e restaurado o botão *"Adicionar"* / *"Adicionado"*.
+
+### 🟢 `4776ce9` — Acréscimo / Margem (%) no Orçamento
+- **Cálculo de Margem**: Adicionado campo para aplicar porcentagem de acréscimo antes do desconto no resumo financeiro.
+- **Reajuste Proporcional nos Itens**: O valor unitário dos produtos na mensagem do WhatsApp passa a incorporar o acréscimo proporcionalmente, garantindo que `Soma dos Itens - Desconto = Total À Vista` com 100% de exatidão matemática.
+
+### 🟢 `3836e09` — Vencimento/Renovação PF/PJ & Refinamento de Orçamentos
+- **Regra de Vencimento Dinâmica**:
+  - **Pessoa Física (PF)**: Vencimento e renovação de **15 dias**.
+  - **Pessoa Jurídica (PJ)**: Vencimento e renovação de **30 dias**.
+  - Recálculo automático da data de expiração ao alternar o tipo de cliente ou data de registro.
+- **Pagamento em Cartão**: Definido parcelamento padrão em **12x sem juros**.
+- **Financiamento no WhatsApp**: Atualizado texto para `• Financiamento: em até 36x (com juros sob consulta)`.
+- **Remoção da Parcela Ideal**: Removido o simulador de Parcela Ideal a pedido do cliente.
+
+### 🟢 `7b11be4` & `aeaaae5` — Relatório Semanal Automático por E-mail (Vercel Cron & Resend)
+- **Vercel Cron Job**: Configurado para rodar todos os domingos às 20:00 BRT (`0 23 * * 0` UTC).
+- **Envio de E-mail via Resend API**: Dispara e-mail formatado contendo o relatório de vendas dos últimos 7 dias em anexo `.xlsx`.
+- **Detalhamento no Excel**: Arquivo gerado em aba única contendo todos os registros de vendas, detalhamento de repasses a outros vendedores e totais gerais.
+
+### 🟢 `3648b39` — Destaque de Ícones de Calendário & Cores Vibrantes
+- **Inputs de Data**: Estilizados os ícones nativos de calendário (`<input type="date">`) com filtro Cyan em CSS global.
+- **Sidebar & Modais**: Adicionados ícones de calendário em destaque Cyan/Amber no menu e modais de oportunidades e comissões.
+
+### 🟢 `9180be2` — Saudação Dinâmica & Validação de E-mail
+- **Dashboard**: Saudação baseada no horário do dia (*"Bom dia"*, *"Boa tarde"*, *"Boa noite"*).
+- **Cadastro**: Validação para evitar e-mails duplicados.
+
+### 🟢 `bee59f4` — Opção de Financiamento em 36x
+- **Fórmula Bancária CET**: Implementado cálculo de financiamento em até 36x baseado na tabela CET oficial de banco.
+
+### 🟢 `31c5191` & `e5885f9` — Expansão do Catálogo Oficial (128 Produtos)
+- **128 Produtos Oficiais**: Extraídos do PDF oficial da Show Tecnologia.
+- **Busca Sem Acentos**: Algoritmo de pesquisa normalizado (`normalizeText`) ignorando diacríticos (`~`, `^`, `´`, `ç`).
+- **Categorização**: Divisão em *Equipamentos Principais* e *Acessórios & Sensores*.
+
+---
+
+## 🔒 Credenciais e Variáveis de Ambiente Configuradas
+
+- **Supabase PostgreSQL**: Conectado via Client SDK e Supabase Auth.
+- **Resend API Key**: Configurada no `.env.local` e nas variáveis de ambiente da Vercel.
+- **Cron Secret**: `assistente_show_cron_secret_2026`
+
+---
+
+*Última atualização registrada: 06 de Agosto de 2026.*
