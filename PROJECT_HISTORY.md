@@ -16,14 +16,14 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 ---
 
 ## 📍 Ponto de Parada Atual
-- **Último Commit**: `PENDING_COMMIT`
+- **Último Commit**: `5dc7a1a`
 - **Descrição**: Título do painel ajustado para "Orçamento", remoção de "& Telemetria" da mensagem do WhatsApp e limitação das mensalidades aos equipamentos principais (removendo dos kits com +).
 
 ---
 
 ## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
 
-### 🟢 `PENDING_COMMIT` — Nome do Painel "Orçamento", WhatsApp Limpo e Mensalidades Estritas por Equipamento
+### 🟢 `5dc7a1a` — Nome do Painel "Orçamento", WhatsApp Limpo e Mensalidades Estritas por Equipamento
 - **Título do Painel**: Alterado de "Carrinho do Orçamento" para simplesmente **"Orçamento"**.
 - **Texto da Proposta no WhatsApp**: Atualizado de `Mensalidade de Serviços & Telemetria` para simplesmente **`Mensalidade de Serviços`**.
 - **Mensalidades Estritas em Equipamentos Principais**:
