@@ -16,7 +16,7 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 ---
 
 ## 📍 Ponto de Parada Atual
-- **Último Commit**: `8b53232`
+- **Último Commit**: `ec98346`
 - **Descrição**: Painel de orçamento com scroll interno e botão de copiar mensagem fixado no rodapé; remoção das tags de mensalidade nos itens do carrinho; remoção de mensalidades do Urbano Omnicarreta e Omnicargas 4G.
 
 ---
