@@ -581,7 +581,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                       </div>
 
                       <button
-                        onClick={() => removeFromCart(item.product.id)}
+                        onClick={() => toggleCartItem(item.product)}
                         className="p-1 text-slate-400 hover:text-rose-500 transition-colors"
                         title="Remover"
                       >
