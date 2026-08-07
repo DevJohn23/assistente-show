@@ -293,7 +293,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNICARGA 4G LORA COM GPS LI0650 DESCARTÁVEL.',
     default_price: 330.75,
     pix_price: 330.75,
-    monthly_fee: 20.00,
+    monthly_fee: 0.00,
     image_url: '/products/prod-img-16.jpg',
     is_active: true,
     commercial_rules: {
@@ -312,7 +312,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNICARGA 4G LORA COM GPS LI0650 - RETORNÁVEL.',
     default_price: 99.00,
     pix_price: 99.00,
-    monthly_fee: 20.00,
+    monthly_fee: 0.00,
     image_url: '/products/prod-img-17.jpg',
     is_active: true,
     commercial_rules: {
@@ -350,7 +350,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — Urbano Omnicarreta.',
     default_price: 474.00,
     pix_price: 474.00,
-    monthly_fee: 59.00,
+    monthly_fee: 0.00,
     image_url: '/products/prod-img-19.jpg',
     is_active: true,
     commercial_rules: {
@@ -502,7 +502,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Equipamento rastreador e controlador de frota Omnilink — OMNICARGA 4G LORA COM GPS COM IMÃ LI0650 DESCARTÁVEL.',
     default_price: 330.75,
     pix_price: 330.75,
-    monthly_fee: 20.00,
+    monthly_fee: 0.00,
     image_url: '/products/prod-img-27.jpg',
     is_active: true,
     commercial_rules: {

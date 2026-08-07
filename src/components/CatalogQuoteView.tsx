@@ -495,311 +495,319 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
           </div>
         </div>
 
-        {/* Right Column: Carrinho do Orçamento */}
-        <div className="clean-card p-4 rounded-2xl space-y-4 sticky top-6">
-          <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-2">
-              <ShoppingBag className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">Orçamento</h3>
-            </div>
-            {cart.length > 0 && (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={clearCart}
-                  title="Limpar Orçamento"
-                  className="text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 hover:underline font-semibold flex items-center gap-1"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Limpar</span>
-                </button>
-
-                <button
-                  onClick={() => setShowSaveTemplateModal(true)}
-                  title="Salvar Combinação como Modelo"
-                  className="text-xs text-sky-600 dark:text-sky-400 hover:underline font-semibold flex items-center gap-1"
-                >
-                  <BookmarkPlus className="w-3.5 h-3.5" />
-                  <span>Salvar Kit</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Client Name Input for Personalized Greeting */}
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Nome do Cliente (Personalizar Mensagem)
-            </label>
-            <input
-              type="text"
-              placeholder="ex: Carlos (Alfa Logística)"
-              value={clientName}
-              onChange={(e) => setClientName(e.target.value)}
-              className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500"
-            />
-          </div>
-
-          {/* Cart Items List */}
-          {cart.length === 0 ? (
-            <div className="py-6 text-center bg-slate-50 dark:bg-slate-950/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
-              <p className="text-xs text-slate-500 dark:text-slate-400">Nenhum produto selecionado.</p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Clique em "Adicionar" nos equipamentos ao lado.</p>
-            </div>
-          ) : (
-            <div className="space-y-2 max-h-48 overflow-y-auto pr-0.5">
-              {cart.map((item) => (
-                <div
-                  key={item.product.id}
-                  className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 text-xs"
-                >
-                  <div className="min-w-0">
-                    <span className="font-semibold text-slate-900 dark:text-white block truncate text-[11px]">{item.product.name}</span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                      R$ {item.product.default_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <div className="flex items-center bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-md p-0.5">
-                      <button
-                        onClick={() => updateQuantity(item.product.id, -1)}
-                        className="p-0.5 text-slate-400 hover:text-slate-800 dark:hover:text-white"
-                      >
-                        <Minus className="w-3 h-3" />
-                      </button>
-                      <span className="px-1.5 font-semibold text-slate-900 dark:text-white font-mono text-[11px]">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.product.id, 1)}
-                        className="p-0.5 text-slate-400 hover:text-slate-800 dark:hover:text-white"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
-                    </div>
-
-                    <button
-                      onClick={() => toggleCartItem(item.product)}
-                      className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Totals Summary Box */}
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
-            <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
-              <span>Equipamentos (Bruto):</span>
-              <span className="font-semibold font-mono">
-                R$ {rawEquipmentTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
-
-            {includeMonthlyFee && totalMonthlyFee > 0 && (
-              <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
-                <span>Mensalidades Totais:</span>
-                <span className="font-bold font-mono">
-                  R$ {totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês
-                </span>
-              </div>
-            )}
-
-            {/* Markup % Input */}
-            <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
-              <label className="text-slate-500 dark:text-slate-400 font-medium">Aplicar Acréscimo (%):</label>
-              <input
-                type="number"
-                min="0"
-                placeholder="0"
-                value={markupPercent || ''}
-                onChange={(e) => setMarkupPercent(parseFloat(e.target.value) || 0)}
-                className="w-14 px-2 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-right font-mono text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 text-xs"
-              />
-            </div>
-
-            {markupPercent > 0 && (
-              <div className="flex items-center justify-between text-sky-600 dark:text-sky-400 font-semibold pt-0.5">
-                <span>Valor Acréscimo:</span>
-                <span className="font-mono">+ R$ {markupAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-              </div>
-            )}
-
-            {/* Discount % Input */}
-            <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
-              <label className="text-slate-500 dark:text-slate-400 font-medium">Aplicar Desconto (%):</label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                placeholder="0"
-                value={discountPercent || ''}
-                onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
-                className="w-14 px-2 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-right font-mono text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 text-xs"
-              />
-            </div>
-
-            {discountPercent > 0 && (
-              <div className="flex items-center justify-between text-amber-600 dark:text-amber-400 font-semibold pt-0.5">
-                <span>Valor Desconto:</span>
-                <span className="font-mono">- R$ {discountAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-              </div>
-            )}
-
-            <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between font-bold text-slate-900 dark:text-white">
-              <span>Total Equipamentos:</span>
-              <span className="text-sm font-bold text-sky-600 dark:text-sky-400 font-outfit">
-                R$ {finalEquipmentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-              </span>
-            </div>
-          </div>
-
-          {/* Formas de Pagamento Options */}
-          <div className="space-y-1.5 text-xs">
-            <span className="font-semibold text-slate-500 dark:text-slate-400 block uppercase tracking-wider text-[10px]">
-              Opções do Orçamento
-            </span>
-
-            {/* Mensalidade Toggle */}
-            <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer">
+        {/* Right Column: Orçamento */}
+        <div className="clean-card p-4 rounded-2xl sticky top-4 max-h-[calc(100vh-2rem)] flex flex-col justify-between shadow-xl">
+          {/* Scrollable Inner Body */}
+          <div className="overflow-y-auto space-y-3.5 pr-1 flex-1">
+            <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={includeMonthlyFee}
-                  onChange={(e) => setIncludeMonthlyFee(e.target.checked)}
-                  className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
-                />
-                <Radio className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                <span className="font-medium text-slate-800 dark:text-slate-200">Mensalidade de Serviços</span>
+                <ShoppingBag className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                <h3 className="font-bold text-slate-900 dark:text-white text-sm font-outfit">Orçamento</h3>
               </div>
-            </label>
-
-            {/* PIX */}
-            <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer">
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={payPix}
-                  onChange={(e) => setPayPix(e.target.checked)}
-                  className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
-                />
-                <QrCode className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="font-medium text-slate-800 dark:text-slate-200">PIX à Vista</span>
-              </div>
-            </label>
-
-            {/* Boleto */}
-            <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={payBoleto}
-                    onChange={(e) => setPayBoleto(e.target.checked)}
-                    className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
-                  />
-                  <FileText className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                  <span className="font-medium text-slate-800 dark:text-slate-200">Boleto Sem Juros</span>
-                </label>
-
-                {payBoleto && (
-                  <select
-                    value={boletoInstallments}
-                    onChange={(e) => setBoletoInstallments(parseInt(e.target.value))}
-                    className="px-2 py-0.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white"
+              {cart.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={clearCart}
+                    title="Limpar Orçamento"
+                    className="text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 hover:underline font-semibold flex items-center gap-1"
                   >
-                    <option value={1}>1x</option>
-                    <option value={2}>2x</option>
-                    <option value={3}>3x (máx)</option>
-                  </select>
-                )}
-              </div>
-            </div>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Limpar</span>
+                  </button>
 
-            {/* Cartão */}
-            <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={payCard}
-                    onChange={(e) => setPayCard(e.target.checked)}
-                    className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
-                  />
-                  <CreditCard className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                  <span className="font-medium text-slate-800 dark:text-slate-200">Cartão Sem Juros</span>
-                </label>
-
-                {payCard && (
-                  <select
-                    value={cardInstallments}
-                    onChange={(e) => setCardInstallments(parseInt(e.target.value))}
-                    className="px-2 py-0.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white"
+                  <button
+                    onClick={() => setShowSaveTemplateModal(true)}
+                    title="Salvar Combinação como Modelo"
+                    className="text-xs text-sky-600 dark:text-sky-400 hover:underline font-semibold flex items-center gap-1"
                   >
-                    {[1,2,3,4,5,6,7,8,9,10,11,12].map((n) => (
-                      <option key={n} value={n}>{n}x</option>
-                    ))}
-                  </select>
-                )}
-              </div>
-            </div>
-
-            {/* Financiamento (até 36x) */}
-            <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={payFinancing}
-                    onChange={(e) => setPayFinancing(e.target.checked)}
-                    className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
-                  />
-                  <Landmark className="w-3.5 h-3.5 text-blue-500" />
-                  <span className="font-medium text-slate-800 dark:text-slate-200">Financiamento</span>
-                </label>
-
-                {payFinancing && (
-                  <select
-                    value={financingInstallments}
-                    onChange={(e) => setFinancingInstallments(parseInt(e.target.value))}
-                    className="px-2 py-0.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white font-mono"
-                  >
-                    {Array.from({ length: 36 }, (_, idx) => idx + 1).map((n) => (
-                      <option key={n} value={n}>{n}x</option>
-                    ))}
-                  </select>
-                )}
-              </div>
-              {payFinancing && (
-                <div className="mt-1.5 pt-1.5 border-t border-slate-200 dark:border-slate-800/60 flex items-center justify-between text-[11px]">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Condição Financiada:</span>
-                  <span className="font-bold text-sky-600 dark:text-sky-400">
-                    Em até {financingInstallments}x (com juros sob consulta)
-                  </span>
+                    <BookmarkPlus className="w-3.5 h-3.5" />
+                    <span>Salvar Kit</span>
+                  </button>
                 </div>
               )}
             </div>
+
+            {/* Client Name Input for Personalized Greeting */}
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Nome do Cliente (Personalizar Mensagem)
+              </label>
+              <input
+                type="text"
+                placeholder="ex: Carlos (Alfa Logística)"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500"
+              />
+            </div>
+
+            {/* Cart Items List */}
+            {cart.length === 0 ? (
+              <div className="py-6 text-center bg-slate-50 dark:bg-slate-950/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
+                <p className="text-xs text-slate-500 dark:text-slate-400">Nenhum produto selecionado.</p>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Clique em "Adicionar" nos equipamentos ao lado.</p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-36 overflow-y-auto pr-0.5">
+                {cart.map((item) => (
+                  <div
+                    key={item.product.id}
+                    className="p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-semibold text-slate-900 dark:text-white truncate font-outfit">{item.product.name}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+                        R$ {item.product.default_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-950">
+                        <button
+                          onClick={() => updateQuantity(item.product.id, -1)}
+                          className="px-1.5 py-0.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="px-2 py-0.5 text-xs font-mono font-bold text-slate-900 dark:text-white">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.product.id, 1)}
+                          className="px-1.5 py-0.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+
+                      <button
+                        onClick={() => removeFromCart(item.product.id)}
+                        className="p-1 text-slate-400 hover:text-rose-500 transition-colors"
+                        title="Remover"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Totals Summary Box */}
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-1.5 text-xs">
+              <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
+                <span>Equipamentos (Bruto):</span>
+                <span className="font-semibold font-mono">
+                  R$ {rawEquipmentTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </span>
+              </div>
+
+              {includeMonthlyFee && totalMonthlyFee > 0 && (
+                <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
+                  <span>Mensalidades Totais:</span>
+                  <span className="font-bold font-mono">
+                    R$ {totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês
+                  </span>
+                </div>
+              )}
+
+              {/* Markup % Input */}
+              <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+                <label className="text-slate-500 dark:text-slate-400 font-medium">Aplicar Acréscimo (%):</label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  value={markupPercent || ''}
+                  onChange={(e) => setMarkupPercent(parseFloat(e.target.value) || 0)}
+                  className="w-14 px-2 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-right font-mono text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 text-xs"
+                />
+              </div>
+
+              {markupPercent > 0 && (
+                <div className="flex items-center justify-between text-sky-600 dark:text-sky-400 font-semibold pt-0.5">
+                  <span>Valor Acréscimo:</span>
+                  <span className="font-mono">+ R$ {markupAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                </div>
+              )}
+
+              {/* Discount % Input */}
+              <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+                <label className="text-slate-500 dark:text-slate-400 font-medium">Aplicar Desconto (%):</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="0"
+                  value={discountPercent || ''}
+                  onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
+                  className="w-14 px-2 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-right font-mono text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 text-xs"
+                />
+              </div>
+
+              {discountPercent > 0 && (
+                <div className="flex items-center justify-between text-amber-600 dark:text-amber-400 font-semibold pt-0.5">
+                  <span>Valor Desconto:</span>
+                  <span className="font-mono">- R$ {discountAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                </div>
+              )}
+
+              <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between font-bold text-slate-900 dark:text-white">
+                <span>Total Equipamentos:</span>
+                <span className="text-sm font-bold text-sky-600 dark:text-sky-400 font-outfit">
+                  R$ {finalEquipmentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </span>
+              </div>
+            </div>
+
+            {/* Formas de Pagamento Options */}
+            <div className="space-y-1.5 text-xs">
+              <span className="font-semibold text-slate-500 dark:text-slate-400 block uppercase tracking-wider text-[10px]">
+                Opções do Orçamento
+              </span>
+
+              {/* Mensalidade Toggle */}
+              <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={includeMonthlyFee}
+                    onChange={(e) => setIncludeMonthlyFee(e.target.checked)}
+                    className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
+                  />
+                  <Radio className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+                  <span className="font-medium text-slate-800 dark:text-slate-200">Mensalidade de Serviços</span>
+                </div>
+              </label>
+
+              {/* PIX */}
+              <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={payPix}
+                    onChange={(e) => setPayPix(e.target.checked)}
+                    className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
+                  />
+                  <QrCode className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span className="font-medium text-slate-800 dark:text-slate-200">PIX à Vista</span>
+                </div>
+              </label>
+
+              {/* Boleto */}
+              <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={payBoleto}
+                      onChange={(e) => setPayBoleto(e.target.checked)}
+                      className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
+                    />
+                    <FileText className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    <span className="font-medium text-slate-800 dark:text-slate-200">Boleto Sem Juros</span>
+                  </label>
+
+                  {payBoleto && (
+                    <select
+                      value={boletoInstallments}
+                      onChange={(e) => setBoletoInstallments(parseInt(e.target.value))}
+                      className="px-2 py-0.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white"
+                    >
+                      <option value={1}>1x</option>
+                      <option value={2}>2x</option>
+                      <option value={3}>3x (máx)</option>
+                    </select>
+                  )}
+                </div>
+              </div>
+
+              {/* Cartão */}
+              <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={payCard}
+                      onChange={(e) => setPayCard(e.target.checked)}
+                      className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
+                    />
+                    <CreditCard className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+                    <span className="font-medium text-slate-800 dark:text-slate-200">Cartão Sem Juros</span>
+                  </label>
+
+                  {payCard && (
+                    <select
+                      value={cardInstallments}
+                      onChange={(e) => setCardInstallments(parseInt(e.target.value))}
+                      className="px-2 py-0.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white"
+                    >
+                      {[1,2,3,4,5,6,7,8,9,10,11,12].map((n) => (
+                        <option key={n} value={n}>{n}x</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              </div>
+
+              {/* Financiamento (até 36x) */}
+              <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={payFinancing}
+                      onChange={(e) => setPayFinancing(e.target.checked)}
+                      className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
+                    />
+                    <Landmark className="w-3.5 h-3.5 text-blue-500" />
+                    <span className="font-medium text-slate-800 dark:text-slate-200">Financiamento</span>
+                  </label>
+
+                  {payFinancing && (
+                    <select
+                      value={financingInstallments}
+                      onChange={(e) => setFinancingInstallments(parseInt(e.target.value))}
+                      className="px-2 py-0.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white font-mono"
+                    >
+                      {Array.from({ length: 36 }, (_, idx) => idx + 1).map((n) => (
+                        <option key={n} value={n}>{n}x</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+                {payFinancing && (
+                  <div className="mt-1.5 pt-1.5 border-t border-slate-200 dark:border-slate-800/60 flex items-center justify-between text-[11px]">
+                    <span className="text-slate-500 dark:text-slate-400 font-medium">Condição Financiada:</span>
+                    <span className="font-bold text-sky-600 dark:text-sky-400">
+                      Em até {financingInstallments}x (com juros sob consulta)
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* Copy Proposal Action Button */}
-          <button
-            onClick={handleCopyMessage}
-            disabled={cart.length === 0}
-            className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-all"
-          >
-            {copiedNotification ? (
-              <>
-                <CheckCircle className="w-4 h-4" />
-                <span>Proposta Copiada!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4" />
-                <span>Copiar Mensagem WhatsApp</span>
-              </>
-            )}
-          </button>
+          {/* Copy Proposal Action Button - Fixed Footer */}
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
+            <button
+              onClick={handleCopyMessage}
+              disabled={cart.length === 0}
+              className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-all"
+            >
+              {copiedNotification ? (
+                <>
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Proposta Copiada!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" />
+                  <span>Copiar Mensagem WhatsApp</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
