@@ -16,14 +16,14 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 ---
 
 ## 📍 Ponto de Parada Atual
-- **Último Commit**: `PENDING_COMMIT`
+- **Último Commit**: `8b53232`
 - **Descrição**: Painel de orçamento com scroll interno e botão de copiar mensagem fixado no rodapé; remoção das tags de mensalidade nos itens do carrinho; remoção de mensalidades do Urbano Omnicarreta e Omnicargas 4G.
 
 ---
 
 ## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
 
-### 🟢 `PENDING_COMMIT` — Painel com Botão Fixo, Carrinho Limpo & Remoção de Mensalidades Específicas
+### 🟢 `8b53232` — Painel com Botão Fixo, Carrinho Limpo & Remoção de Mensalidades Específicas
 - **Painel de Orçamento Responsivo**: Card com altura máxima da tela (`max-h-[calc(100vh-2rem)]`), scroll interno no conteúdo e botão *"Copiar Mensagem WhatsApp"* **fixado permanentemente no rodapé**, 100% visível sem rolar a tela.
 - **Carrinho Limpo**: Removida a tag de mensalidade entre parênteses (`+ R$ .../mês`) da lista de itens do carrinho, mantendo apenas o valor unitário do equipamento.
 - **Mensalidades Removidas**: Zeradas as mensalidades dos produtos *Urbano Omnicarreta*, *Omnicarga 4G Descartáveis* e *Omnicarga 4G Retornáveis*.
