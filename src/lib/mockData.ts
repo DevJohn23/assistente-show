@@ -479,8 +479,8 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-26',
     name: 'TRAVA DE QUINTA RODA E.LOCK',
-    category_id: 'cat-1',
-    description: 'Equipamento rastreador e controlador de frota Omnilink — TRAVA DE QUINTA RODA E.LOCK.',
+    category_id: 'cat-2',
+    description: 'Acessório e componente homologado Show Tecnologia / Omnilink — TRAVA DE QUINTA RODA E.LOCK.',
     default_price: 3700.00,
     pix_price: 3700.00,
     monthly_fee: 0.00,
@@ -2423,6 +2423,25 @@ export const INITIAL_PRODUCTS: Product[] = [
     pix_price: 1417.50,
     monthly_fee: 0.00,
     image_url: '/products/prod-img-40.jpg',
+    is_active: true,
+    commercial_rules: {
+      allow_pix: true,
+      allow_boleto: true,
+      max_boleto_installments: 3,
+      allow_card: true,
+      max_card_installments: 12,
+      allow_financing: false
+    }
+  },
+  {
+    id: 'prod-129',
+    name: 'TRAVA DE QUINTA RODA DIGITAL FONTAINE + ARIETE',
+    category_id: 'cat-2',
+    description: 'Acessório e componente homologado Show Tecnologia / Omnilink — TRAVA DE QUINTA RODA DIGITAL FONTAINE + ARIETE.',
+    default_price: 3700.00,
+    pix_price: 3700.00,
+    monthly_fee: 0.00,
+    image_url: '/products/prod-img-129.jpg',
     is_active: true,
     commercial_rules: {
       allow_pix: true,

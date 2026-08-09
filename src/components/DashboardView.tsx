@@ -173,7 +173,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
           <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-3 font-outfit">
-            R$ {totalCommissionExpected.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            R$ {totalCommissionExpected.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
           <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-medium flex items-center justify-between">
             <span>Movimentação bruta prevista</span>

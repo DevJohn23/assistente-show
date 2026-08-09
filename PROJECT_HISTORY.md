@@ -16,12 +16,18 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 ---
 
 ## 📍 Ponto de Parada Atual
-- **Último Commit**: `ec98346`
-- **Descrição**: Painel de orçamento com scroll interno e botão de copiar mensagem fixado no rodapé; remoção das tags de mensalidade nos itens do carrinho; remoção de mensalidades do Urbano Omnicarreta e Omnicargas 4G.
+- **Último Commit**: `fd4bde3`
+- **Descrição**: Adição do produto Trava de Quinta Roda Digital Fontaine + Aríete (`prod-129`) no catálogo; padronização das travas na categoria Acessórios & Sensores; formatação monetária com 2 casas decimais estritas no resumo e na mensagem do WhatsApp.
 
 ---
 
 ## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
+
+### 🟢 Novo Produto Trava Digital Fontaine & Formatação Monetária Estrita (2 Casas Decimais)
+- **Novo Produto (`prod-129`)**: Cadastrado `TRAVA DE QUINTA RODA DIGITAL FONTAINE + ARIETE` no valor de R$ 3.700,00 à vista / 12x R$ 369,38 no cartão, sem mensalidade.
+- **Padronização de Categorias**: Agrupadas todas as travas de quinta roda (E.LOCK e Digital Fontaine) na categoria *Acessórios & Sensores* (`cat-2`).
+- **Formatação Monetária Estrita**: Adicionado formatador com 2 casas decimais estritas (`maximumFractionDigits: 2`), eliminando dízimas no resumo de orçamento e na mensagem de texto do WhatsApp.
+- **Scrollbar Slim**: Ajustada barra de rolagem lateral ultra-fina e discreta.
 
 ### 🟢 `8b53232` — Painel com Botão Fixo, Carrinho Limpo & Remoção de Mensalidades Específicas
 - **Painel de Orçamento Responsivo**: Card com altura máxima da tela (`max-h-[calc(100vh-2rem)]`), scroll interno no conteúdo e botão *"Copiar Mensagem WhatsApp"* **fixado permanentemente no rodapé**, 100% visível sem rolar a tela.

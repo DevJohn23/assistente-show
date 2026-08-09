@@ -30,6 +30,10 @@ interface CatalogQuoteViewProps {
   onSaveTemplate: (name: string, items: { product_id: string; quantity: number }[]) => void;
 }
 
+const formatCurrency = (val: number) => {
+  return (val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+
 export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   products,
   templates,
@@ -212,34 +216,34 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     cart.forEach((i) => {
       const itemUnitPrice = i.product.default_price * (1 + (markupPercent || 0) / 100);
       const itemTotal = itemUnitPrice * i.quantity;
-      msg += `• ${i.quantity}x ${i.product.name} — R$ ${itemTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `• ${i.quantity}x ${i.product.name} — R$ ${formatCurrency(itemTotal)}\n`;
     });
 
     if (discountPercent > 0) {
-      msg += `\n🏷️ *Desconto Especial (${discountPercent}%):* -R$ ${discountAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `\n🏷️ *Desconto Especial (${discountPercent}%):* -R$ ${formatCurrency(discountAmount)}\n`;
     }
 
-    msg += `\n💰 *Total Equipamentos (À Vista):* R$ ${finalEquipmentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+    msg += `\n💰 *Total Equipamentos (À Vista):* R$ ${formatCurrency(finalEquipmentPrice)}\n`;
 
     if (includeMonthlyFee && totalMonthlyFee > 0) {
-      msg += `\n📡 *Mensalidade de Serviços:* R$ ${totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês\n`;
+      msg += `\n📡 *Mensalidade de Serviços:* R$ ${formatCurrency(totalMonthlyFee)}/mês\n`;
     }
 
     msg += `\n💳 *Formas de Pagamento:*\n`;
 
     if (payPix) {
       const pixTotal = finalEquipmentPrice;
-      msg += `• *PIX à vista:* R$ ${pixTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `• *PIX à vista:* R$ ${formatCurrency(pixTotal)}\n`;
     }
 
     if (payBoleto && boletoInstallments > 0) {
       const boletoVal = finalEquipmentPrice / boletoInstallments;
-      msg += `• *Boleto Sem Juros:* ${boletoInstallments}x de R$ ${boletoVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `• *Boleto Sem Juros:* ${boletoInstallments}x de R$ ${formatCurrency(boletoVal)}\n`;
     }
 
     if (payCard && cardInstallments > 0) {
       const cardVal = finalEquipmentPrice / cardInstallments;
-      msg += `• *Cartão Sem Juros:* ${cardInstallments}x de R$ ${cardVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n`;
+      msg += `• *Cartão Sem Juros:* ${cardInstallments}x de R$ ${formatCurrency(cardVal)}\n`;
     }
 
     if (payFinancing && financingInstallments > 0) {
@@ -373,7 +377,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                         <div>
                           <span className="text-[10px] text-slate-400 block font-medium">À Vista</span>
                           <span className="text-sm font-bold text-slate-900 dark:text-white font-outfit">
-                            R$ {product.default_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            R$ {formatCurrency(product.default_price)}
                           </span>
                         </div>
 
@@ -459,7 +463,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                         <div>
                           <span className="text-[10px] text-slate-400 block font-medium">À Vista</span>
                           <span className="text-sm font-bold text-slate-900 dark:text-white font-outfit">
-                            R$ {product.default_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            R$ {formatCurrency(product.default_price)}
                           </span>
                         </div>
 
@@ -498,7 +502,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
         {/* Right Column: Orçamento */}
         <div className="clean-card p-4 rounded-2xl sticky top-4 max-h-[calc(100vh-2rem)] flex flex-col justify-between shadow-xl">
           {/* Scrollable Inner Body */}
-          <div className="overflow-y-auto space-y-3.5 pr-1 flex-1">
+          <div className="overflow-y-auto space-y-3.5 pr-3 flex-1">
             <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <ShoppingBag className="w-4 h-4 text-sky-600 dark:text-sky-400" />
@@ -557,7 +561,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-semibold text-slate-900 dark:text-white truncate font-outfit">{item.product.name}</p>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
-                        R$ {item.product.default_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        R$ {formatCurrency(item.product.default_price)}
                       </p>
                     </div>
 
@@ -598,7 +602,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
                 <span>Equipamentos (Bruto):</span>
                 <span className="font-semibold font-mono">
-                  R$ {rawEquipmentTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  R$ {formatCurrency(rawEquipmentTotal)}
                 </span>
               </div>
 
@@ -606,7 +610,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                 <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
                   <span>Mensalidades Totais:</span>
                   <span className="font-bold font-mono">
-                    R$ {totalMonthlyFee.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês
+                    R$ {formatCurrency(totalMonthlyFee)}/mês
                   </span>
                 </div>
               )}
@@ -627,7 +631,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               {markupPercent > 0 && (
                 <div className="flex items-center justify-between text-sky-600 dark:text-sky-400 font-semibold pt-0.5">
                   <span>Valor Acréscimo:</span>
-                  <span className="font-mono">+ R$ {markupAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                  <span className="font-mono">+ R$ {formatCurrency(markupAmount)}</span>
                 </div>
               )}
 
@@ -648,14 +652,14 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               {discountPercent > 0 && (
                 <div className="flex items-center justify-between text-amber-600 dark:text-amber-400 font-semibold pt-0.5">
                   <span>Valor Desconto:</span>
-                  <span className="font-mono">- R$ {discountAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                  <span className="font-mono">- R$ {formatCurrency(discountAmount)}</span>
                 </div>
               )}
 
               <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between font-bold text-slate-900 dark:text-white">
                 <span>Total Equipamentos:</span>
                 <span className="text-sm font-bold text-sky-600 dark:text-sky-400 font-outfit">
-                  R$ {finalEquipmentPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  R$ {formatCurrency(finalEquipmentPrice)}
                 </span>
               </div>
             </div>
@@ -833,7 +837,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               <div>
                 <span className="text-[10px] text-slate-400 block font-medium">Preço à vista</span>
                 <span className="text-base font-bold text-slate-900 dark:text-white font-outfit">
-                  R$ {detailProduct.default_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  R$ {formatCurrency(detailProduct.default_price)}
                 </span>
               </div>
 
@@ -841,7 +845,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                 <div className="text-right">
                   <span className="text-[10px] text-slate-400 block font-medium">Mensalidade</span>
                   <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">
-                    R$ {detailProduct.monthly_fee.toFixed(2)}/mês
+                    R$ {formatCurrency(detailProduct.monthly_fee)}/mês
                   </span>
                 </div>
               ) : null}

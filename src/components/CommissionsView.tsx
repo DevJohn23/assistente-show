@@ -295,7 +295,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
         <div className="clean-card p-5 rounded-2xl">
           <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Comissão Prevista (Bruto)</span>
           <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2 font-outfit">
-            R$ {comissaoPrevistaBruta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            R$ {comissaoPrevistaBruta.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
           <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Próprias + Implantações + A Receber</p>
         </div>
@@ -307,7 +307,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
             <ArrowDownLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           </div>
           <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2 font-outfit">
-            R$ {totalReceber.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            R$ {totalReceber.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
           <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Outros implantaram p/ você</p>
         </div>
@@ -319,7 +319,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
             <ArrowUpRight className="w-4 h-4 text-rose-600 dark:text-rose-400" />
           </div>
           <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-2 font-outfit">
-            R$ {totalPagar.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            R$ {totalPagar.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
           <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Você implantou p/ outros</p>
         </div>
@@ -328,7 +328,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
         <div className="clean-card p-5 rounded-2xl bg-sky-50/70 dark:bg-sky-950/20 border-sky-200 dark:border-sky-500/30">
           <span className="text-xs font-bold text-sky-800 dark:text-sky-300 uppercase tracking-wide">Saldo Líquido Final</span>
           <p className="text-2xl font-bold text-sky-700 dark:text-sky-300 mt-2 font-outfit">
-            R$ {saldoLiquido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            R$ {saldoLiquido.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
           <p className="text-[11px] text-sky-700/80 dark:text-slate-400 mt-1">Líquido retido (Bruto - Repassar)</p>
         </div>
@@ -410,11 +410,11 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
                     <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-white">{c.client_name}</td>
                     
                     <td className="px-5 py-3.5 font-mono text-slate-900 dark:text-slate-200 font-semibold">
-                      R$ {c.sale_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      R$ {c.sale_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
 
                     <td className="px-5 py-3.5 font-mono font-bold text-slate-900 dark:text-white">
-                      R$ {c.commission_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      R$ {c.commission_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
 
                     <td className="px-5 py-3.5">
@@ -508,7 +508,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
                 <div key={name} className="flex items-center justify-between text-xs py-1 border-b border-slate-100 dark:border-slate-800">
                   <span className="text-slate-800 dark:text-slate-200 font-semibold">{name}</span>
                   <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">
-                    + R$ {amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    + R$ {amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
               ))}
@@ -529,7 +529,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
                 <div key={name} className="flex items-center justify-between text-xs py-1 border-b border-slate-100 dark:border-slate-800">
                   <span className="text-slate-800 dark:text-slate-200 font-semibold">{name}</span>
                   <span className="font-bold text-rose-600 dark:text-rose-400 font-mono">
-                    - R$ {amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    - R$ {amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
               ))}
