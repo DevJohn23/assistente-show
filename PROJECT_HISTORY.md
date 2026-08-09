@@ -16,12 +16,27 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 ---
 
 ## 📍 Ponto de Parada Atual
-- **Último Commit**: `fd4bde3`
-- **Descrição**: Adição do produto Trava de Quinta Roda Digital Fontaine + Aríete (`prod-129`) no catálogo; padronização das travas na categoria Acessórios & Sensores; formatação monetária com 2 casas decimais estritas no resumo e na mensagem do WhatsApp.
+- **Último Commit**: `Orçamento Inteligente & Gerenciamento de Kits Prontos`
+- **Descrição**: Assistente guiado de Orçamento Inteligente por perfil de veículo; Gerenciador de Kits Prontos com menu de 3 pontinhos (edição e exclusão); ampliação do painel de orçamento e melhorias visuais no catálogo.
 
 ---
 
 ## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
+
+### 🟢 Orçamento Inteligente & Gerenciador de Kits Prontos
+- **Sub-Navegação no Catálogo**: Adicionadas sub-abas no topo do catálogo para alternar entre `Catálogo Padrão` e `Orçamento Inteligente`.
+- **Assistente Guiado por Veículo (`smartQuoteRules.ts` & `SmartQuoteWizard.tsx`)**:
+  - Recomendação dinâmica de equipamentos, travas (folha dupla, roll-up, frigorífica), sensores e conexões/chicotes de cabine.
+  - Suporte a Cavalo Mecânico (com opção de carreta baú e travas de quinta roda Fontaine/E.LOCK).
+  - Cards de produtos em grade de 2 colunas com busca no topo.
+- **Gerenciador de Kits Prontos**:
+  - Botão de 3 pontinhos (`MoreVertical`) fixado no canto direito da barra de kits.
+  - Modal interativo para renomear em tempo real e excluir kits salvos.
+  - Remoção do rótulo "Kits Prontos:" para ganho de espaço em tela.
+- **Melhorias Visuais no Painel do Orçamento**:
+  - Busca compacta com texto "Pesquisar...".
+  - Expansão do espaço de produtos do carrinho para 400px de altura (`max-h-[400px]`).
+  - Adicionado rótulo de título "Produtos" e simplificado "Nome do Cliente".
 
 ### 🟢 Novo Produto Trava Digital Fontaine & Formatação Monetária Estrita (2 Casas Decimais)
 - **Novo Produto (`prod-129`)**: Cadastrado `TRAVA DE QUINTA RODA DIGITAL FONTAINE + ARIETE` no valor de R$ 3.700,00 à vista / 12x R$ 369,38 no cartão, sem mensalidade.

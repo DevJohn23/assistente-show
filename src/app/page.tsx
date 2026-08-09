@@ -31,6 +31,8 @@ import {
   createSeller,
   fetchQuoteTemplates,
   createQuoteTemplate,
+  updateQuoteTemplate,
+  deleteQuoteTemplate,
 } from '@/lib/supabaseServices';
 import { Sparkles } from 'lucide-react';
 
@@ -210,6 +212,20 @@ export default function Home() {
     showToast('Modelo de Orçamento salvo!');
   };
 
+  const handleUpdateTemplate = async (id: string, updated: Partial<QuoteTemplate>) => {
+    setTemplates((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, ...updated } : t))
+    );
+    await updateQuoteTemplate(id, updated);
+    showToast('Modelo de orçamento atualizado.');
+  };
+
+  const handleDeleteTemplate = async (id: string) => {
+    setTemplates((prev) => prev.filter((t) => t.id !== id));
+    await deleteQuoteTemplate(id);
+    showToast('Modelo de orçamento excluído.');
+  };
+
   // Header Titles Map
   const headerContent: Record<string, { title: string; description: string }> = {
     dashboard: {
@@ -295,6 +311,8 @@ export default function Home() {
             products={products}
             templates={templates}
             onSaveTemplate={handleSaveTemplate}
+            onUpdateTemplate={handleUpdateTemplate}
+            onDeleteTemplate={handleDeleteTemplate}
           />
         )}
       </main>

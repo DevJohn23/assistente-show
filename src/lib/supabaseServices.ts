@@ -203,3 +203,29 @@ export async function createQuoteTemplate(template: Omit<QuoteTemplate, 'id'>): 
     return null;
   }
 }
+
+export async function updateQuoteTemplate(id: string, updated: Partial<QuoteTemplate>): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('quote_templates')
+      .update(updated)
+      .eq('id', id);
+
+    return !error;
+  } catch (err) {
+    return false;
+  }
+}
+
+export async function deleteQuoteTemplate(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('quote_templates')
+      .delete()
+      .eq('id', id);
+
+    return !error;
+  } catch (err) {
+    return false;
+  }
+}

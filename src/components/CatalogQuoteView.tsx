@@ -21,13 +21,19 @@ import {
   Eye,
   Radio,
   Wrench,
-  Landmark
+  Landmark,
+  Layers,
+  MoreVertical,
+  Edit3
 } from 'lucide-react';
+import { SmartQuoteWizard } from '@/components/SmartQuoteWizard';
 
 interface CatalogQuoteViewProps {
   products: Product[];
   templates: QuoteTemplate[];
   onSaveTemplate: (name: string, items: { product_id: string; quantity: number }[]) => void;
+  onUpdateTemplate?: (id: string, updated: Partial<QuoteTemplate>) => void;
+  onDeleteTemplate?: (id: string) => void;
 }
 
 const formatCurrency = (val: number) => {
@@ -38,8 +44,25 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   products,
   templates,
   onSaveTemplate,
+  onUpdateTemplate,
+  onDeleteTemplate,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Catalog View Mode: 'standard' | 'smart'
+  const [catalogMode, setCatalogMode] = useState<'standard' | 'smart'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('assistente_show_catalog_mode');
+      if (saved === 'smart' || saved === 'standard') return saved;
+    }
+    return 'standard';
+  });
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('assistente_show_catalog_mode', catalogMode);
+    }
+  }, [catalogMode]);
   
   // Cart & Quote state with localStorage persistence
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -123,6 +146,11 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
   const [showSaveTemplateModal, setShowSaveTemplateModal] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
+
+  const [showManageKitsModal, setShowManageKitsModal] = useState(false);
+  const [editingTemplateId, setEditingTemplateId] = useState<string | null>(null);
+  const [editingTemplateName, setEditingTemplateName] = useState('');
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [copiedNotification, setCopiedNotification] = useState(false);
 
   // Cart operations
@@ -151,6 +179,24 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
   const isProductInCart = (productId: string) => {
     return cart.some((i) => i.product.id === productId);
+  };
+
+  const addMultipleItemsToCart = (items: { product: Product; quantity: number }[]) => {
+    setCart((prev) => {
+      const nextCart = [...prev];
+      items.forEach(({ product, quantity }) => {
+        const idx = nextCart.findIndex((i) => i.product.id === product.id);
+        if (idx > -1) {
+          nextCart[idx] = {
+            ...nextCart[idx],
+            quantity: nextCart[idx].quantity + quantity,
+          };
+        } else {
+          nextCart.push({ product, quantity });
+        }
+      });
+      return nextCart;
+    });
   };
 
   // Helper to normalize accents (ignore diacritics like ~ ^ ´ ` ç)
@@ -291,40 +337,82 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
   return (
     <div className="space-y-5">
-      {/* Search & Kit Templates Bar */}
-      <div className="clean-card p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3">
-        {/* Direct Search Input without floating box */}
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Pesquisar por equipamento ou acessório..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500"
-          />
-        </div>
-
-        {/* Load Template Buttons */}
-        <div className="flex items-center gap-1.5 overflow-x-auto">
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">Kits Prontos:</span>
-          {templates.map((tpl) => (
-            <button
-              key={tpl.id}
-              onClick={() => handleLoadTemplate(tpl)}
-              className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-sky-700 dark:text-sky-300 transition-all whitespace-nowrap flex items-center gap-1"
-            >
-              <Sparkles className="w-3 h-3 text-sky-500" />
-              <span>{tpl.name}</span>
-            </button>
-          ))}
-        </div>
+      {/* Sub-navigation Mode Tabs */}
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+        <button
+          onClick={() => setCatalogMode('standard')}
+          className={`flex-1 py-2 px-4 rounded-xl text-xs font-bold font-outfit transition-all flex items-center justify-center gap-2 ${
+            catalogMode === 'standard'
+              ? 'bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-sm border border-slate-200 dark:border-slate-700'
+              : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          <span>Catálogo Padrão</span>
+        </button>
+        <button
+          onClick={() => setCatalogMode('smart')}
+          className={`flex-1 py-2 px-4 rounded-xl text-xs font-bold font-outfit transition-all flex items-center justify-center gap-2 ${
+            catalogMode === 'smart'
+              ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-md'
+              : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <Sparkles className="w-4 h-4" />
+          <span>Orçamento Inteligente</span>
+        </button>
       </div>
 
       {/* Main Grid + Cart Drawer Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
-        {/* Left Column: Products Categorized Sections */}
+        {/* Left Column: Products Categorized Sections OR Smart Wizard */}
         <div className="lg:col-span-2 space-y-6">
+          {catalogMode === 'smart' ? (
+            <SmartQuoteWizard
+              products={products}
+              onAddItemsToCart={addMultipleItemsToCart}
+              onSwitchToStandardCatalog={() => setCatalogMode('standard')}
+            />
+          ) : (
+            <>
+              {/* Search & Kit Templates Bar */}
+              <div className="clean-card p-3 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+                {/* Compact Search Input */}
+                <div className="relative w-full md:w-44 shrink-0">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    placeholder="Pesquisar..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 font-medium"
+                  />
+                </div>
+
+                {/* Scrollable Kit Templates Pills Area */}
+                <div className="flex items-center gap-1.5 overflow-x-auto min-w-0 flex-1 py-0.5">
+                  {templates.map((tpl) => (
+                    <button
+                      key={tpl.id}
+                      onClick={() => handleLoadTemplate(tpl)}
+                      className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-sky-700 dark:text-sky-300 transition-all whitespace-nowrap flex items-center gap-1 shrink-0"
+                    >
+                      <Sparkles className="w-3 h-3 text-sky-500" />
+                      <span>{tpl.name}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Fixed 3 dots button for Kit Management (Pinned at far right) */}
+                <button
+                  type="button"
+                  onClick={() => setShowManageKitsModal(true)}
+                  className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all shrink-0"
+                  title="Gerenciar Kits Prontos"
+                >
+                  <MoreVertical className="w-4 h-4" />
+                </button>
+              </div>
           
           {/* Section 1: Rastreadores */}
           <div className="space-y-3">
@@ -497,7 +585,9 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               </div>
             )}
           </div>
-        </div>
+        </>
+      )}
+    </div>
 
         {/* Right Column: Orçamento */}
         <div className="clean-card p-4 rounded-2xl sticky top-4 max-h-[calc(100vh-2rem)] flex flex-col justify-between shadow-xl">
@@ -534,16 +624,21 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
             {/* Client Name Input for Personalized Greeting */}
             <div>
               <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Nome do Cliente (Personalizar Mensagem)
+                Nome do Cliente
               </label>
               <input
                 type="text"
                 placeholder="ex: Carlos (Alfa Logística)"
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
-                className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500"
+                className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 font-medium"
               />
             </div>
+
+            {/* Products Header Label */}
+            <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 -mb-1">
+              Produtos
+            </label>
 
             {/* Cart Items List */}
             {cart.length === 0 ? (
@@ -552,7 +647,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                 <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Clique em "Adicionar" nos equipamentos ao lado.</p>
               </div>
             ) : (
-              <div className="space-y-2 max-h-36 overflow-y-auto pr-0.5">
+              <div className="space-y-2 max-h-[400px] min-h-[160px] overflow-y-auto pr-0.5">
                 {cart.map((item) => (
                   <div
                     key={item.product.id}
@@ -918,6 +1013,141 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Gerenciar Kits Prontos */}
+      {showManageKitsModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="clean-card bg-white dark:bg-slate-900 rounded-3xl p-5 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-sky-500" />
+                <h3 className="font-bold text-slate-900 dark:text-white text-base font-outfit">Gerenciar Kits Prontos</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowManageKitsModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+              {templates.length === 0 ? (
+                <p className="text-xs text-slate-400 py-6 text-center">Nenhum kit pronto cadastrado no momento.</p>
+              ) : (
+                templates.map((tpl) => (
+                  <div
+                    key={tpl.id}
+                    className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 flex items-center justify-between gap-2"
+                  >
+                    {editingTemplateId === tpl.id ? (
+                      <div className="flex items-center gap-1.5 flex-1">
+                        <input
+                          type="text"
+                          value={editingTemplateName}
+                          onChange={(e) => setEditingTemplateName(e.target.value)}
+                          className="flex-1 px-3 py-1 bg-white dark:bg-slate-900 border border-sky-500 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none"
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (editingTemplateName.trim() && onUpdateTemplate) {
+                              onUpdateTemplate(tpl.id, { name: editingTemplateName.trim() });
+                            }
+                            setEditingTemplateId(null);
+                          }}
+                          className="p-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-500 shrink-0"
+                          title="Salvar Nome"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditingTemplateId(null)}
+                          className="p-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-400 hover:text-white shrink-0"
+                          title="Cancelar"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <span className="font-bold text-slate-900 dark:text-white text-xs truncate font-outfit">
+                            {tpl.name}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-[10px] font-semibold text-slate-500 dark:text-slate-400 shrink-0">
+                            {tpl.items.length} {tpl.items.length === 1 ? 'item' : 'itens'}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          {/* Editar Nome */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingTemplateId(tpl.id);
+                              setEditingTemplateName(tpl.name);
+                            }}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40 transition-colors"
+                            title="Editar Nome do Kit"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+
+                          {/* Excluir Kit */}
+                          {deleteConfirmId === tpl.id ? (
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (onDeleteTemplate) onDeleteTemplate(tpl.id);
+                                  setDeleteConfirmId(null);
+                                }}
+                                className="px-2 py-1 bg-red-600 hover:bg-red-500 text-white text-[10px] font-bold rounded-lg"
+                              >
+                                Excluir
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setDeleteConfirmId(null)}
+                                className="px-2 py-1 bg-slate-200 dark:bg-slate-800 text-slate-400 text-[10px] font-bold rounded-lg"
+                              >
+                                Não
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setDeleteConfirmId(tpl.id)}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                              title="Excluir Kit"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="pt-2 flex justify-end border-t border-slate-100 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={() => setShowManageKitsModal(false)}
+                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              >
+                Concluir
+              </button>
+            </div>
           </div>
         </div>
       )}
