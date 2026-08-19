@@ -133,14 +133,142 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     }
   }, [includeMonthlyFee]);
 
-  // Bank Simulator Financing Formula (Exact CET Price coefficient matching bank simulator)
-  const calculateFinancingInstallment = (principal: number, n: number) => {
-    if (principal <= 0 || n <= 0) return 0;
-    const exactRate = 0.048858;
-    const factor = Math.pow(1 + exactRate, n);
-    const pmt = principal * ((exactRate * factor) / (factor - 1));
-    return pmt;
+  // ============================================================
+  // FATORES EXATOS DA FERRAMENTA OFICIAL (derivados de 36 cenários com P=6930)
+  // PMT = principal × PMT_FACTORS[n]
+  // Crédito Total = principal × CREDIT_FACTORS[n]
+  // TAC = principal × 0.03 (invariante)
+  // IOF = Crédito - principal - TAC
+  // Os fatores são lineares em P, portanto válidos para qualquer valor de principal.
+  // ============================================================
+  const TAXA_JUROS_MENSAL = 2.82; // exibição apenas (usado se n fora de 1-36)
+
+  const PMT_FACTORS: Record<number, number> = {
+    1:  1.066758,
+    2:  0.541457,
+    3:  0.366424,
+    4:  0.278948,
+    5:  0.226499,
+    6:  0.191563,
+    7:  0.166629,
+    8:  0.147951,
+    9:  0.133443,
+    10: 0.121856,
+    11: 0.112390,
+    12: 0.104518,
+    13: 0.097851,
+    14: 0.092136,
+    15: 0.087183,
+    16: 0.082851,
+    17: 0.079033,
+    18: 0.075642,
+    19: 0.072612,
+    20: 0.069890,
+    21: 0.067431,
+    22: 0.065201,
+    23: 0.063167,
+    24: 0.061309,
+    25: 0.059603,
+    26: 0.058033,
+    27: 0.056583,
+    28: 0.055241,
+    29: 0.053996,
+    30: 0.052837,
+    31: 0.051756,
+    32: 0.050747,
+    33: 0.049804,
+    34: 0.048918,
+    35: 0.048087,
+    36: 0.047304,
   };
+
+  const CREDIT_FACTORS: Record<number, number> = {
+    1:  1.036538,
+    2:  1.037808,
+    3:  1.039105,
+    4:  1.040390,
+    5:  1.041685,
+    6:  1.042986,
+    7:  1.044254,
+    8:  1.045532,
+    9:  1.046810,
+    10: 1.048094,
+    11: 1.049375,
+    12: 1.050661,
+    13: 1.051750,
+    14: 1.052683,
+    15: 1.053492,
+    16: 1.054199,
+    17: 1.054824,
+    18: 1.055380,
+    19: 1.055876,
+    20: 1.056322,
+    21: 1.056727,
+    22: 1.057094,
+    23: 1.057430,
+    24: 1.057737,
+    25: 1.058020,
+    26: 1.058281,
+    27: 1.058524,
+    28: 1.058749,
+    29: 1.058958,
+    30: 1.059153,
+    31: 1.059335,
+    32: 1.059506,
+    33: 1.059667,
+    34: 1.059818,
+    35: 1.059961,
+    36: 1.060097,
+  };
+
+  const calcularSimulacaoFinanciamento = (
+    valorVenda: number,
+    entrada: number,
+    desconto: number,
+    parcelas: number,
+    taxaJurosMensal: number
+  ) => {
+    const principal = valorVenda - entrada - desconto;
+    if (principal <= 0 || parcelas <= 0) {
+      return { valorPrincipal: 0, taxaTac: 0, iofFixo: 0, iofDiario: 0, iofTotal: 0, valorTotalCredito: 0, valorParcela: 0, valorTotalDivida: 0 };
+    }
+    const tac = principal * 0.03;
+    const n = parcelas;
+
+    let valorParcela: number;
+    let totalCredito: number;
+
+    if (PMT_FACTORS[n] && CREDIT_FACTORS[n]) {
+      // Usa fatores exatos derivados dos dados oficiais (n = 1 a 36)
+      valorParcela = principal * PMT_FACTORS[n];
+      totalCredito = principal * CREDIT_FACTORS[n];
+    } else {
+      // Fallback para n fora de 1-36: fórmula Price com TAC + IOF estimado
+      const i = taxaJurosMensal / 100;
+      let diasSum = 0;
+      for (let k = 1; k <= n; k++) diasSum += Math.min(k * 30, 365);
+      const mediaDias = diasSum / n;
+      const base = principal + tac;
+      const iofTotal = base * (0.003978 + 0.000082 * mediaDias);
+      totalCredito = principal + tac + iofTotal;
+      valorParcela = i > 0
+        ? totalCredito * ((i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1))
+        : totalCredito / n;
+    }
+
+    const iofTotal = parseFloat((totalCredito - principal - tac).toFixed(2));
+    return {
+      valorPrincipal: parseFloat(principal.toFixed(2)),
+      taxaTac: parseFloat(tac.toFixed(2)),
+      iofFixo: 0,
+      iofDiario: iofTotal,
+      iofTotal,
+      valorTotalCredito: parseFloat(totalCredito.toFixed(2)),
+      valorParcela: parseFloat(valorParcela.toFixed(2)),
+      valorTotalDivida: parseFloat((valorParcela * n).toFixed(2)),
+    };
+  };
+
 
   // Modals state
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
@@ -229,6 +357,16 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const discountAmount = (subtotalWithMarkup * (discountPercent || 0)) / 100;
   const finalEquipmentPrice = Math.max(0, subtotalWithMarkup - discountAmount);
 
+  // Financing simulation — uses finalEquipmentPrice as valorVenda (already includes markup);
+  // entrada=0 and desconto=0 because discount is already factored into finalEquipmentPrice.
+  const financingResult = calcularSimulacaoFinanciamento(
+    finalEquipmentPrice,
+    0,
+    0,
+    financingInstallments,
+    TAXA_JUROS_MENSAL
+  );
+
   // Client name for proposal greeting with localStorage persistence
   const [clientName, setClientName] = useState<string>(() => {
     if (typeof window !== 'undefined') {
@@ -293,7 +431,8 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     }
 
     if (payFinancing && financingInstallments > 0) {
-      msg += `• *Financiamento:* em até ${financingInstallments}x (com juros sob consulta)\n`;
+      const fResult = calcularSimulacaoFinanciamento(finalEquipmentPrice, 0, 0, financingInstallments, TAXA_JUROS_MENSAL);
+      msg += `• *Financiamento:* ${financingInstallments}x de R$ ${formatCurrency(fResult.valorParcela)} (TAC + IOF incl.)\n`;
     }
 
     msg += `\n✨ *Benefícios Incluídos:*\n`;
@@ -876,11 +1015,22 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                   )}
                 </div>
                 {payFinancing && (
-                  <div className="mt-1.5 pt-1.5 border-t border-slate-200 dark:border-slate-800/60 flex items-center justify-between text-[11px]">
-                    <span className="text-slate-500 dark:text-slate-400 font-medium">Condição Financiada:</span>
-                    <span className="font-bold text-sky-600 dark:text-sky-400">
-                      Em até {financingInstallments}x (com juros sob consulta)
-                    </span>
+                  <div className="mt-1.5 pt-1.5 border-t border-slate-200 dark:border-slate-800/60 space-y-1">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-slate-500 dark:text-slate-400 font-medium">Parcela Estimada:</span>
+                      <span className="font-bold text-sky-600 dark:text-sky-400 font-mono">
+                        {financingInstallments}x de R$ {formatCurrency(financingResult.valorParcela)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
+                      <span>Crédito Total (c/ TAC+IOF):</span>
+                      <span className="font-mono">R$ {formatCurrency(financingResult.valorTotalCredito)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
+                      <span>Total da Dívida:</span>
+                      <span className="font-mono">R$ {formatCurrency(financingResult.valorTotalDivida)}</span>
+                    </div>
+                    <div className="text-[9px] text-slate-300 dark:text-slate-600 text-right">Taxa 2,61% a.m. · TAC 3% · IOF</div>
                   </div>
                 )}
               </div>
