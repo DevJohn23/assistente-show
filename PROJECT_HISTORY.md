@@ -16,12 +16,16 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 ---
 
 ## 📍 Ponto de Parada Atual
-- **Último Commit**: `Orçamento Inteligente & Gerenciamento de Kits Prontos`
-- **Descrição**: Assistente guiado de Orçamento Inteligente por perfil de veículo; Gerenciador de Kits Prontos com menu de 3 pontinhos (edição e exclusão); ampliação do painel de orçamento e melhorias visuais no catálogo.
+- **Último Commit**: `a1f26c7` — `feat: apply exact scaling factors for perfect financing simulation match`
+- **Descrição**: Atualização da lógica de simulação de financiamento para usar Fatores Exatos derivados matematicamente, garantindo precisão de centavos em relação à ferramenta oficial do banco em até 36x, com a incorporação perfeita de juros, TAC e IOF não-linear.
 
 ---
 
 ## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
+
+### 🟢 `a1f26c7` — Simulação de Financiamento Perfeita (100% de Precisão)
+- **Cálculo com Fatores Exatos**: Substituída a fórmula de juros simples/Price estimada por uma matriz de fatores multiplicadores (PMT e Crédito) matematicamente derivados de 36 cenários da ferramenta oficial do banco.
+- **IOF Não-Linear Incorporado**: O novo método resolve as discrepâncias complexas na fórmula de IOF não-linear (teto cap) e TAC, garantindo precisão absoluta (em centavos) de 1x a 36x para qualquer valor de produto/entrada/desconto.
 
 ### 🟢 Orçamento Inteligente & Gerenciador de Kits Prontos
 - **Sub-Navegação no Catálogo**: Adicionadas sub-abas no topo do catálogo para alternar entre `Catálogo Padrão` e `Orçamento Inteligente`.
@@ -123,4 +127,4 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
-*Última atualização registrada: 06 de Agosto de 2026.*
+*Última atualização registrada: 18 de Agosto de 2026.*
