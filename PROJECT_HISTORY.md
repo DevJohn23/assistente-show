@@ -16,12 +16,21 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 ---
 
 ## 📍 Ponto de Parada Atual
-- **Último Commit**: `a1f26c7` — `feat: apply exact scaling factors for perfect financing simulation match`
-- **Descrição**: Atualização da lógica de simulação de financiamento para usar Fatores Exatos derivados matematicamente, garantindo precisão de centavos em relação à ferramenta oficial do banco em até 36x, com a incorporação perfeita de juros, TAC e IOF não-linear.
+- **Último Commit**: `de987ac` — `feat: Adiciona aba Rede de Técnicos com mapa e busca de proximidade`
+- **Descrição**: Criação completa do Buscador de Técnico Mais Próximo. Um mapa interativo (Leaflet) sem custos de API, com busca de endereço, extração de 122 técnicos do arquivo KML e cálculo de proximidade (fórmula de Haversine). Funciona tanto como um diretório nacional visual quanto como buscador rankeado.
 
 ---
 
 ## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
+
+### 🟢 `de987ac` — Aba Rede de Técnicos (Buscador Georreferenciado)
+- **Mapa e Busca Sem Custos**: Implementado mapa via Leaflet/OpenStreetMap e Geocoding via Nominatim (dispensando API Key paga do Google Maps).
+- **Lista de Técnicos (122 registros)**: Parse automatizado do KML oficial do 1º Semestre de 2026, gerando JSON padronizado com categorias, coordenadas, tipo de atuação e dados de contato.
+- **Cálculo de Proximidade On-The-Fly**: Busca por endereço aplica a fórmula de Haversine no lado do cliente, listando os 5 técnicos mais próximos classificados por distância em linha reta, com destaque (⭐ Recomendado) para a opção #1.
+- **Modo Duplo**: 
+  - *Visão Inicial*: Mapa mostra todos os 122 técnicos coloridos por categoria. Clique em um pino revela o card na lateral.
+  - *Modo Busca*: Zoom focado no endereço, exibindo apenas os 5 mais próximos como pinos Google-style numerados.
+- **Contatos Expressos**: Integração com WhatsApp Web/App (`wa.me/`) ao clicar no telefone, com redirecionamento limpo.
 
 ### 🟢 `a1f26c7` — Simulação de Financiamento Perfeita (100% de Precisão)
 - **Cálculo com Fatores Exatos**: Substituída a fórmula de juros simples/Price estimada por uma matriz de fatores multiplicadores (PMT e Crédito) matematicamente derivados de 36 cenários da ferramenta oficial do banco.
@@ -127,4 +136,4 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
-*Última atualização registrada: 18 de Agosto de 2026.*
+*Última atualização registrada: 23 de Agosto de 2026.*
