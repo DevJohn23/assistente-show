@@ -7,6 +7,7 @@ import { DashboardView } from '@/components/DashboardView';
 import { OpportunitiesView } from '@/components/OpportunitiesView';
 import { CommissionsView } from '@/components/CommissionsView';
 import { CatalogQuoteView } from '@/components/CatalogQuoteView';
+import { TecnicosBuscadorView } from '@/components/TecnicosBuscadorView';
 import { LoginView } from '@/components/LoginView';
 
 import { useAuth } from '@/context/AuthContext';
@@ -41,7 +42,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('assistente_show_active_tab');
-      if (saved && ['dashboard', 'opportunities', 'commissions', 'catalog'].includes(saved)) {
+      if (saved && ['dashboard', 'opportunities', 'commissions', 'catalog', 'tecnicos'].includes(saved)) {
         return saved;
       }
     }
@@ -244,6 +245,10 @@ export default function Home() {
       title: 'Catálogo & Gerador de Orçamentos',
       description: '',
     },
+    tecnicos: {
+      title: 'Rede de Técnicos',
+      description: 'Encontre o técnico mais próximo do cliente na rede Omnilink',
+    },
   };
 
   const currentHeader = headerContent[activeTab] || headerContent.dashboard;
@@ -314,6 +319,10 @@ export default function Home() {
             onUpdateTemplate={handleUpdateTemplate}
             onDeleteTemplate={handleDeleteTemplate}
           />
+        )}
+
+        {activeTab === 'tecnicos' && (
+          <TecnicosBuscadorView />
         )}
       </main>
 

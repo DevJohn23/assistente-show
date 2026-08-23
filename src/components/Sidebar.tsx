@@ -9,7 +9,8 @@ import {
   Sparkles,
   LogOut,
   Menu,
-  X
+  X,
+  MapPin
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -59,6 +60,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Catálogo / Orçamento',
       icon: ShoppingBag,
       iconColor: 'text-amber-400',
+      badge: null,
+    },
+    {
+      id: 'tecnicos',
+      label: 'Rede de Técnicos',
+      icon: MapPin,
+      iconColor: 'text-rose-400',
       badge: null,
     },
   ];
