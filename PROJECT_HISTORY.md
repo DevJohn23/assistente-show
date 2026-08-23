@@ -23,6 +23,11 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
 
+### 🟢 `HEAD` — Opção de Entrada Mínima e Ajustes Visuais no Orçamento
+- **Entrada Mínima PF**: Adicionado toggle ("Exigir Entrada PF Novo") no painel de opções do orçamento, com destaque visual e persistência de estado.
+- **Inserção no WhatsApp**: Ao habilitar o toggle, o texto copiável inclui automaticamente `💵 *Entrada Mínima:* R$ 550,00` antes das formas de pagamento.
+- **Limpeza do Financiamento**: Removida a tag poluente "(TAC + IOF incl.)" do texto de financiamento no WhatsApp.
+
 ### 🟢 `de987ac` — Aba Rede de Técnicos (Buscador Georreferenciado)
 - **Mapa e Busca Sem Custos**: Implementado mapa via Leaflet/OpenStreetMap e Geocoding via Nominatim (dispensando API Key paga do Google Maps).
 - **Lista de Técnicos (122 registros)**: Parse automatizado do KML oficial do 1º Semestre de 2026, gerando JSON padronizado com categorias, coordenadas, tipo de atuação e dados de contato.

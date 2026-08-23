@@ -100,6 +100,14 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     return true;
   });
 
+  const [requireEntryFee, setRequireEntryFee] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('assistente_show_quote_require_entry_fee');
+      if (saved !== null) return saved === 'true';
+    }
+    return false;
+  });
+
   const [payPix, setPayPix] = useState(true);
   const [payBoleto, setPayBoleto] = useState(true);
   const [boletoInstallments, setBoletoInstallments] = useState(3);
@@ -132,6 +140,12 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
       localStorage.setItem('assistente_show_quote_include_monthly', includeMonthlyFee.toString());
     }
   }, [includeMonthlyFee]);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('assistente_show_quote_require_entry_fee', requireEntryFee.toString());
+    }
+  }, [requireEntryFee]);
 
   // ============================================================
   // FATORES EXATOS DA FERRAMENTA OFICIAL (derivados de 36 cenários com P=6930)
@@ -413,6 +427,10 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
       msg += `\n📡 *Mensalidade de Serviços:* R$ ${formatCurrency(totalMonthlyFee)}/mês\n`;
     }
 
+    if (requireEntryFee) {
+      msg += `\n💵 *Entrada Mínima:* R$ 550,00\n`;
+    }
+
     msg += `\n💳 *Formas de Pagamento:*\n`;
 
     if (payPix) {
@@ -432,7 +450,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
     if (payFinancing && financingInstallments > 0) {
       const fResult = calcularSimulacaoFinanciamento(finalEquipmentPrice, 0, 0, financingInstallments, TAXA_JUROS_MENSAL);
-      msg += `• *Financiamento:* ${financingInstallments}x de R$ ${formatCurrency(fResult.valorParcela)} (TAC + IOF incl.)\n`;
+      msg += `• *Financiamento:* ${financingInstallments}x de R$ ${formatCurrency(fResult.valorParcela)}\n`;
     }
 
     msg += `\n✨ *Benefícios Incluídos:*\n`;
@@ -916,6 +934,23 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                   <Radio className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
                   <span className="font-medium text-slate-800 dark:text-slate-200">Mensalidade de Serviços</span>
                 </div>
+              </label>
+
+              {/* Entrada Obrigatória Toggle */}
+              <label className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 cursor-pointer">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={requireEntryFee}
+                    onChange={(e) => setRequireEntryFee(e.target.checked)}
+                    className="rounded border-slate-300 dark:border-slate-700 text-rose-600 focus:ring-0"
+                  />
+                  <span className="w-3.5 h-3.5 flex items-center justify-center text-[10px] bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400 rounded-sm font-bold">R$</span>
+                  <span className="font-medium text-slate-800 dark:text-slate-200">Exigir Entrada PF Novo</span>
+                </div>
+                {requireEntryFee && (
+                  <span className="text-[10px] font-bold text-rose-600 bg-rose-100 dark:bg-rose-900/40 dark:text-rose-400 px-1.5 py-0.5 rounded">R$ 550</span>
+                )}
               </label>
 
               {/* PIX */}
