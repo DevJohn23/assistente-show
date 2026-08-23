@@ -17,38 +17,80 @@ export async function GET(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET || 'assistente_show_cron_secret_2026';
 
     if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${cronSecret}`) {
-      // Allow Vercel Cron headers or secret parameter
       const urlSecret = request.nextUrl.searchParams.get('secret');
       if (urlSecret !== cronSecret && authHeader !== `Bearer ${cronSecret}`) {
         return NextResponse.json({ error: 'Unauthorized Cron Invocation' }, { status: 401 });
       }
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    
+    if (!serviceRoleKey) {
+      console.warn('SUPABASE_SERVICE_ROLE_KEY is missing. Falling back to anon key.');
+    }
 
-    // Fetch commissions
+    // Use Service Role to get access to auth.users if available, otherwise fallback to anon
+    const supabase = createClient(supabaseUrl, serviceRoleKey || supabaseKey);
+
+    // Fetch all commissions
     const { data: commissionsData, error: commError } = await supabase
       .from('commissions')
       .select('*');
 
     if (commError) {
       console.error('Error fetching commissions in Cron:', commError);
+      throw new Error(commError.message);
     }
 
-    const commissions: Commission[] = (commissionsData as Commission[]) || [];
+    const allCommissions: Commission[] = (commissionsData as Commission[]) || [];
 
-    // Target email recipient (Can be configured or extracted from logged users)
-    // Default fallback to registered email
-    const targetEmail = request.nextUrl.searchParams.get('email') || 'devjohn23@gmail.com';
-    const recipientName = 'Vendedor Show';
+    // Filter to last 7 days only
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+    const recentCommissions = allCommissions.filter(c => c.sale_date >= sevenDaysAgoStr);
 
-    // Dispatch weekly report email via Resend
-    const resendResult = await sendWeeklyReportEmail(targetEmail, recipientName, commissions);
+    let sentCount = 0;
+    const errors: any[] = [];
+
+    // If we have a service role, fetch real users. Otherwise, fallback for testing.
+    if (serviceRoleKey) {
+      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
+      if (authError) {
+        throw new Error(`Failed to list users: ${authError.message}`);
+      }
+
+      const users = authData.users || [];
+
+      for (const user of users) {
+        // Find commissions for this specific user
+        const userCommissions = recentCommissions.filter(c => c.user_id === user.id);
+        
+        // Only send if they had sales in the last 7 days
+        if (userCommissions.length > 0 && user.email) {
+          try {
+            const userName = user.user_metadata?.full_name || 'Vendedor Show';
+            await sendWeeklyReportEmail(user.email, userName, userCommissions);
+            sentCount++;
+          } catch (err: any) {
+            console.error(`Failed to send email to ${user.email}:`, err);
+            errors.push({ email: user.email, error: err.message });
+          }
+        }
+      }
+    } else {
+      // Fallback: Group by user_id but we don't have their email. We send a single summary to fallback email.
+      const fallbackEmail = request.nextUrl.searchParams.get('email') || 'devjohn23@gmail.com';
+      if (recentCommissions.length > 0) {
+        await sendWeeklyReportEmail(fallbackEmail, 'Administrador (Fallback)', recentCommissions);
+        sentCount = 1;
+      }
+    }
 
     return NextResponse.json({
       success: true,
-      message: `Relatório semanal enviado com sucesso para ${targetEmail}`,
-      resendId: resendResult.data?.id || null,
+      message: `Relatório semanal processado. E-mails enviados: ${sentCount}.`,
+      errors: errors.length > 0 ? errors : undefined,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

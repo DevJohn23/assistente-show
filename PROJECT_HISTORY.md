@@ -23,6 +23,11 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
 
+### 🟢 `HEAD` — Backup Semanal de Comissões Individualizado (Cron)
+- **Varredura em Lote**: Endpoint do Cron Job modificado para aceitar `SUPABASE_SERVICE_ROLE_KEY` e identificar todos os usuários cadastrados via Admin API.
+- **Relatórios Exclusivos**: O sistema cruza as vendas dos últimos 7 dias e gera um Excel contendo apenas as vendas pertencentes àquele usuário específico, disparando o e-mail pro endereço de cadastro.
+- **Fallback de Segurança**: Mantido envio único genérico caso a chave Admin não esteja configurada.
+
 ### 🟢 `HEAD` — Opção de Entrada Mínima e Ajustes Visuais no Orçamento
 - **Entrada Mínima PF**: Adicionado toggle ("Exigir Entrada PF Novo") no painel de opções do orçamento, com destaque visual e persistência de estado.
 - **Inserção no WhatsApp**: Ao habilitar o toggle, o texto copiável inclui automaticamente `💵 *Entrada Mínima:* R$ 550,00` antes das formas de pagamento.
