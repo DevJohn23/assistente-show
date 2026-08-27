@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { MapPin, Search, Mail, Star, Loader2, X, Navigation, Users } from 'lucide-react';
+import { MapPin, Search, Mail, Star, Loader2, X, Navigation, Users, Map } from 'lucide-react';
 import tecnicosData from '@/data/tecnicos.json';
 
 interface Tecnico {
@@ -81,6 +81,36 @@ export const TecnicosBuscadorView: React.FC = () => {
     if (q.length < 4) { setSuggestions([]); return; }
     setLoadingSuggestions(true);
     try {
+      // Verifica se é um CEP (8 números seguidos, com ou sem traço)
+      const cepMatch = q.replace(/[^0-9]/g, '');
+      if (cepMatch.length === 8) {
+        // Tenta buscar no ViaCEP
+        const viaCepRes = await fetch(`https://viacep.com.br/ws/${cepMatch}/json/`);
+        const viaCepData = await viaCepRes.json();
+        
+        if (!viaCepData.erro) {
+          // Monta o endereço legível
+          const addressStr = `${viaCepData.logradouro}, ${viaCepData.bairro}, ${viaCepData.localidade} - ${viaCepData.uf}`;
+          // Busca as coordenadas no Nominatim usando o endereço retornado pelo ViaCEP
+          const nomRes = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addressStr + ', Brasil')}&format=json&limit=1`,
+            { headers: { 'Accept-Language': 'pt-BR' } }
+          );
+          const nomData: NominatimResult[] = await nomRes.json();
+          
+          if (nomData.length > 0) {
+            setSuggestions([{
+              lat: nomData[0].lat,
+              lon: nomData[0].lon,
+              display_name: `${addressStr} (CEP: ${viaCepData.cep})`
+            }]);
+            setShowSuggestions(true);
+            return;
+          }
+        }
+      }
+
+      // Se não for CEP ou o CEP falhou, busca normalmente no Nominatim
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q + ', Brasil')}&format=json&limit=5&countrycodes=br`,
         { headers: { 'Accept-Language': 'pt-BR' } }
@@ -343,6 +373,14 @@ export const TecnicosBuscadorView: React.FC = () => {
                       <span className="truncate">{selectedTecnico.email}</span>
                     </a>
                   )}
+                  <a href={`https://www.google.com/maps/dir/?api=1${clientePos ? `&origin=${clientePos.lat},${clientePos.lng}` : ''}&destination=${selectedTecnico.lat},${selectedTecnico.lng}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-xs text-amber-400 hover:text-amber-300 font-semibold transition-colors group">
+                      <div className="w-6 h-6 rounded-lg bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-colors">
+                        <Map className="w-3 h-3" />
+                      </div>
+                      <span className="truncate">Ver rota no Google Maps</span>
+                    </a>
                 </div>
               </div>
             </div>
@@ -425,6 +463,14 @@ export const TecnicosBuscadorView: React.FC = () => {
                         <span className="truncate">{t.email}</span>
                       </a>
                     )}
+                    <a href={`https://www.google.com/maps/dir/?api=1${clientePos ? `&origin=${clientePos.lat},${clientePos.lng}` : ''}&destination=${t.lat},${t.lng}`}
+                      target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-2 text-xs text-amber-400 hover:text-amber-300 font-semibold transition-colors group">
+                      <div className="w-6 h-6 rounded-lg bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-colors">
+                        <Map className="w-3 h-3" />
+                      </div>
+                      <span className="truncate">Ver rota no Google Maps</span>
+                    </a>
                   </div>
                 )}
                 {!isSelected && (t.telefone || t.email) && (

@@ -23,6 +23,14 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
 
+### 🟢 `HEAD` — Integração com Google Maps (Rotas)
+- **Traçar Rota Direta**: Adicionado um botão "Ver rota no Google Maps" dentro do card de detalhes de cada técnico.
+- **Roteamento Inteligente**: Quando uma busca é feita (por CEP ou endereço), o sistema injeta a coordenada do cliente como ponto de partida (origem) e a coordenada do técnico como destino, abrindo o app ou site do Google Maps com a rota exata já traçada para verificar o deslocamento real.
+
+### 🟢 `HEAD` — Busca Inteligente de Técnicos por CEP
+- **Integração ViaCEP**: O campo de busca agora reconhece automaticamente quando um CEP é digitado (8 dígitos, com ou sem traço).
+- **Resolução Dupla**: Ao detectar um CEP, o sistema busca o endereço completo e usa essa informação para encontrar as coordenadas exatas no Nominatim, retornando o local com precisão sem falhas de interpretação de CEP.
+
 ### 🟢 `HEAD` — Backup Semanal de Comissões Individualizado (Cron)
 - **Varredura em Lote**: Endpoint do Cron Job modificado para aceitar `SUPABASE_SERVICE_ROLE_KEY` e identificar todos os usuários cadastrados via Admin API.
 - **Relatórios Exclusivos**: O sistema cruza as vendas dos últimos 7 dias e gera um Excel contendo apenas as vendas pertencentes àquele usuário específico, disparando o e-mail pro endereço de cadastro.
