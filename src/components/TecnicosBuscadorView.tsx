@@ -429,12 +429,6 @@ export const TecnicosBuscadorView: React.FC = () => {
                   )}
                 </div>
 
-                <div className="flex items-center gap-1.5 text-sky-400 text-xs font-bold mb-2">
-                  <Navigation className="w-3 h-3" />
-                  {t.distancia < 10 ? `${t.distancia.toFixed(1)} km` : `${Math.round(t.distancia)} km`}
-                  <span className="text-slate-500 font-normal">em linha reta</span>
-                </div>
-
                 {isSelected && (
                   <div className="mt-3 pt-3 border-t border-slate-700/60 space-y-2">
                     {t.telefone && (
