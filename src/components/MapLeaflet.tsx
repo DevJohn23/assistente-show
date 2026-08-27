@@ -12,6 +12,7 @@ interface Tecnico {
   lat: number;
   lng: number;
   distancia?: number;
+  vendedor_parceiro?: string;
 }
 
 interface MapLeafletProps {

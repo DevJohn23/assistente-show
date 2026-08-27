@@ -15,6 +15,7 @@ interface Tecnico {
   email: string;
   lat: number;
   lng: number;
+  vendedor_parceiro?: string;
 }
 
 interface TecnicoComDistancia extends Tecnico {
@@ -315,6 +316,11 @@ export const TecnicosBuscadorView: React.FC = () => {
                       {selectedTecnico.tipo}
                     </span>
                   )}
+                  {selectedTecnico.vendedor_parceiro && (
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-violet-600/30 text-violet-400 border-violet-600/40 flex items-center gap-1">
+                      <Users className="w-3 h-3" /> Parceiro: {selectedTecnico.vendedor_parceiro}
+                    </span>
+                  )}
                 </div>
                 <div className="space-y-2">
                   {selectedTecnico.telefone && (
@@ -376,6 +382,11 @@ export const TecnicosBuscadorView: React.FC = () => {
                   {t.tipo && (
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-slate-600/30 text-slate-400 border-slate-600/40">
                       {t.tipo}
+                    </span>
+                  )}
+                  {t.vendedor_parceiro && (
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-violet-600/30 text-violet-400 border-violet-600/40 flex items-center gap-1">
+                      <Users className="w-3 h-3" /> Parceiro: {t.vendedor_parceiro}
                     </span>
                   )}
                 </div>
