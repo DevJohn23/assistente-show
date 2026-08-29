@@ -3,20 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { MapPin, Search, Mail, Star, Loader2, X, Navigation, Users, Map } from 'lucide-react';
-import tecnicosData from '@/data/tecnicos.json';
-
-interface Tecnico {
-  id: number;
-  nome: string;
-  categoria: string;
-  tipo: string;
-  descricao: string;
-  telefone: string;
-  email: string;
-  lat: number;
-  lng: number;
-  vendedor_parceiro?: string;
-}
+import { supabase } from '@/lib/supabase';
+import { Tecnico } from '@/types';
 
 interface TecnicoComDistancia extends Tecnico {
   distancia: number;
@@ -65,7 +53,7 @@ export const TecnicosBuscadorView: React.FC = () => {
   const [clientePos, setClientePos] = useState<{ lat: number; lng: number } | null>(null);
   const [clienteLabel, setClienteLabel] = useState('');
   const [tecnicos5, setTecnicos5] = useState<TecnicoComDistancia[]>([]);
-  const [mapTecnicos, setMapTecnicos] = useState<Tecnico[]>(tecnicosData as Tecnico[]);
+  const [mapTecnicos, setMapTecnicos] = useState<Tecnico[]>([]);
   const [searchMode, setSearchMode] = useState(false);
   const [selectedTecnico, setSelectedTecnico] = useState<TecnicoComDistancia | null>(null);
   const [mapCenter, setMapCenter] = useState<[number, number]>([-15.788, -47.879]);
@@ -75,8 +63,18 @@ export const TecnicosBuscadorView: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const justSelectedRef = useRef(false);
 
-  const tecnicos = tecnicosData as Tecnico[];
+  const [tecnicos, setTecnicos] = useState<Tecnico[]>([]);
 
+  useEffect(() => {
+    const fetchTecnicos = async () => {
+      const { data } = await supabase.from('tecnicos').select('*');
+      if (data) {
+        setTecnicos(data);
+        setMapTecnicos(data); // Inicia o mapa com os dados
+      }
+    };
+    fetchTecnicos();
+  }, []);
   const fetchSuggestions = useCallback(async (q: string) => {
     if (q.length < 4) { setSuggestions([]); return; }
     setLoadingSuggestions(true);
@@ -137,11 +135,13 @@ export const TecnicosBuscadorView: React.FC = () => {
 
   const buscarTecnicos = useCallback(async (lat: number, lng: number, label: string) => {
     setSearching(true);
-    setShowSuggestions(false);
+    setSearchMode(true);
     setClientePos({ lat, lng });
     setClienteLabel(label);
     setSelectedTecnico(null);
+    setShowSuggestions(false);
 
+    // Sort all tecnicos by distance
     const ranked = tecnicos
       .map((t) => ({ ...t, distancia: haversine(lat, lng, t.lat, t.lng) }))
       .sort((a, b) => a.distancia - b.distancia)
@@ -149,7 +149,6 @@ export const TecnicosBuscadorView: React.FC = () => {
 
     setTecnicos5(ranked);
     setMapTecnicos(ranked);
-    setSearchMode(true);
     setMapCenter([lat, lng]);
     setMapZoom(10);
     setSearching(false);
@@ -187,12 +186,13 @@ export const TecnicosBuscadorView: React.FC = () => {
     }
   };
 
-  const handleClearSearch = () => {
+  const resetSearch = () => {
     setQuery('');
     setSuggestions([]);
     setClientePos(null);
+    setClienteLabel('');
     setTecnicos5([]);
-    setMapTecnicos(tecnicosData as Tecnico[]);
+    setMapTecnicos(tecnicos);
     setSearchMode(false);
     setSelectedTecnico(null);
     setMapCenter([-15.788, -47.879]);
@@ -224,8 +224,10 @@ export const TecnicosBuscadorView: React.FC = () => {
               className="w-full pl-10 pr-10 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/40 transition-all"
             />
             {query && (
-              <button type="button" onClick={handleClearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors">
+              <button type="button" onClick={resetSearch}
+                className="absolute right-12 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
+                title="Limpar busca"
+              >
                 <X className="w-4 h-4" />
               </button>
             )}

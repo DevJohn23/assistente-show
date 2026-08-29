@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isAdmin: boolean;
   signInWithEmail: (email: string, pass: string) => Promise<{ error: Error | null }>;
   signUpWithEmail: (email: string, pass: string, fullName: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -19,20 +20,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const checkAdminStatus = async (currentUser: User | null) => {
+    if (!currentUser?.email) {
+      setIsAdmin(false);
+      return;
+    }
+    try {
+      const { data, error } = await supabase
+        .from('admin_users')
+        .select('email')
+        .ilike('email', currentUser.email.trim())
+        .maybeSingle();
+      
+      const isDbAdmin = !!data && !error;
+      const isEnvAdmin = process.env.NEXT_PUBLIC_ADMIN_EMAIL === currentUser.email;
+      
+      console.log('Admin Check:', { dbAdmin: isDbAdmin, envAdmin: isEnvAdmin, email: currentUser.email });
+      setIsAdmin(isDbAdmin || isEnvAdmin);
+    } catch (e) {
+      console.error('Error checking admin status', e);
+      setIsAdmin(process.env.NEXT_PUBLIC_ADMIN_EMAIL === currentUser.email);
+    }
+  };
 
   useEffect(() => {
     // 1. Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
+      checkAdminStatus(session?.user ?? null).finally(() => setLoading(false));
     });
 
     // 2. Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
+      checkAdminStatus(session?.user ?? null).finally(() => setLoading(false));
     });
 
     return () => {
@@ -91,6 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         session,
         loading,
+        isAdmin,
         signInWithEmail,
         signUpWithEmail,
         signOut,

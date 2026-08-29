@@ -16,12 +16,31 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 ---
 
 ## 📍 Ponto de Parada Atual
-- **Último Commit**: `de987ac` — `feat: Adiciona aba Rede de Técnicos com mapa e busca de proximidade`
-- **Descrição**: Criação completa do Buscador de Técnico Mais Próximo. Um mapa interativo (Leaflet) sem custos de API, com busca de endereço, extração de 122 técnicos do arquivo KML e cálculo de proximidade (fórmula de Haversine). Funciona tanto como um diretório nacional visual quanto como buscador rankeado.
+- **Último Commit**: Pendente — `feat: Painel Administrativo + Migração de Produtos/Técnicos para Supabase`
+- **Descrição**: Implementação completa do Painel Administrativo com gestão CRUD de produtos e técnicos via Supabase, upload de imagens com compressão automática, busca rápida nas listagens do admin, e migração integral dos dados de produtos e técnicos para o banco de dados (Supabase PostgreSQL).
 
 ---
 
 ## 📜 Histórico de Commits e Funcionalidades (Linha do Tempo)
+
+### 🟢 `HEAD` — Painel Administrativo Completo + Migração para Supabase
+- **Painel Admin (`/admin`)**: Nova rota protegida acessível apenas por administradores cadastrados na tabela `admin_users`. Botão de acesso aparece no Sidebar (ícone ⚙️ dourado) apenas para contas autorizadas.
+- **Gestão de Produtos**: Listagem completa com busca por nome, edição inline de preço, mensalidade, descrição e imagem. Adição e exclusão de produtos diretamente pelo painel.
+- **Gestão de Técnicos**: Listagem com busca multi-campo (nome, categoria, tipo, parceiro), edição de dados de contato, coordenadas e categoria. Adição e remoção de técnicos.
+- **Upload de Imagens com Compressão**: Upload direto do dispositivo com redimensionamento automático (max 400px) e compressão JPEG (qualidade 70%, ~200KB). Armazenamento no Supabase Storage (bucket `product-images`). Fallback para URL manual mantido.
+- **Migração de Dados para Supabase**:
+  - Tabela `products`: 128+ produtos migrados do `mockData.ts` para o PostgreSQL com categorias (`cat-1`, `cat-2`), preços, mensalidades e regras comerciais.
+  - Tabela `tecnicos`: 122 técnicos migrados do `tecnicos.json` para o PostgreSQL.
+  - Tabela `categories`: Categorias de produtos cadastradas (`Rastreadores Omnilink`, `Acessórios & Sensores`, etc.).
+  - Tabela `admin_users`: Controle de acesso administrativo por email.
+- **Row Level Security (RLS)**: Políticas configuradas para leitura pública de produtos, técnicos e categorias, e acesso total (CRUD) apenas para administradores autenticados.
+- **Verificação de Admin Robusta**: Checagem dupla — consulta à tabela `admin_users` no Supabase + variável de ambiente `NEXT_PUBLIC_ADMIN_EMAIL` como fallback.
+- **Catálogo Dinâmico**: A página principal agora busca produtos do Supabase em tempo real. Alterações feitas no Painel Admin refletem instantaneamente no catálogo sem necessidade de deploy.
+
+### 🟢 `HEAD` — Simulador de Parcela de Financiamento (Modal)
+- **Botão Discreto**: Ícone de calculadora na barra de ferramentas do catálogo, abrindo modal sem poluir o layout.
+- **Simulação Livre**: Campo de valor + seletor de parcelas (1x a 36x) com botões de incremento/decremento.
+- **Cálculo em Tempo Real**: Utiliza a mesma matriz de fatores bancários oficiais para precisão absoluta.
 
 ### 🟢 `HEAD` — Integração com Google Maps (Rotas)
 - **Traçar Rota Direta**: Adicionado um botão "Ver rota no Google Maps" dentro do card de detalhes de cada técnico.
@@ -154,4 +173,4 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
-*Última atualização registrada: 23 de Agosto de 2026.*
+*Última atualização registrada: 29 de Agosto de 2026.*

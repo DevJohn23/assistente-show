@@ -10,9 +10,11 @@ import {
   LogOut,
   Menu,
   X,
-  MapPin
+  MapPin,
+  Settings
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 interface SidebarProps {
   activeTab: string;
@@ -25,7 +27,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setActiveTab,
   opportunitiesCountToday 
 }) => {
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -180,6 +183,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
               );
             })}
           </nav>
+
+          {/* Admin Panel Button */}
+          {isAdmin && (
+            <div className="px-2.5 mt-1">
+              <button
+                onClick={() => router.push('/admin')}
+                title={!isExpanded ? 'Painel Admin' : undefined}
+                className="w-full flex items-center gap-3.5 px-3 py-3 rounded-xl font-medium text-sm transition-all duration-200 text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
+              >
+                <Settings className="w-5 h-5 shrink-0" />
+                <span className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap text-left ${
+                  isExpanded ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0'
+                }`}>
+                  Painel Admin
+                </span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* User Info & Logout Footer - Fixed height */}

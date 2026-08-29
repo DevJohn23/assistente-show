@@ -1,0 +1,114 @@
+na                                                                                       Coluna2                            Coluna1                            Coluna2
+PSO_BRASIL SAT RASTREADORES (FEIRA DE SANTANA - BA)                                      Kauanne Soares da Silva Januário   Lavinia de Oliveira Cavalcante                6
+SPOT_MTRACKER MOZARLANDIA (MOZARLANDIA - GO)                                                                                Mikaely da Silva Goncalves                    4
+ATA1110_JOAQUIM HELIO DA SILVA (SÃO PAULO -SP)                                           NEGATIVO                           Vitor Noberto Ferreira da Silva               0
+SPOT_MTRACKER CONFRESA (CONFRESA - MT)                                                                                      Luana Xavier de Pontes                        0
+                                                                                         NEGATIVO                           Maria Yonara Santos da Silva                  9
+PSO_GNM EXATA SERVICOS AUTOMOTIVOS LTDA (SAO PAULO-SP)                                   Lavinia de Oliveira Cavalcante     Kauanne Soares da Silva Januário              6
+ATA472_TALES SANTOS SALES (ITAJAI - SC)                                                  NEGATIVO                           Nathan Carvalho da Silva                      2
+ATA1117_RAFAEL PAULINO DA SILVA (SÃO PAULO-SP)                                           NEGATIVO                           Maria da Guia da Silva Goncalves              5
+PSO_INFRATEC SOLUCOES LTDA (JACAREI - SP)                                                Valderly Trajano de Morais         Myllena da Silva Santos                       2
+PSO_JUNIOR SILVANO FELISBERTO (TUBARAO - SC)                                             NEGATIVO                           Maria Heloisa Gomes Albino                    2
+ATA119_ALEXSANDRO CARDOSO DA SILVA (MONTE MOR - SP)                                      NEGATIVO                           Valderly Trajano de Morais                   10
+PSO_IMPACTO SERVICOS AUTOMOTIVOS LTDA (GUARULHOS - SP)                                   Maria da Guia da Silva Goncalves
+PSO_MARTA MARIA BATISTA LOPES DOS SANTOS (LINS - SP)                                     Maria Yonara Santos da Silva
+ATA_PEDRO PAULO DA FONSECA BASTOS (FEIRA DE SANTANA - BA)
+PSO_FRANKLIN CLAUDIO DA SILVA FREITAS (SÃO JOSE DO RIBAMAR-MA)                           Valderly Trajano de Morais
+PSO_CONTROL (CAMPINAS - SP)
+SPOT_ANB TECNOLOGIA (BARRETOS - SP)                                                      NEGATIVO
+PSO_KR CRONOTACOGRAFOS (GUARULHOS - SP)                                                  Nathan Carvalho da Silva
+PSO_MEGA TEC COMERCIO DE INSTRUMENTOS DE PRECISAO LTDA (OSASCO - SP)                     Nathan Carvalho da Silva
+PSO_TORK CRONOTACOGRAFOS (SAO PAULO - SP)                                                Maria da Guia da Silva Goncalves
+PSO_MARCO AURELIO FRIGIERI ME (RIBEIRAO PRETO - SP)                                      Lavinia de Oliveira Cavalcante
+ATA101_ITALO DO NASCIMENTO MENDES (SANTO ANDRE - SP)                                     NEGATIVO
+ATA1112_HALISON PEDRO DA SILVA (SÃO PAULO-SP)                                            NEGATIVO
+PSO_NOGUEIRA RASTREADORES E ELETRICA AUTOMOTIVA LTDA (PIRACICABA - SP)                   Lavinia de Oliveira Cavalcante
+PSO_AUTO PROTEGE BENS. SERVICOS E DISTRIBUIDORA LTDA (OSASCO - SP)                       NEGATIVO
+PSO_ANB TECNOLOGIA (CAMPINAS -SP)                                                        Maria Heloisa Gomes Albino
+ATA192_RUBENS OLIVEIRA (CAMPINAS – SP)                                                   NEGATIVO
+PSO_ ANDREY MICHALOVSKI LOCATELLI (VIDEIRA - SC)                                         Valderly Trajano de Morais
+PSO_MILENA DUTRA DE MATTOS (SAO LEOPOLDO - RS)                                           Valderly Trajano de Morais
+SPOT_EDLANGELO PAULINO DOS SANTOS (NOSSA SENHORA DO SOCORRO - SE)                        Lavinia de Oliveira Cavalcante
+PSO_AUTO ELETRICA BELCHIOR LTDA ME (NAVEGANTES - SC)                                     Valderly Trajano de Morais
+PSO_ADAIR ANTONIO FIDELES CHAGA - (CHAPECO - SC)                                         Valderly Trajano de Morais
+PSO_ELEN CRISTINE NUNES (DOIS VIZINHOS - PR)                                             Valderly Trajano de Morais
+ATA114_SINVAL LIMA (SAO PAULO - SP)                                                      NEGATIVO
+PSO_CARLOS RICARDO LIMA DE SOUZA (VOLTA REDONDA -RJ)
+PSO_JRF SERVICOS (LONDRINA - PR)                                                         Valderly Trajano de Morais
+PSO_ FILIAL - RASTERSUL (TOLEDO - PR)
+PSO_ALEXIA GOULART (CURITIBA - PR)                                                       Valderly Trajano de Morais
+PSO_DSF REPARACAO E MANUTENCAO LTDA (DUQUE DE CAXIAS -RJ)                                Maria da Guia da Silva Goncalves
+PSO_VANGUARD AUTOMOTIVOS (TERESINA - PI)                                                 Beatriz
+PSO_FERNANDA FREITAS SILAVA (UBERLANDIA-MG)
+ATA545_THIAGO RIGO FERRARO (GRAVATAÍ-RS)                                                 NEGATIVO
+ATA822_CARLOS EDUARDO CAVALCANTE DE LIMA (CURITIBA - PR)                                 NEGATIVO
+PSO_RICARDO BORGES DA COSTA (CURITIBA - PR)                                              Myllena da Silva Santos
+ATA216_EDSON BONFIM DOS SANTOS (DUQUE DE CAXIAS-RJ)                                      NEGATIVO
+PSO_MANUTENSAT RASTREAMENTO E MANUTENCAO DE VEICULOS LTDA (JABOATAO DOS GUARARAPES-PE)   Maria da Guia da Silva Goncalves
+PSO_ANGELO MAXIMO ANGELIM DE OLIVEIRA (CARUARU - PE)
+PSO_RAUL DE AZEVEDO GASPERI GARCIA (MANDAGUACU - PR)             Kauanne Soares da Silva Januário
+PSO_RASTREAR SAT (APARECIDA DE GOIÂNIA-GO)                       Maria Yonara Santos da Silva
+ATA218_ ARTHUR INACIO DA SILVA (DUQUE DE CAXIAS - RJ)            NEGATIVO
+PSO_RASTER SUL (CURITIBA - PR)
+PSO_START TEC RASTREADORES LTDA (CUIABA-MT)
+PSO_LD RASTREAMENTO (CAMPO GRANDE - MS)
+ATA_912 ALESSANDRO DE SOUZA CONCEICAO (ANANINDEUA)               NEGATIVO
+PSO_AUTO ELETRICA MORAIS (BRASILIA-DF)                           Marcelo
+ATA215_GILMAR DA APARECIDA IBA (SÃO JOÃO DE MERITI - RJ)         NEGATIVO
+PSO_SOLUTECH ASSISTENCIA TECNICA (CASTANHAL-PA)                  Lavinia de Oliveira Cavalcante
+PSO_RICARDO RASTREADORES LTDA (BETIM - MG)                       Mikaely da Silva Goncalves
+PSO_JAMIKLELSE LACERDA LOPES (GOIANIA-GO)                        Maria Yonara Santos da Silva
+PSO_RODRIGUES AUTO ELÉTRICA (VITÓRIA-ES)                         Nathan
+PSO_BH RASTREAR (BELO HORIZONTE - MG)                            Maria Heloisa Gomes Albino
+ATA314_CLAYTON FRANCISCO OLIVEIRA MORAES (BELO HORIZONTE - MG)   NEGATIVO
+PSO_ANDERLAN GONCALVES BRITO - FORSEG SOLUCOES (EUSEBIO-CE)      Maria da Guia da Silva Goncalves
+PSO_A.C COUTINHO SAT (LAURO DE FREITAS-BA)                       Kauanne Soares da Silva Januário
+ATA211_EDVALDO FERREIRA (CAXIAS-RJ)                              NEGATIVO
+SPOT_SUELTON ALVES LOPES DOS SANTOS (SENADOR CANEGO - GO)
+PSO_UNITY SERVICOS (DUQUE DE CAXIAS - RJ)                        NEGATIVO
+PSO_HEITOR DOS REIS ARAUJO (APARECIDA DE GOIANIA -GO)            Mikaely da Silva Goncalves
+ATA118_MAURICIO ALVES PERRUD (SAO BER                            NEGATIVO
+PSO_RTS RASTREAMENTO LTDA (SERRA - ES)                           Myllena da Silva Santos
+PSO_SCA SILVA (BARRA MANSA - RJ)
+PSO_EDSON CARLOS MARTINS (URUGUAIANA - RS)
+PSO_G.I. DOS SANTOS - RASTREADORES (FAZENDA RIO GRANDE - PR)
+PSO_TEC.SAT INST. AUTO. LTDA -ME (ARAQUARI - SC)
+PSO_WAGNER DAVI GOETTEMS (VIDEIRA - SC)
+PSO_PEDRO BROZEGHINI (CARIACICA - ES)
+PSO_APOLO AUTOMOTIVOS (SAO PAULO-SP)
+PSO_DIEGO DE OLIVEIRA SANTOS (CARAPICUIBA - SP)                  Maria Yonara Santos da Silva
+PSO_ERSAT SOLUÇÕES E RASTREAMENTOS                               Kauanne Soares da Silva Januário
+
+PSO_ALTO TIETE TRUCK CENTER LTDA (MOGI DAS CRUZES – SP)          Lavinia de Oliveira Cavalcante
+PSO_LUCAS BRESSA COMELLI (VOTORANTIM - SP)
+PSO_4 RODAS AUTO CENTER LTDA (JUIZ DE FORA - MG)                 Nathan
+PSO_APARECIDA MARIA DE CARVALHO RIBEIRO (BELO HORIZONTE - MG)
+PSO_LUANA BRESSAN DUARTE (ELOI MENDES - MG)                      Valderly Trajano de Morais
+PSO_BRENDA RENATA DA SILVA (CUIABA-MT)
+PSO_FERNANDO FERREIRA DE QUEIROZ (BARRA DO GARCAS - MT)
+PSO_RG RASTREAMENTO (SINOP - MT)
+PSO_SDTRACKERS LTDA (RONDONOPOLIS - MT)
+PSO_WESLEYJAN LACERDA LOPES (ANAPOLIS-GO)                        Maria Yonara Santos da Silva
+PSO_AUTOTECH SOLUCOES TECNOLOGICAS (PARAUAPEBAS-PA)
+PSO_DIOGO ROBERTO LOPES DOS SANTOS (FEIRA DE SANTANA - BA)       Maria Yonara Santos da Silva
+PSO_ELTON MACEDO SERVICOS (MACEIO-AL)                            Kauanne Soares da Silva Januário
+PSO_KESSYLA PEREIRA MARTINS RODRIGUES (SALVADOR-BA)               Kauanne Soares da Silva Januário
+PSO_LIMA RASTREADORES (VITORIA DA CONQUISTA - BA)                 Mikaely da Silva Goncalves
+PSO_LUNA NASCIMENTO DA SILVA (MANAUS-AM)
+PSO_MICHELLINE RAMOS DO NASCIMENTO (SAO CAITANO -PE)              maria yonara Santos da Silva
+PSO_THYSCIANE DE ALMEIDA (FORTALEZA - CE)                         Maria Yonara Santos da Silva
+PSO_AMIZAEL INSTALACOES (CAXIAS DO SUL - RS)
+SPOT_EVANDRO SOUZA MASCARENHAS (SÃO PAULO - SP)
+SPOT_STARTRACKCONECT (BAURU - SP)                                 Maria Yonara Santos da Silva
+SPOT_PAULO HENRIQUE DA SILVA DE SOUZA (BARREIRAS - BA)            Mikaely da Silva Goncalves
+SPOT_K.A.B AUTO ELETRICA DOURADO MS LTDA (DOURADOS - MS)
+SPOT_BRUNO HENRIQUE (TRES LAGOAS - MS)
+SPOT_GABRIEL FERREIRA (TRES LAGOAS - MS)
+SPOT_JULIANA CORREIA SANTOS (ITABUNA - BA)
+SPOT_M.J.L DA SILVA (MACAPÁ - AP)
+SPOT_BALSAS GPS RASTREAMENTO (BALSAS - MA)
+SPOT_TECHNOHALL ELETRICA (TIMOTEO - MG)
+SPOT_MAGNU RASTREAMENTO (BOA VISTA - RR)
+SPOT_MULTSAT COMERCIO E SERVICOS (CABO DE SANTO AGOSTINHO - PE)
+SPOT_THIAGO DA SILVA (ARAGUAINA - TO)
+

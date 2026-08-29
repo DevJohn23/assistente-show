@@ -35,6 +35,7 @@ import {
   updateQuoteTemplate,
   deleteQuoteTemplate,
 } from '@/lib/supabaseServices';
+import { supabase } from '@/lib/supabase';
 import { Sparkles } from 'lucide-react';
 
 export default function Home() {
@@ -60,7 +61,7 @@ export default function Home() {
   const [commissions, setCommissions] = useState<Commission[]>(INITIAL_COMMISSIONS);
   const [sellers, setSellers] = useState<string[]>(INITIAL_SELLERS);
   const [templates, setTemplates] = useState<QuoteTemplate[]>(INITIAL_TEMPLATES);
-  const [products] = useState(INITIAL_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [isDataLoading, setIsDataLoading] = useState(false);
 
   // Modal open triggers
@@ -81,17 +82,21 @@ export default function Home() {
 
     async function loadUserSupabaseData() {
       setIsDataLoading(true);
-      const [oppsData, commsData, sellersData, tplsData] = await Promise.all([
+      const [oppsData, commsData, sellersData, tplsData, productsData] = await Promise.all([
         fetchOpportunities(user!.id),
         fetchCommissions(user!.id),
         fetchSellers(user!.id),
         fetchQuoteTemplates(user!.id),
+        supabase.from('products').select('*')
       ]);
 
       setOpportunities(oppsData);
       setCommissions(commsData);
       setSellers(sellersData);
       setTemplates(tplsData);
+      if (productsData.data && productsData.data.length > 0) {
+        setProducts(productsData.data);
+      }
       setIsDataLoading(false);
     }
 

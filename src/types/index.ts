@@ -18,6 +18,19 @@ export interface CommercialRules {
   allow_financing: boolean;
 }
 
+export interface Tecnico {
+  id: number;
+  nome: string;
+  categoria: string;
+  tipo: string;
+  descricao: string;
+  telefone: string;
+  email: string;
+  lat: number;
+  lng: number;
+  vendedor_parceiro: string;
+}
+
 export interface Product {
   id: string;
   category_id?: string;
