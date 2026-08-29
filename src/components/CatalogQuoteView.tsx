@@ -305,16 +305,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   // Financing Calculator Modal
   const [showFinancingCalcModal, setShowFinancingCalcModal] = useState(false);
   const [calcValue, setCalcValue] = useState('');
-  const [calcInstallments, setCalcInstallments] = useState<number[]>([12, 24, 36]);
   const [calcCurrentN, setCalcCurrentN] = useState(12);
-  const addCalcInstallment = () => {
-    if (calcCurrentN >= 1 && calcCurrentN <= 36 && !calcInstallments.includes(calcCurrentN)) {
-      setCalcInstallments(prev => [...prev, calcCurrentN].sort((a, b) => a - b));
-    }
-  };
-  const removeCalcInstallment = (n: number) => {
-    setCalcInstallments(prev => prev.filter(x => x !== n));
-  };
   const calcNumericValue = parseFloat(calcValue.replace(/[^0-9,.]/g, '').replace(',', '.')) || 0;
 
   // Cart operations
@@ -1412,20 +1403,18 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               />
             </div>
 
-            {/* Parcelas: campo numérico livre com +/- e botão de adicionar */}
-            <div className="mb-4">
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Quantidade de Parcelas (até 36x)</label>
+            {/* Parcelas com +/- */}
+            <div className="mb-5">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Parcelas (1x a 36x)</label>
               <div className="flex items-center gap-2">
-                {/* Decrement */}
                 <button
                   type="button"
                   onClick={() => setCalcCurrentN(n => Math.max(1, n - 1))}
-                  className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-base flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
+                  className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
                 >
-                  <Minus className="w-3.5 h-3.5" />
+                  <Minus className="w-4 h-4" />
                 </button>
 
-                {/* Number input */}
                 <input
                   type="number"
                   min={1}
@@ -1435,62 +1424,30 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                     const v = Math.min(36, Math.max(1, parseInt(e.target.value) || 1));
                     setCalcCurrentN(v);
                   }}
-                  className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-center font-bold text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 font-mono transition-colors"
+                  className="flex-1 px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-base text-center font-bold text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 font-mono transition-colors"
                 />
 
-                {/* Increment */}
                 <button
                   type="button"
                   onClick={() => setCalcCurrentN(n => Math.min(36, n + 1))}
-                  className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-base flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
+                  className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                </button>
-
-                {/* Add to comparison */}
-                <button
-                  type="button"
-                  onClick={addCalcInstallment}
-                  disabled={calcInstallments.includes(calcCurrentN)}
-                  className="px-3 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 text-white text-xs font-bold transition-all shrink-0"
-                  title={calcInstallments.includes(calcCurrentN) ? 'Já adicionado' : 'Adicionar à simulação'}
-                >
-                  {calcInstallments.includes(calcCurrentN) ? 'Adicionado' : '+ Simular'}
+                  <Plus className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Results */}
-            {calcNumericValue > 0 && calcInstallments.length > 0 && (
-              <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 space-y-2">
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Simulação Comparativa</p>
-                {calcInstallments.map(n => {
-                  const res = calcularSimulacaoFinanciamento(calcNumericValue, 0, 0, n, TAXA_JUROS_MENSAL);
-                  return (
-                    <div key={n} className="flex items-center justify-between group">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => removeCalcInstallment(n)}
-                          className="opacity-0 group-hover:opacity-100 w-4 h-4 rounded-full bg-red-100 dark:bg-red-950 text-red-500 flex items-center justify-center transition-opacity hover:bg-red-200 dark:hover:bg-red-900"
-                          title="Remover"
-                        >
-                          <X className="w-2.5 h-2.5" />
-                        </button>
-                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{n}x</span>
-                      </div>
-                      <span className="text-sm font-bold text-sky-600 dark:text-sky-400 font-mono">
-                        R$ {formatCurrency(res.valorParcela)}/mês
-                      </span>
-                    </div>
-                  );
-                })}
-                <div className="pt-1.5 border-t border-slate-200 dark:border-slate-700/60 text-[9px] text-slate-300 dark:text-slate-600 text-right">
-                  Taxa 2,61% a.m. · TAC 3% · IOF incluso
-                </div>
+            {/* Resultado em tempo real */}
+            {calcNumericValue > 0 ? (
+              <div className="rounded-xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800/60 p-4 text-center">
+                <p className="text-[10px] font-semibold text-sky-500 uppercase tracking-wide mb-1">{calcCurrentN}x de</p>
+                <p className="text-2xl font-bold text-sky-600 dark:text-sky-400 font-mono">
+                  R$ {formatCurrency(calcularSimulacaoFinanciamento(calcNumericValue, 0, 0, calcCurrentN, TAXA_JUROS_MENSAL).valorParcela)}
+                  <span className="text-sm font-medium text-sky-500">/mês</span>
+                </p>
+                <p className="text-[9px] text-slate-400 dark:text-slate-600 mt-2">Taxa 2,61% a.m. · TAC 3% · IOF incluso</p>
               </div>
-            )}
-
-            {calcNumericValue === 0 && (
+            ) : (
               <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-200 dark:border-slate-800 p-4 text-center">
                 <p className="text-xs text-slate-400">Insira um valor para ver a simulação</p>
               </div>
