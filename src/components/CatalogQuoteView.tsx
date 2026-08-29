@@ -306,11 +306,14 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const [showFinancingCalcModal, setShowFinancingCalcModal] = useState(false);
   const [calcValue, setCalcValue] = useState('');
   const [calcInstallments, setCalcInstallments] = useState<number[]>([12, 24, 36]);
-  const CALC_CHIP_OPTIONS = [6, 10, 12, 18, 24, 30, 36];
-  const toggleCalcInstallment = (n: number) => {
-    setCalcInstallments(prev =>
-      prev.includes(n) ? prev.filter(x => x !== n) : [...prev, n].sort((a, b) => a - b)
-    );
+  const [calcCurrentN, setCalcCurrentN] = useState(12);
+  const addCalcInstallment = () => {
+    if (calcCurrentN >= 1 && calcCurrentN <= 36 && !calcInstallments.includes(calcCurrentN)) {
+      setCalcInstallments(prev => [...prev, calcCurrentN].sort((a, b) => a - b));
+    }
+  };
+  const removeCalcInstallment = (n: number) => {
+    setCalcInstallments(prev => prev.filter(x => x !== n));
   };
   const calcNumericValue = parseFloat(calcValue.replace(/[^0-9,.]/g, '').replace(',', '.')) || 0;
 
@@ -1409,38 +1412,72 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               />
             </div>
 
-            {/* Parcelas Chips */}
+            {/* Parcelas: campo numérico livre com +/- e botão de adicionar */}
             <div className="mb-4">
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Selecione as Parcelas</label>
-              <div className="flex flex-wrap gap-2">
-                {CALC_CHIP_OPTIONS.map(n => {
-                  const isActive = calcInstallments.includes(n);
-                  return (
-                    <button
-                      key={n}
-                      onClick={() => toggleCalcInstallment(n)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                        isActive
-                          ? 'bg-sky-600 text-white border-sky-500 shadow-sm shadow-sky-500/30'
-                          : 'bg-white dark:bg-slate-950 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-sky-400 hover:text-sky-500'
-                      }`}
-                    >
-                      {n}x
-                    </button>
-                  );
-                })}
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Quantidade de Parcelas (até 36x)</label>
+              <div className="flex items-center gap-2">
+                {/* Decrement */}
+                <button
+                  type="button"
+                  onClick={() => setCalcCurrentN(n => Math.max(1, n - 1))}
+                  className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-base flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
+                >
+                  <Minus className="w-3.5 h-3.5" />
+                </button>
+
+                {/* Number input */}
+                <input
+                  type="number"
+                  min={1}
+                  max={36}
+                  value={calcCurrentN}
+                  onChange={(e) => {
+                    const v = Math.min(36, Math.max(1, parseInt(e.target.value) || 1));
+                    setCalcCurrentN(v);
+                  }}
+                  className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-center font-bold text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 font-mono transition-colors"
+                />
+
+                {/* Increment */}
+                <button
+                  type="button"
+                  onClick={() => setCalcCurrentN(n => Math.min(36, n + 1))}
+                  className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-base flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+
+                {/* Add to comparison */}
+                <button
+                  type="button"
+                  onClick={addCalcInstallment}
+                  disabled={calcInstallments.includes(calcCurrentN)}
+                  className="px-3 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 text-white text-xs font-bold transition-all shrink-0"
+                  title={calcInstallments.includes(calcCurrentN) ? 'Já adicionado' : 'Adicionar à simulação'}
+                >
+                  {calcInstallments.includes(calcCurrentN) ? 'Adicionado' : '+ Simular'}
+                </button>
               </div>
             </div>
 
             {/* Results */}
             {calcNumericValue > 0 && calcInstallments.length > 0 && (
               <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 space-y-2">
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Simulação</p>
+                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Simulação Comparativa</p>
                 {calcInstallments.map(n => {
                   const res = calcularSimulacaoFinanciamento(calcNumericValue, 0, 0, n, TAXA_JUROS_MENSAL);
                   return (
-                    <div key={n} className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{n}x</span>
+                    <div key={n} className="flex items-center justify-between group">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => removeCalcInstallment(n)}
+                          className="opacity-0 group-hover:opacity-100 w-4 h-4 rounded-full bg-red-100 dark:bg-red-950 text-red-500 flex items-center justify-center transition-opacity hover:bg-red-200 dark:hover:bg-red-900"
+                          title="Remover"
+                        >
+                          <X className="w-2.5 h-2.5" />
+                        </button>
+                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{n}x</span>
+                      </div>
                       <span className="text-sm font-bold text-sky-600 dark:text-sky-400 font-mono">
                         R$ {formatCurrency(res.valorParcela)}/mês
                       </span>
