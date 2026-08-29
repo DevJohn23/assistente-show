@@ -302,6 +302,17 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const [editingTemplateName, setEditingTemplateName] = useState('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [copiedNotification, setCopiedNotification] = useState(false);
+  // Financing Calculator Modal
+  const [showFinancingCalcModal, setShowFinancingCalcModal] = useState(false);
+  const [calcValue, setCalcValue] = useState('');
+  const [calcInstallments, setCalcInstallments] = useState<number[]>([12, 24, 36]);
+  const CALC_CHIP_OPTIONS = [6, 10, 12, 18, 24, 30, 36];
+  const toggleCalcInstallment = (n: number) => {
+    setCalcInstallments(prev =>
+      prev.includes(n) ? prev.filter(x => x !== n) : [...prev, n].sort((a, b) => a - b)
+    );
+  };
+  const calcNumericValue = parseFloat(calcValue.replace(/[^0-9,.]/g, '').replace(',', '.')) || 0;
 
   // Cart operations
   const toggleCartItem = (product: Product) => {
@@ -567,6 +578,16 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                     </button>
                   ))}
                 </div>
+
+                {/* Financing Calculator Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowFinancingCalcModal(true)}
+                  className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-sky-100 dark:hover:bg-sky-900/40 border border-slate-200 dark:border-slate-800 hover:border-sky-400 dark:hover:border-sky-600 text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 transition-all shrink-0"
+                  title="Calculadora de Financiamento"
+                >
+                  <Calculator className="w-4 h-4" />
+                </button>
 
                 {/* Fixed 3 dots button for Kit Management (Pinned at far right) */}
                 <button
@@ -1349,6 +1370,94 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                 Concluir
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* Financing Calculator Modal */}
+      {showFinancingCalcModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 w-full max-w-sm shadow-2xl relative">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-sky-600/20 flex items-center justify-center">
+                  <Calculator className="w-4 h-4 text-sky-500" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white font-outfit">Simulador de Financiamento</h3>
+                  <p className="text-[10px] text-slate-400">Calcule parcelas para qualquer valor</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowFinancingCalcModal(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Value Input */}
+            <div className="mb-4">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Valor do Equipamento (R$)</label>
+              <input
+                type="text"
+                placeholder="Ex: 2.500,00"
+                value={calcValue}
+                onChange={(e) => setCalcValue(e.target.value)}
+                className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white font-mono placeholder-slate-400 focus:outline-none focus:border-sky-500 transition-colors"
+                autoFocus
+              />
+            </div>
+
+            {/* Parcelas Chips */}
+            <div className="mb-4">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Selecione as Parcelas</label>
+              <div className="flex flex-wrap gap-2">
+                {CALC_CHIP_OPTIONS.map(n => {
+                  const isActive = calcInstallments.includes(n);
+                  return (
+                    <button
+                      key={n}
+                      onClick={() => toggleCalcInstallment(n)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                        isActive
+                          ? 'bg-sky-600 text-white border-sky-500 shadow-sm shadow-sky-500/30'
+                          : 'bg-white dark:bg-slate-950 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-sky-400 hover:text-sky-500'
+                      }`}
+                    >
+                      {n}x
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Results */}
+            {calcNumericValue > 0 && calcInstallments.length > 0 && (
+              <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 space-y-2">
+                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Simulação</p>
+                {calcInstallments.map(n => {
+                  const res = calcularSimulacaoFinanciamento(calcNumericValue, 0, 0, n, TAXA_JUROS_MENSAL);
+                  return (
+                    <div key={n} className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{n}x</span>
+                      <span className="text-sm font-bold text-sky-600 dark:text-sky-400 font-mono">
+                        R$ {formatCurrency(res.valorParcela)}/mês
+                      </span>
+                    </div>
+                  );
+                })}
+                <div className="pt-1.5 border-t border-slate-200 dark:border-slate-700/60 text-[9px] text-slate-300 dark:text-slate-600 text-right">
+                  Taxa 2,61% a.m. · TAC 3% · IOF incluso
+                </div>
+              </div>
+            )}
+
+            {calcNumericValue === 0 && (
+              <div className="rounded-xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-200 dark:border-slate-800 p-4 text-center">
+                <p className="text-xs text-slate-400">Insira um valor para ver a simulação</p>
+              </div>
+            )}
           </div>
         </div>
       )}
