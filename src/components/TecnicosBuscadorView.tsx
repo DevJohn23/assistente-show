@@ -63,6 +63,10 @@ export const TecnicosBuscadorView: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const justSelectedRef = useRef(false);
 
+  const [tecnicoNameQuery, setTecnicoNameQuery] = useState('');
+  const [enderecoSelecionado, setEnderecoSelecionado] = useState('');
+  const [loadingEndereco, setLoadingEndereco] = useState(false);
+
   const [tecnicos, setTecnicos] = useState<Tecnico[]>([]);
 
   useEffect(() => {
@@ -75,6 +79,29 @@ export const TecnicosBuscadorView: React.FC = () => {
     };
     fetchTecnicos();
   }, []);
+
+  useEffect(() => {
+    if (selectedTecnico) {
+      setLoadingEndereco(true);
+      setEnderecoSelecionado('');
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${selectedTecnico.lat}&lon=${selectedTecnico.lng}&format=json`, {
+        headers: { 'Accept-Language': 'pt-BR' }
+      })
+      .then(res => res.json())
+      .then(data => {
+        setEnderecoSelecionado(data.display_name || 'Endereço não encontrado');
+      })
+      .catch(() => setEnderecoSelecionado('Falha ao buscar endereço'))
+      .finally(() => setLoadingEndereco(false));
+    }
+  }, [selectedTecnico]);
+
+  const filteredTecnicos = tecnicoNameQuery.trim() === '' ? [] : tecnicos.filter(t => 
+    t.nome.toLowerCase().includes(tecnicoNameQuery.toLowerCase()) ||
+    (t.categoria || '').toLowerCase().includes(tecnicoNameQuery.toLowerCase()) ||
+    (t.vendedor_parceiro || '').toLowerCase().includes(tecnicoNameQuery.toLowerCase())
+  );
+
   const fetchSuggestions = useCallback(async (q: string) => {
     if (q.length < 4) { setSuggestions([]); return; }
     setLoadingSuggestions(true);
@@ -303,6 +330,42 @@ export const TecnicosBuscadorView: React.FC = () => {
                   ou busque um endereço para encontrar os 5 técnicos mais próximos
                 </p>
               </div>
+              {/* Busca por Nome do Técnico */}
+              <div className="bg-slate-800/40 rounded-2xl border border-slate-700/40 p-4">
+                <p className="text-xs font-semibold text-slate-400 mb-3 uppercase tracking-wider">Localizar Técnico Específico</p>
+                <div className="relative mb-3">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={tecnicoNameQuery}
+                    onChange={(e) => setTecnicoNameQuery(e.target.value)}
+                    placeholder="Nome, categoria ou parceiro..."
+                    className="w-full pl-9 pr-3 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all shadow-sm"
+                  />
+                </div>
+                {tecnicoNameQuery.trim() !== '' && (
+                  <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+                    {filteredTecnicos.length === 0 ? (
+                      <p className="text-xs text-slate-500 text-center py-2">Nenhum técnico encontrado.</p>
+                    ) : (
+                      filteredTecnicos.map(t => (
+                        <button key={t.id} onClick={() => {
+                          setSelectedTecnico(t as TecnicoComDistancia);
+                          setMapCenter([t.lat, t.lng]);
+                          setMapZoom(13);
+                          setTecnicoNameQuery('');
+                        }} className="text-left px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors bg-slate-800/60 border border-slate-700/60 flex items-center justify-between group">
+                          <div className="min-w-0">
+                            <p className="font-semibold truncate">{t.nome.replace(/^(ATA\d+_|PSO_|SPOT_|PRP_BOSCH_|PRP_)/, '')}</p>
+                            <p className="text-[10px] text-slate-400 truncate mt-0.5">{t.categoria} {t.tipo ? `• ${t.tipo}` : ''}</p>
+                          </div>
+                          <MapPin className="w-3.5 h-3.5 text-sky-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-2" />
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
               {/* Legenda de categorias */}
               <div className="bg-slate-800/40 rounded-2xl border border-slate-700/40 p-4">
                 <p className="text-xs font-semibold text-slate-400 mb-3 uppercase tracking-wider">Legenda</p>
@@ -352,6 +415,20 @@ export const TecnicosBuscadorView: React.FC = () => {
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-violet-600/30 text-violet-400 border-violet-600/40 flex items-center gap-1">
                       <Users className="w-3 h-3" /> Parceiro: {selectedTecnico.vendedor_parceiro}
                     </span>
+                  )}
+                </div>
+                {/* Endereço Dinâmico */}
+                <div className="mb-4 text-xs">
+                  {loadingEndereco ? (
+                    <div className="flex flex-col gap-1.5 animate-pulse">
+                      <div className="h-3.5 bg-slate-600/30 rounded w-full"></div>
+                      <div className="h-3.5 bg-slate-600/30 rounded w-2/3"></div>
+                    </div>
+                  ) : (
+                    <p className="text-slate-300 leading-relaxed font-medium">
+                      <MapPin className="w-3.5 h-3.5 inline text-slate-400 mr-1.5 mb-0.5" />
+                      {enderecoSelecionado}
+                    </p>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -432,8 +509,24 @@ export const TecnicosBuscadorView: React.FC = () => {
                 </div>
 
                 {isSelected && (
-                  <div className="mt-3 pt-3 border-t border-slate-700/60 space-y-2">
-                    {t.telefone && (
+                  <div className="mt-3 pt-3 border-t border-slate-700/60 space-y-3">
+                    {/* Endereço Dinâmico */}
+                    <div className="text-xs">
+                      {loadingEndereco ? (
+                        <div className="flex flex-col gap-1.5 animate-pulse">
+                          <div className="h-3.5 bg-slate-600/30 rounded w-full"></div>
+                          <div className="h-3.5 bg-slate-600/30 rounded w-2/3"></div>
+                        </div>
+                      ) : (
+                        <p className="text-slate-300 leading-relaxed font-medium">
+                          <MapPin className="w-3.5 h-3.5 inline text-slate-400 mr-1.5 mb-0.5" />
+                          {enderecoSelecionado}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      {t.telefone && (
                       <a
                         href={waHref(t.telefone)}
                         target="_blank"
@@ -468,7 +561,8 @@ export const TecnicosBuscadorView: React.FC = () => {
                       <span className="truncate">Ver rota no Google Maps</span>
                     </a>
                   </div>
-                )}
+                </div>
+              )}
                 {!isSelected && (t.telefone || t.email) && (
                   <p className="text-[10px] text-slate-500 mt-1">Clique para ver contato</p>
                 )}
