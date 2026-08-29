@@ -114,7 +114,15 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const [payCard, setPayCard] = useState(true);
   const [cardInstallments, setCardInstallments] = useState(12);
   const [payFinancing, setPayFinancing] = useState(false);
-  const [financingInstallments, setFinancingInstallments] = useState(36);
+  const [financingInstallments, setFinancingInstallments] = useState<number[]>([36]);
+
+  const FINANCING_CHIP_OPTIONS = [10, 12, 18, 24, 30, 36];
+
+  const toggleFinancingInstallment = (n: number) => {
+    setFinancingInstallments(prev =>
+      prev.includes(n) ? prev.filter(x => x !== n) : [...prev, n].sort((a, b) => a - b)
+    );
+  };
 
   // Sync state to localStorage
   React.useEffect(() => {
@@ -371,15 +379,13 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const discountAmount = (subtotalWithMarkup * (discountPercent || 0)) / 100;
   const finalEquipmentPrice = Math.max(0, subtotalWithMarkup - discountAmount);
 
-  // Financing simulation — uses finalEquipmentPrice as valorVenda (already includes markup);
-  // entrada=0 and desconto=0 because discount is already factored into finalEquipmentPrice.
-  const financingResult = calcularSimulacaoFinanciamento(
-    finalEquipmentPrice,
-    0,
-    0,
-    financingInstallments,
-    TAXA_JUROS_MENSAL
-  );
+  // Financing simulation — multiple installment options
+  const financingResults = financingInstallments.map(n => ({
+    n,
+    result: calcularSimulacaoFinanciamento(finalEquipmentPrice, 0, 0, n, TAXA_JUROS_MENSAL)
+  }));
+  // Keep single result for legacy use (first selected or 36x)
+  const financingResult = financingResults[0]?.result ?? calcularSimulacaoFinanciamento(finalEquipmentPrice, 0, 0, 36, TAXA_JUROS_MENSAL);
 
   // Client name for proposal greeting with localStorage persistence
   const [clientName, setClientName] = useState<string>(() => {
@@ -448,9 +454,11 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
       msg += `• *Cartão Sem Juros:* ${cardInstallments}x de R$ ${formatCurrency(cardVal)}\n`;
     }
 
-    if (payFinancing && financingInstallments > 0) {
-      const fResult = calcularSimulacaoFinanciamento(finalEquipmentPrice, 0, 0, financingInstallments, TAXA_JUROS_MENSAL);
-      msg += `• *Financiamento:* ${financingInstallments}x de R$ ${formatCurrency(fResult.valorParcela)}\n`;
+    if (payFinancing && financingInstallments.length > 0) {
+      financingInstallments.forEach(n => {
+        const fResult = calcularSimulacaoFinanciamento(finalEquipmentPrice, 0, 0, n, TAXA_JUROS_MENSAL);
+        msg += `• *Financiamento ${n}x:* R$ ${formatCurrency(fResult.valorParcela)}/mês\n`;
+      });
     }
 
     msg += `\n✨ *Benefícios Incluídos:*\n`;
@@ -1036,36 +1044,44 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                     <Landmark className="w-3.5 h-3.5 text-blue-500" />
                     <span className="font-medium text-slate-800 dark:text-slate-200">Financiamento</span>
                   </label>
-
-                  {payFinancing && (
-                    <select
-                      value={financingInstallments}
-                      onChange={(e) => setFinancingInstallments(parseInt(e.target.value))}
-                      className="px-2 py-0.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white font-mono"
-                    >
-                      {Array.from({ length: 36 }, (_, idx) => idx + 1).map((n) => (
-                        <option key={n} value={n}>{n}x</option>
-                      ))}
-                    </select>
-                  )}
                 </div>
+
                 {payFinancing && (
-                  <div className="mt-1.5 pt-1.5 border-t border-slate-200 dark:border-slate-800/60 space-y-1">
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-slate-500 dark:text-slate-400 font-medium">Parcela Estimada:</span>
-                      <span className="font-bold text-sky-600 dark:text-sky-400 font-mono">
-                        {financingInstallments}x de R$ {formatCurrency(financingResult.valorParcela)}
-                      </span>
+                  <div className="mt-2 space-y-2">
+                    {/* Chips de parcelas */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {FINANCING_CHIP_OPTIONS.map(n => {
+                        const isActive = financingInstallments.includes(n);
+                        return (
+                          <button
+                            key={n}
+                            onClick={() => toggleFinancingInstallment(n)}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all ${
+                              isActive
+                                ? 'bg-sky-600 text-white border-sky-500 shadow-sm shadow-sky-500/30'
+                                : 'bg-white dark:bg-slate-950 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-sky-400 hover:text-sky-500'
+                            }`}
+                          >
+                            {n}x
+                          </button>
+                        );
+                      })}
                     </div>
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
-                      <span>Crédito Total (c/ TAC+IOF):</span>
-                      <span className="font-mono">R$ {formatCurrency(financingResult.valorTotalCredito)}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
-                      <span>Total da Dívida:</span>
-                      <span className="font-mono">R$ {formatCurrency(financingResult.valorTotalDivida)}</span>
-                    </div>
-                    <div className="text-[9px] text-slate-300 dark:text-slate-600 text-right">Taxa 2,61% a.m. · TAC 3% · IOF</div>
+
+                    {/* Simulações de cada parcela selecionada */}
+                    {financingResults.length > 0 && (
+                      <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800/60 space-y-1.5">
+                        {financingResults.map(({ n, result }) => (
+                          <div key={n} className="flex items-center justify-between text-[11px]">
+                            <span className="text-slate-500 dark:text-slate-400 font-medium">{n}x:</span>
+                            <span className="font-bold text-sky-600 dark:text-sky-400 font-mono">
+                              R$ {formatCurrency(result.valorParcela)}/mês
+                            </span>
+                          </div>
+                        ))}
+                        <div className="text-[9px] text-slate-300 dark:text-slate-600 text-right">Taxa 2,61% a.m. · TAC 3% · IOF</div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
