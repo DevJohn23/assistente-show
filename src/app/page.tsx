@@ -18,7 +18,7 @@ import {
   INITIAL_TEMPLATES,
   INITIAL_SELLERS
 } from '@/lib/mockData';
-import { Opportunity, Commission, QuoteTemplate } from '@/types';
+import { Opportunity, Commission, QuoteTemplate, Product } from '@/types';
 import {
   fetchOpportunities,
   createOpportunity,
