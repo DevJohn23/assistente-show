@@ -95,21 +95,40 @@ export default function AdminView() {
     e.preventDefault();
     if (!editingProduct) return;
 
-    if (editingProduct.id) {
-      // Update
-      await supabase.from('products').update(editingProduct).eq('id', editingProduct.id);
-    } else {
-      // Insert
-      await supabase.from('products').insert([editingProduct]);
+    try {
+      if (editingProduct.id) {
+        // Update
+        const { error } = await supabase.from('products').update(editingProduct).eq('id', editingProduct.id);
+        if (error) throw error;
+      } else {
+        // Insert (gerando ID único e garantindo categoria)
+        const newProduct = {
+          ...editingProduct,
+          id: `prod-${Date.now()}`,
+          category_id: editingProduct.category_id || 'cat-1',
+          is_active: editingProduct.is_active ?? true,
+          default_price: editingProduct.default_price || 0,
+          monthly_fee: editingProduct.monthly_fee || 0,
+        };
+        const { error } = await supabase.from('products').insert([newProduct]);
+        if (error) throw error;
+      }
+      setIsProductModalOpen(false);
+      fetchData();
+    } catch (err: any) {
+      console.error('Erro ao salvar produto:', err);
+      alert('Erro ao salvar produto no Supabase: ' + (err.message || 'Verifique a conexão ou permissões.'));
     }
-    setIsProductModalOpen(false);
-    fetchData();
   };
 
   const handleDeleteProduct = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir este produto?')) {
-      await supabase.from('products').delete().eq('id', id);
-      fetchData();
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) {
+        alert('Erro ao excluir produto: ' + error.message);
+      } else {
+        fetchData();
+      }
     }
   };
 
@@ -118,21 +137,33 @@ export default function AdminView() {
     e.preventDefault();
     if (!editingTecnico) return;
 
-    if (editingTecnico.id) {
-      // Update
-      await supabase.from('tecnicos').update(editingTecnico).eq('id', editingTecnico.id);
-    } else {
-      // Insert
-      await supabase.from('tecnicos').insert([editingTecnico]);
+    try {
+      if (editingTecnico.id) {
+        // Update
+        const { error } = await supabase.from('tecnicos').update(editingTecnico).eq('id', editingTecnico.id);
+        if (error) throw error;
+      } else {
+        // Insert (omitindo ID para o SERIAL do Postgres gerar automaticamente)
+        const { id, ...tecnicoData } = editingTecnico;
+        const { error } = await supabase.from('tecnicos').insert([tecnicoData]);
+        if (error) throw error;
+      }
+      setIsTecnicoModalOpen(false);
+      fetchData();
+    } catch (err: any) {
+      console.error('Erro ao salvar técnico:', err);
+      alert('Erro ao salvar técnico no Supabase: ' + (err.message || 'Verifique a conexão ou permissões.'));
     }
-    setIsTecnicoModalOpen(false);
-    fetchData();
   };
 
   const handleDeleteTecnico = async (id: number) => {
     if (confirm('Tem certeza que deseja excluir este técnico?')) {
-      await supabase.from('tecnicos').delete().eq('id', id);
-      fetchData();
+      const { error } = await supabase.from('tecnicos').delete().eq('id', id);
+      if (error) {
+        alert('Erro ao excluir técnico: ' + error.message);
+      } else {
+        fetchData();
+      }
     }
   };
 
@@ -208,7 +239,7 @@ export default function AdminView() {
                   <h2 className="text-lg font-bold">Gestão de Produtos</h2>
                   <button
                     onClick={() => {
-                      setEditingProduct({ is_active: true, commercial_rules: { allow_pix: true, allow_boleto: true, allow_card: true, allow_financing: true, max_boleto_installments: 3, max_card_installments: 12 } });
+                      setEditingProduct({ category_id: 'cat-1', is_active: true, commercial_rules: { allow_pix: true, allow_boleto: true, allow_card: true, allow_financing: true, max_boleto_installments: 3, max_card_installments: 12 } });
                       setIsProductModalOpen(true);
                     }}
                     className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded-xl transition-colors"
@@ -353,8 +384,21 @@ export default function AdminView() {
             <div className="p-4 overflow-y-auto flex-1">
               <form id="productForm" onSubmit={handleSaveProduct} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold mb-1">Nome</label>
+                  <label className="block text-xs font-semibold mb-1">Nome do Produto</label>
                   <input type="text" value={editingProduct.name || ''} onChange={e => setEditingProduct({...editingProduct, name: e.target.value})} className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" required />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Categoria no Catálogo</label>
+                  <select
+                    value={editingProduct.category_id || 'cat-1'}
+                    onChange={e => setEditingProduct({...editingProduct, category_id: e.target.value})}
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium"
+                  >
+                    <option value="cat-1">Equipamentos Principais (Rastreadores / Dashcams)</option>
+                    <option value="cat-2">Acessórios & Sensores</option>
+                    <option value="cat-3">Iscas de Carga (Descartáveis / Retornáveis)</option>
+                    <option value="cat-4">Serviços & Licenças</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1">Descrição</label>

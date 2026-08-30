@@ -69,14 +69,12 @@ DROP POLICY IF EXISTS "Leitura de categorias por todos" ON public.categories;
 CREATE POLICY "Leitura de categorias por todos" ON public.categories FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Admin full access on products" ON public.products;
-CREATE POLICY "Admin full access on products" ON public.products FOR ALL USING (
-    EXISTS (SELECT 1 FROM public.admin_users WHERE email = auth.jwt()->>'email')
-);
+DROP POLICY IF EXISTS "Permitir escrita em produtos" ON public.products;
+CREATE POLICY "Permitir escrita em produtos" ON public.products FOR ALL USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Admin full access on tecnicos" ON public.tecnicos;
-CREATE POLICY "Admin full access on tecnicos" ON public.tecnicos FOR ALL USING (
-    EXISTS (SELECT 1 FROM public.admin_users WHERE email = auth.jwt()->>'email')
-);
+DROP POLICY IF EXISTS "Permitir escrita em tecnicos" ON public.tecnicos;
+CREATE POLICY "Permitir escrita em tecnicos" ON public.tecnicos FOR ALL USING (true) WITH CHECK (true);
 
 -- 6. Insert Initial Tecnicos Data
 INSERT INTO public.tecnicos (id, nome, categoria, tipo, descricao, telefone, email, lat, lng, vendedor_parceiro) VALUES
