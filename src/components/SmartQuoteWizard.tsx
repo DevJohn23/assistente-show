@@ -37,24 +37,24 @@ const formatCurrency = (val: number) => {
 };
 
 // Definição visual dos implementos por categoria de veículo
-const IMPLEMENT_OPTIONS: Record<string, { value: ImplementType; label: string; desc: string; icon: React.ReactNode }[]> = {
+const IMPLEMENT_OPTIONS: Record<string, { value: ImplementType; label: string; icon: React.ReactNode }[]> = {
   tractor: [
-    { value: 'box_dry', label: 'Baú Seco', desc: 'Carga seca, embalada', icon: <Box className="w-4 h-4" /> },
-    { value: 'box_refrigerated', label: 'Baú Refrigerado', desc: 'Frigorífico / Perecíveis', icon: <Snowflake className="w-4 h-4" /> },
-    { value: 'sider', label: 'Sider (Lonado)', desc: 'Lona lateral retrátil', icon: <RectangleHorizontal className="w-4 h-4" /> },
-    { value: 'tank', label: 'Tanque', desc: 'Combustível, Químico', icon: <Fuel className="w-4 h-4" /> },
-    { value: 'bulk', label: 'Graneleiro', desc: 'Grãos, Caçamba', icon: <Wheat className="w-4 h-4" /> },
-    { value: 'flatbed', label: 'Prancha', desc: 'Plataforma / Cegonha', icon: <RectangleHorizontal className="w-4 h-4" /> },
-    { value: 'container', label: 'Container', desc: 'Container marítimo', icon: <Container className="w-4 h-4" /> },
+    { value: 'box_dry', label: 'Baú Seco', icon: <Box className="w-4 h-4" /> },
+    { value: 'box_refrigerated', label: 'Baú Refrigerado', icon: <Snowflake className="w-4 h-4" /> },
+    { value: 'sider', label: 'Sider', icon: <RectangleHorizontal className="w-4 h-4" /> },
+    { value: 'tank', label: 'Tanque', icon: <Fuel className="w-4 h-4" /> },
+    { value: 'bulk', label: 'Graneleiro', icon: <Wheat className="w-4 h-4" /> },
+    { value: 'flatbed', label: 'Prancha', icon: <RectangleHorizontal className="w-4 h-4" /> },
+    { value: 'container', label: 'Container', icon: <Container className="w-4 h-4" /> },
   ],
   truck_mono: [
-    { value: 'box_dry', label: 'Baú Seco', desc: 'Carga seca comum', icon: <Box className="w-4 h-4" /> },
-    { value: 'box_refrigerated', label: 'Baú Refrigerado', desc: 'Frigorífico / Perecíveis', icon: <Snowflake className="w-4 h-4" /> },
+    { value: 'box_dry', label: 'Baú Seco', icon: <Box className="w-4 h-4" /> },
+    { value: 'box_refrigerated', label: 'Baú Refrigerado', icon: <Snowflake className="w-4 h-4" /> },
   ],
   van_utilitarian: [
-    { value: 'van_box', label: 'Van Baú', desc: 'Sprinter, Master, Ducato', icon: <Car className="w-4 h-4" /> },
-    { value: 'van_fiorino', label: 'Fiorino / Kangoo', desc: 'Pequeno utilitário', icon: <Car className="w-4 h-4" /> },
-    { value: 'van_hr_bongo', label: 'HR / Bongo (Baú)', desc: 'Utilitário com baú', icon: <Truck className="w-4 h-4" /> },
+    { value: 'van_box', label: 'Van Baú', icon: <Car className="w-4 h-4" /> },
+    { value: 'van_fiorino', label: 'Fiorino / Kangoo', icon: <Car className="w-4 h-4" /> },
+    { value: 'van_hr_bongo', label: 'HR / Bongo', icon: <Truck className="w-4 h-4" /> },
   ],
 };
 
@@ -238,21 +238,18 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                   key={opt.value}
                   type="button"
                   onClick={() => handleSelectImplement(opt.value)}
-                  className={`p-2.5 rounded-xl border text-left transition-all ${
+                  className={`p-2.5 rounded-xl border text-left transition-all flex items-center gap-2 ${
                     config.implementType === opt.value
                       ? 'bg-amber-500/10 border-amber-500/50 shadow-md text-white'
                       : 'bg-slate-900/40 border-slate-800/80 text-slate-300 hover:border-slate-700'
                   }`}
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className={`p-1.5 rounded-lg shrink-0 ${
-                      config.implementType === opt.value ? 'bg-amber-500 text-white' : 'bg-slate-800 text-slate-400'
-                    }`}>
-                      {opt.icon}
-                    </div>
-                    <span className="font-bold text-[11px] font-outfit leading-tight">{opt.label}</span>
+                  <div className={`p-1.5 rounded-lg shrink-0 ${
+                    config.implementType === opt.value ? 'bg-amber-500 text-white' : 'bg-slate-800 text-slate-400'
+                  }`}>
+                    {opt.icon}
                   </div>
-                  <p className="text-[10px] text-slate-500 pl-8 leading-snug">{opt.desc}</p>
+                  <span className="font-bold text-[11px] font-outfit leading-tight">{opt.label}</span>
                 </button>
               ))}
             </div>
@@ -263,7 +260,6 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <Sliders className="w-3.5 h-3.5 text-emerald-400" />
               3. Ajuste Fino
-              <span className="text-[9px] font-normal text-slate-500 ml-1">(auto-preenchido pelo implemento)</span>
             </h3>
 
             {/* Opções para CAMINHÃO MONOBLOCO */}
