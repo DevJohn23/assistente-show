@@ -4,7 +4,9 @@ import React, { useState, useMemo } from 'react';
 import { Product } from '@/types';
 import {
   SmartQuoteConfig,
+  ImplementType,
   getRecommendedProducts,
+  getDefaultsForImplement,
 } from '@/lib/smartQuoteRules';
 import {
   Truck,
@@ -16,6 +18,12 @@ import {
   CheckCircle2,
   Sliders,
   Sparkles,
+  Container,
+  Snowflake,
+  Box,
+  Fuel,
+  Wheat,
+  RectangleHorizontal,
 } from 'lucide-react';
 
 interface SmartQuoteWizardProps {
@@ -28,6 +36,28 @@ const formatCurrency = (val: number) => {
   return (val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
+// Definição visual dos implementos por categoria de veículo
+const IMPLEMENT_OPTIONS: Record<string, { value: ImplementType; label: string; desc: string; icon: React.ReactNode }[]> = {
+  tractor: [
+    { value: 'box_dry', label: 'Baú Seco', desc: 'Carga seca, embalada', icon: <Box className="w-4 h-4" /> },
+    { value: 'box_refrigerated', label: 'Baú Refrigerado', desc: 'Frigorífico / Perecíveis', icon: <Snowflake className="w-4 h-4" /> },
+    { value: 'sider', label: 'Sider (Lonado)', desc: 'Lona lateral retrátil', icon: <RectangleHorizontal className="w-4 h-4" /> },
+    { value: 'tank', label: 'Tanque', desc: 'Combustível, Químico', icon: <Fuel className="w-4 h-4" /> },
+    { value: 'bulk', label: 'Graneleiro', desc: 'Grãos, Caçamba', icon: <Wheat className="w-4 h-4" /> },
+    { value: 'flatbed', label: 'Prancha', desc: 'Plataforma / Cegonha', icon: <RectangleHorizontal className="w-4 h-4" /> },
+    { value: 'container', label: 'Container', desc: 'Container marítimo', icon: <Container className="w-4 h-4" /> },
+  ],
+  truck_mono: [
+    { value: 'box_dry', label: 'Baú Seco', desc: 'Carga seca comum', icon: <Box className="w-4 h-4" /> },
+    { value: 'box_refrigerated', label: 'Baú Refrigerado', desc: 'Frigorífico / Perecíveis', icon: <Snowflake className="w-4 h-4" /> },
+  ],
+  van_utilitarian: [
+    { value: 'van_box', label: 'Van Baú', desc: 'Sprinter, Master, Ducato', icon: <Car className="w-4 h-4" /> },
+    { value: 'van_fiorino', label: 'Fiorino / Kangoo', desc: 'Pequeno utilitário', icon: <Car className="w-4 h-4" /> },
+    { value: 'van_hr_bongo', label: 'HR / Bongo (Baú)', desc: 'Utilitário com baú', icon: <Truck className="w-4 h-4" /> },
+  ],
+};
+
 export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
   products,
   onAddItemsToCart,
@@ -35,6 +65,7 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
   // Configuração do Veículo
   const [config, setConfig] = useState<SmartQuoteConfig>({
     category: 'truck_mono',
+    implementType: 'none',
     rearDoorType: 'double_leaf',
     hasSideDoor: true,
     isRefrigerated: false,
@@ -87,6 +118,25 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
     setTimeout(() => setAddedNotice(false), 3000);
   };
 
+  // Selecionar implemento e auto-preencher toggles
+  const handleSelectImplement = (impl: ImplementType) => {
+    const defaults = getDefaultsForImplement(impl);
+    setConfig((prev) => ({
+      ...prev,
+      implementType: impl,
+      ...defaults,
+    }));
+  };
+
+  // Selecionar categoria e resetar implemento
+  const handleSelectCategory = (category: typeof config.category) => {
+    setConfig((prev) => ({
+      ...prev,
+      category,
+      implementType: 'none',
+    }));
+  };
+
   // Produtos extras filtrados pela busca auxiliar
   const extraProducts = useMemo(() => {
     if (!extraSearch.trim()) return [];
@@ -108,6 +158,8 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
     setTimeout(() => setAddedNotice(false), 3000);
   };
 
+  const currentImplementOptions = IMPLEMENT_OPTIONS[config.category] || [];
+
   return (
     <div className="space-y-5">
       {/* Grid Principal: Filtros de Veículo (Esquerda) vs Cards de Produtos (Direita) */}
@@ -127,7 +179,7 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
               {/* Caminhão Monobloco */}
               <button
                 type="button"
-                onClick={() => setConfig((prev) => ({ ...prev, category: 'truck_mono' }))}
+                onClick={() => handleSelectCategory('truck_mono')}
                 className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 ${
                   config.category === 'truck_mono'
                     ? 'bg-sky-500/10 border-sky-500/50 shadow-md text-white'
@@ -143,7 +195,7 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
               {/* Cavalo Mecânico */}
               <button
                 type="button"
-                onClick={() => setConfig((prev) => ({ ...prev, category: 'tractor' }))}
+                onClick={() => handleSelectCategory('tractor')}
                 className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 ${
                   config.category === 'tractor'
                     ? 'bg-sky-500/10 border-sky-500/50 shadow-md text-white'
@@ -159,7 +211,7 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
               {/* Van / Fiorino */}
               <button
                 type="button"
-                onClick={() => setConfig((prev) => ({ ...prev, category: 'van_utilitarian' }))}
+                onClick={() => handleSelectCategory('van_utilitarian')}
                 className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 ${
                   config.category === 'van_utilitarian'
                     ? 'bg-sky-500/10 border-sky-500/50 shadow-md text-white'
@@ -174,11 +226,44 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
             </div>
           </div>
 
-          {/* 2. Especificações do Veículo */}
+          {/* 2. Tipo de Implemento / Carroceria */}
+          <div className="clean-card p-4 rounded-2xl space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <Sliders className="w-3.5 h-3.5 text-amber-400" />
+              2. Tipo de Implemento
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {currentImplementOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => handleSelectImplement(opt.value)}
+                  className={`p-2.5 rounded-xl border text-left transition-all ${
+                    config.implementType === opt.value
+                      ? 'bg-amber-500/10 border-amber-500/50 shadow-md text-white'
+                      : 'bg-slate-900/40 border-slate-800/80 text-slate-300 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className={`p-1.5 rounded-lg shrink-0 ${
+                      config.implementType === opt.value ? 'bg-amber-500 text-white' : 'bg-slate-800 text-slate-400'
+                    }`}>
+                      {opt.icon}
+                    </div>
+                    <span className="font-bold text-[11px] font-outfit leading-tight">{opt.label}</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 pl-8 leading-snug">{opt.desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 3. Especificações do Veículo (ajuste fino) */}
           <div className="clean-card p-4 rounded-2xl space-y-3.5">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Sliders className="w-3.5 h-3.5 text-sky-400" />
-              2. Especificações do Veículo
+              <Sliders className="w-3.5 h-3.5 text-emerald-400" />
+              3. Ajuste Fino
+              <span className="text-[9px] font-normal text-slate-500 ml-1">(auto-preenchido pelo implemento)</span>
             </h3>
 
             {/* Opções para CAMINHÃO MONOBLOCO */}

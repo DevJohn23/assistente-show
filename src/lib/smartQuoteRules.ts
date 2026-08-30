@@ -2,14 +2,94 @@ import { Product } from '@/types';
 
 export type VehicleCategory = 'truck_mono' | 'tractor' | 'van_utilitarian';
 
+export type ImplementType =
+  | 'box_dry'           // Baú Seco
+  | 'box_refrigerated'  // Baú Refrigerado / Frigorífico
+  | 'sider'             // Sider (Lonado)
+  | 'tank'              // Tanque (Combustível, Químico, etc.)
+  | 'bulk'              // Graneleiro / Caçamba Basculante
+  | 'flatbed'           // Prancha / Plataforma
+  | 'container'         // Container
+  | 'van_box'           // Van tipo Baú (Sprinter, Master, Ducato)
+  | 'van_fiorino'       // Fiorino / Kangoo / Pequeno Utilitário
+  | 'van_hr_bongo'      // HR / Bongo com Baú
+  | 'none';             // Nenhum / Não se aplica
+
 export interface SmartQuoteConfig {
   category: VehicleCategory;
+  implementType: ImplementType;
   rearDoorType: 'double_leaf' | 'roll_up' | 'none';
   hasSideDoor: boolean;
   isRefrigerated: boolean;
   tractorHasTrailer: boolean;
-  tractorTrailerIsBox: boolean; // Se a carreta rebocada pelo cavalo é do tipo Baú (desmarcado por padrão)
+  tractorTrailerIsBox: boolean;
   includeFifthWheel: boolean;
+}
+
+/**
+ * Retorna os valores padrão dos toggles com base no tipo de implemento selecionado.
+ * O vendedor pode sobrescrever qualquer valor depois.
+ */
+export function getDefaultsForImplement(
+  implementType: ImplementType
+): Partial<SmartQuoteConfig> {
+  switch (implementType) {
+    case 'box_dry':
+      return {
+        rearDoorType: 'double_leaf',
+        hasSideDoor: false,
+        isRefrigerated: false,
+        tractorTrailerIsBox: true,
+      };
+    case 'box_refrigerated':
+      return {
+        rearDoorType: 'double_leaf',
+        hasSideDoor: false,
+        isRefrigerated: true,
+        tractorTrailerIsBox: true,
+      };
+    case 'sider':
+      return {
+        rearDoorType: 'none',
+        hasSideDoor: false,
+        isRefrigerated: false,
+        tractorTrailerIsBox: false,
+      };
+    case 'tank':
+    case 'bulk':
+    case 'flatbed':
+      return {
+        rearDoorType: 'none',
+        hasSideDoor: false,
+        isRefrigerated: false,
+        tractorTrailerIsBox: false,
+      };
+    case 'container':
+      return {
+        rearDoorType: 'double_leaf',
+        hasSideDoor: false,
+        isRefrigerated: false,
+        tractorTrailerIsBox: true,
+      };
+    case 'van_box':
+      return {
+        hasSideDoor: true,
+        isRefrigerated: false,
+      };
+    case 'van_fiorino':
+      return {
+        hasSideDoor: false,
+        isRefrigerated: false,
+      };
+    case 'van_hr_bongo':
+      return {
+        rearDoorType: 'double_leaf',
+        hasSideDoor: false,
+        isRefrigerated: false,
+      };
+    default:
+      return {};
+  }
 }
 
 export interface RecommendationItem {
