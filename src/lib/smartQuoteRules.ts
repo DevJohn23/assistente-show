@@ -217,12 +217,6 @@ export function getRecommendedProducts(
   // 3. CAMINHÃO RÍGIDO / MONOBLOCO COM BAÚ
   // ---------------------------------------------------------------------------
   if (config.category === 'truck_mono') {
-    // Conexões e fiação da cabine ao baú monobloco (necessárias para acionamento de travas e sensores)
-    const tomadaConexao = findProduct(allProducts, 'TOMADA');
-    addRecommendation(tomadaConexao, 'Tomada de conexão para interligação elétrica entre cabine e baú monobloco.');
-
-    const chicoteConexao = findProduct(allProducts, 'CONEXÃO CAVALO', 'ESPIRAL') || findProduct(allProducts, 'CHICOTE');
-    addRecommendation(chicoteConexao, 'Chicote de conexão reforçado para sinal e alimentação dos atuadores do baú.');
 
     if (config.isRefrigerated) {
       // Recomenda ambos os modelos de trava frigorífica traseira para o usuário escolher diretamente nos cards
