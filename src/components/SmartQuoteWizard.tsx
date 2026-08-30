@@ -232,7 +232,7 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
               <Sliders className="w-3.5 h-3.5 text-amber-400" />
               2. Tipo de Implemento
             </h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2">
               {currentImplementOptions.map((opt) => (
                 <button
                   key={opt.value}
