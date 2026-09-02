@@ -114,20 +114,41 @@ export const TecnicosBuscadorView: React.FC = () => {
         const viaCepData = await viaCepRes.json();
         
         if (!viaCepData.erro) {
-          // Monta o endereço legível
-          const addressStr = `${viaCepData.logradouro}, ${viaCepData.bairro}, ${viaCepData.localidade} - ${viaCepData.uf}`;
+          // Monta o endereço completo
+          const fullAddress = `${viaCepData.logradouro}, ${viaCepData.bairro}, ${viaCepData.localidade} - ${viaCepData.uf}`;
+          const fallbackAddress = `${viaCepData.logradouro}, ${viaCepData.localidade} - ${viaCepData.uf}`;
+          const cityAddress = `${viaCepData.localidade} - ${viaCepData.uf}`;
+          
           // Busca as coordenadas no Nominatim usando o endereço retornado pelo ViaCEP
-          const nomRes = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addressStr + ', Brasil')}&format=json&limit=1`,
+          let nomRes = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullAddress + ', Brasil')}&format=json&limit=1`,
             { headers: { 'Accept-Language': 'pt-BR' } }
           );
-          const nomData: NominatimResult[] = await nomRes.json();
+          let nomData: NominatimResult[] = await nomRes.json();
+          
+          // Fallback 1: Sem o bairro
+          if (nomData.length === 0 && viaCepData.logradouro) {
+            nomRes = await fetch(
+              `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fallbackAddress + ', Brasil')}&format=json&limit=1`,
+              { headers: { 'Accept-Language': 'pt-BR' } }
+            );
+            nomData = await nomRes.json();
+          }
+
+          // Fallback 2: Apenas a cidade e estado
+          if (nomData.length === 0) {
+            nomRes = await fetch(
+              `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityAddress + ', Brasil')}&format=json&limit=1`,
+              { headers: { 'Accept-Language': 'pt-BR' } }
+            );
+            nomData = await nomRes.json();
+          }
           
           if (nomData.length > 0) {
             setSuggestions([{
               lat: nomData[0].lat,
               lon: nomData[0].lon,
-              display_name: `${addressStr} (CEP: ${viaCepData.cep})`
+              display_name: `${fullAddress} (CEP: ${viaCepData.cep})`
             }]);
             setShowSuggestions(true);
             return;
