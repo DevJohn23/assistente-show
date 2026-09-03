@@ -76,6 +76,7 @@ export interface Commission {
 export interface CartItem {
   product: Product;
   quantity: number;
+  customPrice?: number;
 }
 
 export interface QuoteTemplate {

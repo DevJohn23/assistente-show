@@ -299,6 +299,8 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
   const [showManageKitsModal, setShowManageKitsModal] = useState(false);
   const [editingTemplateId, setEditingTemplateId] = useState<string | null>(null);
+  const [editingItemPriceId, setEditingItemPriceId] = useState<string | null>(null);
+  const [editPriceValue, setEditPriceValue] = useState<string>('');
   const [editingTemplateName, setEditingTemplateName] = useState('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [copiedNotification, setCopiedNotification] = useState(false);
@@ -329,6 +331,17 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
           return item;
         })
         .filter(Boolean) as CartItem[]
+    );
+  };
+
+  const updateItemCustomPrice = (productId: string, newPrice: number | undefined) => {
+    setCart((prev) =>
+      prev.map((item) => {
+        if (item.product.id === productId) {
+          return { ...item, customPrice: newPrice };
+        }
+        return item;
+      })
     );
   };
 
@@ -375,7 +388,10 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const accessoryProducts = searchResults.filter((p) => p.category_id === 'cat-2');
 
   // Total Calculations
-  const rawEquipmentTotal = cart.reduce((acc, item) => acc + item.product.default_price * item.quantity, 0);
+  const rawEquipmentTotal = cart.reduce((acc, item) => {
+    const priceToUse = item.customPrice !== undefined ? item.customPrice : item.product.default_price;
+    return acc + priceToUse * item.quantity;
+  }, 0);
   const totalMonthlyFee = cart.reduce((acc, item) => acc + (item.product.monthly_fee || 0) * item.quantity, 0);
 
   const markupAmount = (rawEquipmentTotal * (markupPercent || 0)) / 100;
@@ -423,7 +439,8 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
     msg += `📦 *Equipamentos Selecionados:*\n`;
     cart.forEach((i) => {
-      const itemUnitPrice = i.product.default_price * (1 + (markupPercent || 0) / 100);
+      const basePrice = i.customPrice !== undefined ? i.customPrice : i.product.default_price;
+      const itemUnitPrice = basePrice * (1 + (markupPercent || 0) / 100);
       const itemTotal = itemUnitPrice * i.quantity;
       msg += `• ${i.quantity}x ${i.product.name} — R$ ${formatCurrency(itemTotal)}\n`;
     });
@@ -835,9 +852,53 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                   >
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-semibold text-slate-900 dark:text-white truncate font-outfit">{item.product.name}</p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
-                        R$ {formatCurrency(item.product.default_price)}
-                      </p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        {editingItemPriceId === item.product.id ? (
+                          <div className="flex items-center gap-1">
+                            <span className="text-[10px] text-slate-500">R$</span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              autoFocus
+                              className="w-16 px-1.5 py-0.5 text-[11px] font-mono border border-sky-300 dark:border-sky-600 rounded bg-white dark:bg-slate-950 focus:outline-none focus:border-sky-500"
+                              value={editPriceValue}
+                              onChange={(e) => setEditPriceValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  const val = parseFloat(editPriceValue);
+                                  updateItemCustomPrice(item.product.id, isNaN(val) ? undefined : val);
+                                  setEditingItemPriceId(null);
+                                } else if (e.key === 'Escape') {
+                                  setEditingItemPriceId(null);
+                                }
+                              }}
+                              onBlur={() => {
+                                const val = parseFloat(editPriceValue);
+                                updateItemCustomPrice(item.product.id, isNaN(val) ? undefined : val);
+                                setEditingItemPriceId(null);
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5 group cursor-pointer" 
+                               onClick={() => {
+                                 setEditingItemPriceId(item.product.id);
+                                 setEditPriceValue(
+                                   item.customPrice !== undefined 
+                                     ? item.customPrice.toString() 
+                                     : item.product.default_price.toString()
+                                 );
+                               }}
+                               title="Clique para editar o preço"
+                          >
+                            <p className={`text-[11px] font-mono ${item.customPrice !== undefined ? 'text-sky-600 dark:text-sky-400 font-bold' : 'text-slate-500 dark:text-slate-400'}`}>
+                              R$ {formatCurrency(item.customPrice !== undefined ? item.customPrice : item.product.default_price)}
+                            </p>
+                            <Edit3 className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
