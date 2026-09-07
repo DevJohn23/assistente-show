@@ -170,7 +170,7 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
           
           {/* 1. Perfil do Veículo */}
           <div className="clean-card p-4 rounded-2xl space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
               <Sliders className="w-3.5 h-3.5 text-sky-400" />
               1. Perfil do Veículo
             </h3>
@@ -183,10 +183,10 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                 className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 ${
                   config.category === 'truck_mono'
                     ? 'bg-sky-500/10 border-sky-500/50 shadow-md text-white'
-                    : 'bg-slate-900/40 border-slate-800/80 text-slate-300 hover:border-slate-700'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300 dark:bg-slate-900/40 dark:border-slate-800/80 dark:text-slate-300 dark:hover:border-slate-700'
                 }`}
               >
-                <div className={`p-2 rounded-lg shrink-0 ${config.category === 'truck_mono' ? 'bg-sky-500 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                <div className={`p-2 rounded-lg shrink-0 ${config.category === 'truck_mono' ? 'bg-sky-500 text-white' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
                   <Truck className="w-4 h-4" />
                 </div>
                 <h4 className="font-bold text-xs font-outfit">Caminhão Rígido / Baú Monobloco</h4>
@@ -199,10 +199,10 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                 className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 ${
                   config.category === 'tractor'
                     ? 'bg-sky-500/10 border-sky-500/50 shadow-md text-white'
-                    : 'bg-slate-900/40 border-slate-800/80 text-slate-300 hover:border-slate-700'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300 dark:bg-slate-900/40 dark:border-slate-800/80 dark:text-slate-300 dark:hover:border-slate-700'
                 }`}
               >
-                <div className={`p-2 rounded-lg shrink-0 ${config.category === 'tractor' ? 'bg-sky-500 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                <div className={`p-2 rounded-lg shrink-0 ${config.category === 'tractor' ? 'bg-sky-500 text-white' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
                   <ShieldCheck className="w-4 h-4" />
                 </div>
                 <h4 className="font-bold text-xs font-outfit">Cavalo Mecânico (Articulado)</h4>
@@ -215,10 +215,10 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                 className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 ${
                   config.category === 'van_utilitarian'
                     ? 'bg-sky-500/10 border-sky-500/50 shadow-md text-white'
-                    : 'bg-slate-900/40 border-slate-800/80 text-slate-300 hover:border-slate-700'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300 dark:bg-slate-900/40 dark:border-slate-800/80 dark:text-slate-300 dark:hover:border-slate-700'
                 }`}
               >
-                <div className={`p-2 rounded-lg shrink-0 ${config.category === 'van_utilitarian' ? 'bg-sky-500 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                <div className={`p-2 rounded-lg shrink-0 ${config.category === 'van_utilitarian' ? 'bg-sky-500 text-white' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
                   <Car className="w-4 h-4" />
                 </div>
                 <h4 className="font-bold text-xs font-outfit">Van / Fiorino / Utilitário Leve</h4>
@@ -228,7 +228,7 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
 
           {/* 2. Tipo de Implemento / Carroceria */}
           <div className="clean-card p-4 rounded-2xl space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
               <Sliders className="w-3.5 h-3.5 text-amber-400" />
               2. Tipo de Implemento
             </h3>
@@ -241,11 +241,11 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                   className={`p-2.5 rounded-xl border text-left transition-all flex items-center gap-2 ${
                     config.implementType === opt.value
                       ? 'bg-amber-500/10 border-amber-500/50 shadow-md text-white'
-                      : 'bg-slate-900/40 border-slate-800/80 text-slate-300 hover:border-slate-700'
+                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300 dark:bg-slate-900/40 dark:border-slate-800/80 dark:text-slate-300 dark:hover:border-slate-700'
                   }`}
                 >
                   <div className={`p-1.5 rounded-lg shrink-0 ${
-                    config.implementType === opt.value ? 'bg-amber-500 text-white' : 'bg-slate-800 text-slate-400'
+                    config.implementType === opt.value ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
                   }`}>
                     {opt.icon}
                   </div>
@@ -257,7 +257,7 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
 
           {/* 3. Especificações do Veículo (ajuste fino) */}
           <div className="clean-card p-4 rounded-2xl space-y-3.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
               <Sliders className="w-3.5 h-3.5 text-emerald-400" />
               3. Ajuste Fino
             </h3>
@@ -266,11 +266,11 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
             {config.category === 'truck_mono' && (
               <div className="space-y-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300 block">Porta Traseira:</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 block">Porta Traseira:</label>
                   <select
                     value={config.rearDoorType}
                     onChange={(e) => setConfig((prev) => ({ ...prev, rearDoorType: e.target.value as any }))}
-                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-sky-500 font-medium"
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-800 dark:bg-slate-900 dark:border-slate-700 dark:text-white focus:outline-none focus:border-sky-500 font-medium"
                   >
                     <option value="double_leaf">Porta de 2 Folhas (Folha Dupla)</option>
                     <option value="roll_up">Porta de Enrolar (Roll-Up)</option>
@@ -278,8 +278,8 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                   </select>
                 </div>
 
-                <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 cursor-pointer hover:border-slate-700 transition-colors">
-                  <span className="text-xs text-slate-300 font-medium">Possui Porta Lateral no Baú?</span>
+                <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+                  <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">Possui Porta Lateral no Baú?</span>
                   <input
                     type="checkbox"
                     checked={config.hasSideDoor}
@@ -288,8 +288,8 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                   />
                 </label>
 
-                <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 cursor-pointer hover:border-slate-700 transition-colors">
-                  <span className="text-xs text-slate-300 font-medium">Baú Refrigerado / Frigorífico?</span>
+                <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+                  <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">Baú Refrigerado / Frigorífico?</span>
                   <input
                     type="checkbox"
                     checked={config.isRefrigerated}
@@ -303,8 +303,8 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
             {/* Opções para CAVALO MECÂNICO */}
             {config.category === 'tractor' && (
               <div className="space-y-3">
-                <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 cursor-pointer hover:border-slate-700 transition-colors">
-                  <span className="text-xs text-slate-300 font-medium">Engata / Desengata?</span>
+                <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+                  <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">Engata / Desengata?</span>
                   <input
                     type="checkbox"
                     checked={config.tractorHasTrailer}
@@ -316,8 +316,8 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                 {/* Se engata/desengata, pergunta se a carreta é tipo Baú */}
                 {config.tractorHasTrailer && (
                   <>
-                    <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 cursor-pointer hover:border-slate-700 transition-colors">
-                      <span className="text-xs text-slate-300 font-medium">A carreta é do tipo Baú?</span>
+                    <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+                      <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">A carreta é do tipo Baú?</span>
                       <input
                         type="checkbox"
                         checked={config.tractorTrailerIsBox}
@@ -330,11 +330,11 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                     {config.tractorTrailerIsBox && (
                       <div className="pl-3 space-y-2.5 border-l-2 border-sky-500/40">
                         <div className="space-y-1.5">
-                          <label className="text-[11px] font-semibold text-slate-300 block">Porta Traseira da Carreta:</label>
+                          <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 block">Porta Traseira da Carreta:</label>
                           <select
                             value={config.rearDoorType}
                             onChange={(e) => setConfig((prev) => ({ ...prev, rearDoorType: e.target.value as any }))}
-                            className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-sky-500 font-medium"
+                            className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-800 dark:bg-slate-900 dark:border-slate-700 dark:text-white focus:outline-none focus:border-sky-500 font-medium"
                           >
                             <option value="double_leaf">Porta de 2 Folhas (Folha Dupla)</option>
                             <option value="roll_up">Porta de Enrolar (Roll-Up)</option>
@@ -342,8 +342,8 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                           </select>
                         </div>
 
-                        <label className="flex items-center justify-between p-2 rounded-lg bg-slate-900/80 border border-slate-800 cursor-pointer">
-                          <span className="text-[11px] text-slate-300 font-medium">Porta Lateral na Carreta?</span>
+                        <label className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 cursor-pointer">
+                          <span className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">Porta Lateral na Carreta?</span>
                           <input
                             type="checkbox"
                             checked={config.hasSideDoor}
@@ -352,8 +352,8 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                           />
                         </label>
 
-                        <label className="flex items-center justify-between p-2 rounded-lg bg-slate-900/80 border border-slate-800 cursor-pointer">
-                          <span className="text-[11px] text-slate-300 font-medium">Carreta Frigorífica / Refrigerada?</span>
+                        <label className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 cursor-pointer">
+                          <span className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">Carreta Frigorífica / Refrigerada?</span>
                           <input
                             type="checkbox"
                             checked={config.isRefrigerated}
@@ -366,8 +366,8 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                   </>
                 )}
 
-                <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 cursor-pointer hover:border-slate-700 transition-colors">
-                  <span className="text-xs text-slate-300 font-medium">Incluir Trava de Quinta Roda & Aríete?</span>
+                <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+                  <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">Incluir Trava de Quinta Roda & Aríete?</span>
                   <input
                     type="checkbox"
                     checked={config.includeFifthWheel}
@@ -381,8 +381,8 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
             {/* Opções para VAN / UTILITÁRIO */}
             {config.category === 'van_utilitarian' && (
               <div className="space-y-3">
-                <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 cursor-pointer hover:border-slate-700 transition-colors">
-                  <span className="text-xs text-slate-300 font-medium">Possui Porta Lateral de Correr?</span>
+                <label className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+                  <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">Possui Porta Lateral de Correr?</span>
                   <input
                     type="checkbox"
                     checked={config.hasSideDoor}
@@ -400,34 +400,34 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
           <div className="clean-card p-4 rounded-2xl flex flex-col justify-between space-y-3.5">
             
             {/* Cabeçalho da Seção com Busca Discreta no Topo */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-sky-400" />
-                <h3 className="font-bold text-white text-sm font-outfit">
+                <h3 className="font-bold text-slate-800 dark:text-white text-sm font-outfit">
                   Equipamentos Recomendados ({recommendations.length})
                 </h3>
               </div>
 
               {/* Campo de Busca Discreto no Topo */}
               <div className="relative min-w-[220px]">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                <Search className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 absolute left-3 top-2.5" />
                 <input
                   type="text"
                   placeholder="Pesquisar outro item no catálogo..."
                   value={extraSearch}
                   onChange={(e) => setExtraSearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all"
+                  className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 dark:bg-slate-900 dark:border-slate-800 dark:text-white dark:placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all"
                 />
               </div>
             </div>
 
             {/* Dropdown/Lista da Busca Extra quando houver termo pesquisado */}
             {extraProducts.length > 0 && (
-              <div className="space-y-1 max-h-36 overflow-y-auto bg-slate-950 p-2 rounded-xl border border-slate-800 shadow-md">
+              <div className="space-y-1 max-h-36 overflow-y-auto bg-white p-2 rounded-xl border border-slate-200 dark:bg-slate-950 dark:border-slate-800 shadow-md">
                 {extraProducts.map((p) => (
                   <div
                     key={p.id}
-                    className="p-1.5 rounded-lg hover:bg-slate-900 flex items-center justify-between text-xs text-slate-300"
+                    className="p-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300"
                   >
                     <span className="truncate pr-2 font-medium">{p.name}</span>
                     <button
@@ -453,13 +453,13 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                     onClick={() => toggleSelect(rec.product.id)}
                     className={`clean-card rounded-2xl p-3.5 flex flex-col justify-between transition-all cursor-pointer relative border ${
                       isSelected
-                        ? 'border-sky-500 shadow-lg bg-sky-950/20'
-                        : 'border-slate-800/80 bg-slate-950/40 hover:border-slate-700 opacity-75 hover:opacity-100'
+                        ? 'border-sky-500 shadow-lg bg-sky-50 dark:bg-sky-950/20'
+                        : 'border-slate-200 bg-slate-50/80 hover:border-slate-300 opacity-75 hover:opacity-100 dark:border-slate-800/80 dark:bg-slate-950/40 dark:hover:border-slate-700'
                     }`}
                   >
                     <div>
                       {/* Imagem do Produto com Checkbox no Canto */}
-                      <div className="w-full h-36 rounded-xl overflow-hidden bg-slate-900 relative mb-3 group">
+                      <div className="w-full h-36 rounded-xl overflow-hidden bg-white dark:bg-slate-900 relative mb-3 group">
                         <img
                           src={rec.product.image_url}
                           alt={rec.product.name}
@@ -471,7 +471,7 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                           className={`absolute top-2.5 left-2.5 w-5 h-5 rounded-md flex items-center justify-center border shadow-md transition-all ${
                             isSelected
                               ? 'bg-sky-500 border-sky-400 text-white'
-                              : 'bg-slate-900/80 border-slate-700 text-transparent'
+                              : 'bg-white/80 border-slate-300 text-transparent dark:bg-slate-900/80 dark:border-slate-700'
                           }`}
                         >
                           <Check className="w-3.5 h-3.5 stroke-[3]" />
@@ -479,21 +479,21 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
 
                         {/* Mensalidade Badge se houver */}
                         {rec.product.monthly_fee && rec.product.monthly_fee > 0 ? (
-                          <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-slate-900/80 backdrop-blur-md text-[10px] font-semibold text-emerald-400 border border-emerald-500/30">
+                          <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-slate-50 dark:bg-slate-900/80 backdrop-blur-md text-[10px] font-semibold text-emerald-400 border border-emerald-500/30">
                             R$ {rec.product.monthly_fee.toFixed(2)}/mês
                           </span>
                         ) : null}
                       </div>
 
                       {/* Nome do Produto */}
-                      <h4 className="font-bold text-white text-xs font-outfit line-clamp-2 leading-snug">
+                      <h4 className="font-bold text-slate-800 dark:text-white text-xs font-outfit line-clamp-2 leading-snug">
                         {rec.product.name}
                       </h4>
                     </div>
 
                     {/* Preço À Vista no Rodapé do Card */}
-                    <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between">
-                      <span className="text-[10px] text-slate-400 font-medium">À Vista</span>
+                    <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">À Vista</span>
                       <span className="text-xs font-bold text-sky-400 font-mono">
                         R$ {formatCurrency(rec.product.default_price)}
                       </span>
@@ -512,7 +512,7 @@ export const SmartQuoteWizard: React.FC<SmartQuoteWizardProps> = ({
                 className={`w-full py-3 px-4 rounded-xl font-bold text-sm font-outfit shadow-lg transition-all flex items-center justify-center gap-2 ${
                   selectedIds.size > 0
                     ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white cursor-pointer shadow-emerald-950/40'
-                    : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                    : 'bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed'
                 }`}
               >
                 <CheckCircle2 className="w-4 h-4" />

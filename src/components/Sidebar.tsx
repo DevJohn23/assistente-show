@@ -11,10 +11,13 @@ import {
   Menu,
   X,
   MapPin,
-  Settings
+  Settings,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useTheme } from '@/context/ThemeContext';
 
 interface SidebarProps {
   activeTab: string;
@@ -29,6 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { user, isAdmin, signOut } = useAuth();
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -84,20 +88,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <>
       {/* Mobile Top Header Bar (< md) */}
-      <div className="md:hidden sticky top-0 z-40 bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between shadow-md">
+      <div className="md:hidden sticky top-0 z-40 bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-md">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-sm text-white font-outfit">Assistente Show</h1>
-            <p className="text-[10px] text-slate-400 font-medium">Show Tecnologia</p>
+            <h1 className="font-bold text-sm text-slate-800 dark:text-white font-outfit">Assistente Show</h1>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Show Tecnologia</p>
           </div>
         </div>
 
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white transition-colors"
+          className="p-2 rounded-xl bg-slate-100 text-slate-600 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white transition-colors"
           aria-label="Abrir Menu"
         >
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -108,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {mobileOpen && (
         <div 
           onClick={() => setMobileOpen(false)}
-          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xs animate-fadeIn"
+          className="md:hidden fixed inset-0 z-40 bg-black/30 dark:bg-black/60 backdrop-blur-xs animate-fadeIn"
         />
       )}
 
@@ -116,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`fixed md:sticky top-0 z-50 md:z-30 bg-slate-900 border-r border-slate-800 flex flex-col justify-between h-screen select-none transition-all duration-300 ease-in-out shadow-2xl md:shadow-none overflow-hidden ${
+        className={`fixed md:sticky top-0 z-50 md:z-30 bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-800 flex flex-col justify-between h-screen select-none transition-all duration-300 ease-in-out shadow-lg dark:shadow-2xl md:shadow-none overflow-hidden ${
           mobileOpen ? 'left-0 w-64' : '-left-64 md:left-0'
         } ${
           isHovered ? 'md:w-64' : 'md:w-16'
@@ -124,7 +128,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         <div className="w-full">
           {/* App Logo & Header - Fixed height to avoid vertical shift */}
-          <div className="h-[72px] px-4 border-b border-slate-800 flex items-center justify-between shrink-0">
+          <div className="h-[72px] px-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3.5 min-w-0">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-md shadow-sky-500/20 shrink-0">
                 <Sparkles className="w-4 h-4 text-white" />
@@ -133,15 +137,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap ${
                 isExpanded ? 'opacity-100 max-w-[180px]' : 'opacity-0 max-w-0'
               }`}>
-                <h1 className="font-bold text-base text-white tracking-wide font-outfit truncate">Assistente Show</h1>
-                <p className="text-[11px] text-slate-400 font-medium truncate">Show Tecnologia • Omnilink</p>
+                <h1 className="font-bold text-base text-slate-800 dark:text-white tracking-wide font-outfit truncate">Assistente Show</h1>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">Show Tecnologia • Omnilink</p>
               </div>
             </div>
 
             {/* Mobile close button */}
             <button 
               onClick={() => setMobileOpen(false)}
-              className="md:hidden p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 shrink-0"
+              className="md:hidden p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
             >
               <X className="w-4 h-4" />
             </button>
@@ -160,7 +164,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   className={`w-full flex items-center justify-between px-3 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
                     isActive
                       ? 'bg-sky-600 text-white font-semibold shadow-md shadow-sky-600/20'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60'
                   }`}
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
@@ -203,8 +207,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        {/* User Info & Logout Footer - Fixed height */}
-        <div className="h-[68px] px-3.5 border-t border-slate-800 bg-slate-950/40 flex items-center shrink-0">
+        {/* Theme Toggle — acima do footer do perfil */}
+        <div className="px-2.5 mb-1">
+          <button
+            onClick={toggleTheme}
+            title={!isExpanded ? (theme === 'dark' ? 'Tema Claro' : 'Tema Escuro') : undefined}
+            className="w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60"
+          >
+            {theme === 'dark' ? (
+              <Sun className="w-5 h-5 shrink-0 text-amber-400" />
+            ) : (
+              <Moon className="w-5 h-5 shrink-0 text-indigo-400" />
+            )}
+            <span className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap text-left ${
+              isExpanded ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0'
+            }`}>
+              {theme === 'dark' ? 'Tema Claro' : 'Tema Escuro'}
+            </span>
+          </button>
+        </div>
+
+        {/* User Info & Logout Footer */}
+        <div className="h-[68px] px-3.5 border-t border-slate-200 bg-slate-50 dark:bg-slate-950/40 dark:border-slate-800 flex items-center shrink-0">
           <div className="w-full flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-9 h-9 rounded-full bg-sky-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
@@ -214,7 +238,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap ${
                 isExpanded ? 'opacity-100 max-w-[140px]' : 'opacity-0 max-w-0'
               }`}>
-                <p className="text-xs font-semibold text-slate-200 truncate">{userName}</p>
+                <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate">{userName}</p>
                 <p className="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                   Online (Supabase)
@@ -225,7 +249,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               onClick={() => signOut()}
               title="Sair da Conta"
-              className={`transition-all duration-300 ease-in-out p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 shrink-0 ${
+              className={`transition-all duration-300 ease-in-out p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:text-rose-400 dark:hover:bg-slate-800 shrink-0 ${
                 isExpanded ? 'opacity-100 max-w-[40px]' : 'opacity-0 max-w-0 overflow-hidden pointer-events-none'
               }`}
             >

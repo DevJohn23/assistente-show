@@ -423,11 +423,10 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
               <div className="flex-1 overflow-y-auto p-6 space-y-3.5 text-left">
                 <div>
                   <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                    Nome do Cliente *
+                    Nome do Cliente
                   </label>
                   <input
                     type="text"
-                    required
                     placeholder="ex: Transportadora Alfa"
                     value={formData.client_name}
                     onChange={(e) => setFormData({ ...formData, client_name: e.target.value })}
@@ -475,11 +474,10 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                      Telefone / WhatsApp *
+                      Telefone / WhatsApp
                     </label>
                     <input
                       type="text"
-                      required
                       placeholder="11999998888"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}

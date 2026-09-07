@@ -39,7 +39,7 @@ function categoriaBadge(cat: string) {
 const MapLeaflet = dynamic(() => import('./MapLeaflet'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-slate-800/60 rounded-2xl">
+    <div className="w-full h-full flex items-center justify-center bg-slate-200/60 dark:bg-slate-200/60 dark:bg-slate-800/60 rounded-2xl">
       <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
     </div>
   ),
@@ -261,7 +261,7 @@ export const TecnicosBuscadorView: React.FC = () => {
       <div className="relative z-[2000]">
         <form onSubmit={handleSearchSubmit} className="flex gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
             <input
               ref={inputRef}
               type="text"
@@ -269,11 +269,11 @@ export const TecnicosBuscadorView: React.FC = () => {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
               placeholder="Digite o endereço do cliente (ex: Rua Pedro II, Guarabira - PB)"
-              className="w-full pl-10 pr-10 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/40 transition-all"
+              className="w-full pl-10 pr-10 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/40 transition-all"
             />
             {query && (
               <button type="button" onClick={resetSearch}
-                className="absolute right-12 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
+                className="absolute right-12 top-1/2 -translate-y-1/2 p-2 text-slate-500 dark:text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
                 title="Limpar busca"
               >
                 <X className="w-4 h-4" />
@@ -291,15 +291,15 @@ export const TecnicosBuscadorView: React.FC = () => {
         </form>
 
         {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute top-full mt-1 left-0 right-0 z-50 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden">
+          <div className="absolute top-full mt-1 left-0 right-0 z-50 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl shadow-lg dark:shadow-2xl overflow-hidden">
             {loadingSuggestions && (
-              <div className="px-4 py-2 text-xs text-slate-400 flex items-center gap-2">
+              <div className="px-4 py-2 text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
                 <Loader2 className="w-3 h-3 animate-spin" /> Buscando...
               </div>
             )}
             {suggestions.map((s, i) => (
               <button key={i} type="button" onClick={() => handleSelectSuggestion(s)}
-                className="w-full px-4 py-2.5 text-left text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors flex items-start gap-2 border-b border-slate-700/60 last:border-0">
+                className="w-full px-4 py-2.5 text-left text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors flex items-start gap-2 border-b border-slate-300/60 dark:border-slate-700/60 last:border-0">
                 <MapPin className="w-3.5 h-3.5 mt-0.5 text-sky-400 shrink-0" />
                 <span className="line-clamp-1">{s.display_name}</span>
               </button>
@@ -311,7 +311,7 @@ export const TecnicosBuscadorView: React.FC = () => {
       {/* Body */}
       <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
         {/* Map */}
-        <div className="flex-1 min-h-[320px] lg:min-h-0 rounded-2xl overflow-hidden border border-slate-700/60 shadow-xl">
+        <div className="flex-1 min-h-[320px] lg:min-h-0 rounded-2xl overflow-hidden border border-slate-300/60 dark:border-slate-700/60 shadow-xl">
           <MapLeaflet
             center={mapCenter}
             zoom={mapZoom}
@@ -327,7 +327,7 @@ export const TecnicosBuscadorView: React.FC = () => {
         {/* Lista */}
         <div className="w-full lg:w-80 xl:w-96 flex flex-col gap-3 overflow-y-auto">
           <div className="flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-2 text-slate-400 text-xs">
+            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs">
               <Users className="w-3.5 h-3.5" />
               <span>{tecnicos5.length > 0 ? `${tecnicos5.length} técnicos encontrados` : `${tecnicos.length} técnicos na rede`}</span>
             </div>
@@ -342,26 +342,26 @@ export const TecnicosBuscadorView: React.FC = () => {
           {!searchMode && !selectedTecnico && (
             <div className="flex-1 flex flex-col gap-3">
               {/* Instrução */}
-              <div className="flex flex-col items-center justify-center text-center py-8 px-4 bg-slate-800/40 rounded-2xl border border-slate-700/40">
+              <div className="flex flex-col items-center justify-center text-center py-8 px-4 bg-slate-100 dark:bg-slate-800/40 rounded-2xl border border-slate-300 dark:border-slate-700/40">
                 <div className="w-12 h-12 rounded-2xl bg-slate-700/60 flex items-center justify-center mb-3">
-                  <MapPin className="w-6 h-6 text-slate-400" />
+                  <MapPin className="w-6 h-6 text-slate-500 dark:text-slate-400" />
                 </div>
-                <p className="text-slate-300 font-semibold text-sm mb-1">Clique em um pino</p>
+                <p className="text-slate-600 dark:text-slate-300 font-semibold text-sm mb-1">Clique em um pino</p>
                 <p className="text-slate-500 text-xs max-w-[210px]">
                   ou busque um endereço para encontrar os 5 técnicos mais próximos
                 </p>
               </div>
               {/* Busca por Nome do Técnico */}
-              <div className="bg-slate-800/40 rounded-2xl border border-slate-700/40 p-4">
-                <p className="text-xs font-semibold text-slate-400 mb-3 uppercase tracking-wider">Localizar Técnico Específico</p>
+              <div className="bg-slate-100 dark:bg-slate-800/40 rounded-2xl border border-slate-300 dark:border-slate-700/40 p-4">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">Localizar Técnico Específico</p>
                 <div className="relative mb-3">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
                   <input
                     type="text"
                     value={tecnicoNameQuery}
                     onChange={(e) => setTecnicoNameQuery(e.target.value)}
                     placeholder="Nome, categoria ou parceiro..."
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all shadow-sm"
+                    className="w-full pl-9 pr-3 py-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all shadow-sm"
                   />
                 </div>
                 {tecnicoNameQuery.trim() !== '' && (
@@ -375,10 +375,10 @@ export const TecnicosBuscadorView: React.FC = () => {
                           setMapCenter([t.lat, t.lng]);
                           setMapZoom(13);
                           setTecnicoNameQuery('');
-                        }} className="text-left px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors bg-slate-800/60 border border-slate-700/60 flex items-center justify-between group">
+                        }} className="text-left px-3 py-2 text-xs text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors bg-slate-200/60 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/60 flex items-center justify-between group">
                           <div className="min-w-0">
                             <p className="font-semibold truncate">{t.nome.replace(/^(ATA\d+_|PSO_|SPOT_|PRP_BOSCH_|PRP_)/, '')}</p>
-                            <p className="text-[10px] text-slate-400 truncate mt-0.5">{t.categoria} {t.tipo ? `• ${t.tipo}` : ''}</p>
+                            <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{t.categoria} {t.tipo ? `• ${t.tipo}` : ''}</p>
                           </div>
                           <MapPin className="w-3.5 h-3.5 text-sky-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-2" />
                         </button>
@@ -388,8 +388,8 @@ export const TecnicosBuscadorView: React.FC = () => {
                 )}
               </div>
               {/* Legenda de categorias */}
-              <div className="bg-slate-800/40 rounded-2xl border border-slate-700/40 p-4">
-                <p className="text-xs font-semibold text-slate-400 mb-3 uppercase tracking-wider">Legenda</p>
+              <div className="bg-slate-100 dark:bg-slate-800/40 rounded-2xl border border-slate-300 dark:border-slate-700/40 p-4">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">Legenda</p>
                 <div className="space-y-2">
                   {[
                     { label: 'Rede Plus', color: '#f59e0b' },
@@ -402,7 +402,7 @@ export const TecnicosBuscadorView: React.FC = () => {
                         <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24S24 21 24 12C24 5.373 18.627 0 12 0z" fill={color}/>
                         <circle cx="12" cy="12" r="5" fill="white" opacity="0.9"/>
                       </svg>
-                      <span className="text-xs text-slate-400">{label}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{label}</span>
                     </div>
                   ))}
                 </div>
@@ -415,12 +415,12 @@ export const TecnicosBuscadorView: React.FC = () => {
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => setSelectedTecnico(null)}
-                className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 transition-colors self-start"
+                className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors self-start"
               >
                 <X className="w-3 h-3" /> Voltar para legenda
               </button>
               <div className="p-4 rounded-2xl border bg-sky-600/20 border-sky-500/60 shadow-lg shadow-sky-500/10 text-left">
-                <p className="text-sm font-semibold text-slate-100 leading-snug mb-2">
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug mb-2">
                   {selectedTecnico.nome.replace(/^(ATA\d+_|PSO_|SPOT_|PRP_BOSCH_|PRP_)/, '')}
                 </p>
                 <div className="flex flex-wrap gap-1.5 mb-3">
@@ -428,7 +428,7 @@ export const TecnicosBuscadorView: React.FC = () => {
                     {selectedTecnico.categoria}
                   </span>
                   {selectedTecnico.tipo && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-slate-600/30 text-slate-400 border-slate-600/40">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-slate-600/30 text-slate-500 dark:text-slate-400 border-slate-300/40 dark:border-slate-600/40">
                       {selectedTecnico.tipo}
                     </span>
                   )}
@@ -446,8 +446,8 @@ export const TecnicosBuscadorView: React.FC = () => {
                       <div className="h-3.5 bg-slate-600/30 rounded w-2/3"></div>
                     </div>
                   ) : (
-                    <p className="text-slate-300 leading-relaxed font-medium">
-                      <MapPin className="w-3.5 h-3.5 inline text-slate-400 mr-1.5 mb-0.5" />
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                      <MapPin className="w-3.5 h-3.5 inline text-slate-500 dark:text-slate-400 mr-1.5 mb-0.5" />
                       {enderecoSelecionado}
                     </p>
                   )}
@@ -495,19 +495,19 @@ export const TecnicosBuscadorView: React.FC = () => {
                 className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 ${
                   isSelected
                     ? 'bg-sky-600/20 border-sky-500/60 shadow-lg shadow-sky-500/10'
-                    : 'bg-slate-800/60 border-slate-700/60 hover:bg-slate-800 hover:border-slate-600'
+                    : 'bg-slate-50 border-slate-200 hover:bg-slate-100 hover:border-slate-300 dark:bg-slate-800/60 dark:border-slate-700/60 dark:hover:bg-slate-800 dark:hover:border-slate-600'
                 }`}>
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
-                      isRecomendado ? 'bg-rose-500 text-white shadow-sm shadow-rose-500/40' : 'bg-slate-700 text-slate-300'
+                      isRecomendado ? 'bg-rose-500 text-white shadow-sm shadow-rose-500/40' : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
                     }`}>{idx + 1}</div>
-                    <p className="text-sm font-semibold text-slate-100 leading-snug line-clamp-2">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug line-clamp-2">
                       {t.nome.replace(/^(ATA\d+_|PSO_|SPOT_|PRP_BOSCH_|PRP_)/, '')}
                     </p>
                   </div>
                   {isRecomendado && (
-                    <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-bold whitespace-nowrap">
+                    <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/30 text-[10px] font-bold whitespace-nowrap">
                       <Star className="w-2.5 h-2.5" /> Recomendado
                     </span>
                   )}
@@ -518,7 +518,7 @@ export const TecnicosBuscadorView: React.FC = () => {
                     {t.categoria}
                   </span>
                   {t.tipo && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-slate-600/30 text-slate-400 border-slate-600/40">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-slate-600/30 text-slate-500 dark:text-slate-400 border-slate-300/40 dark:border-slate-600/40">
                       {t.tipo}
                     </span>
                   )}
@@ -530,7 +530,7 @@ export const TecnicosBuscadorView: React.FC = () => {
                 </div>
 
                 {isSelected && (
-                  <div className="mt-3 pt-3 border-t border-slate-700/60 space-y-3">
+                  <div className="mt-3 pt-3 border-t border-slate-300/60 dark:border-slate-700/60 space-y-3">
                     {/* Endereço Dinâmico */}
                     <div className="text-xs">
                       {loadingEndereco ? (
@@ -539,8 +539,8 @@ export const TecnicosBuscadorView: React.FC = () => {
                           <div className="h-3.5 bg-slate-600/30 rounded w-2/3"></div>
                         </div>
                       ) : (
-                        <p className="text-slate-300 leading-relaxed font-medium">
-                          <MapPin className="w-3.5 h-3.5 inline text-slate-400 mr-1.5 mb-0.5" />
+                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                          <MapPin className="w-3.5 h-3.5 inline text-slate-500 dark:text-slate-400 mr-1.5 mb-0.5" />
                           {enderecoSelecionado}
                         </p>
                       )}

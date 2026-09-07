@@ -106,11 +106,11 @@ export default function Home() {
   // If Auth is loading, show clean loading screen
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#0b0f19] text-white flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-100 dark:bg-[#0b0f19] text-slate-800 dark:text-white flex flex-col items-center justify-center p-4">
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-sky-500/25 animate-bounce mb-4">
           <Sparkles className="w-6 h-6 text-white" />
         </div>
-        <p className="text-sm font-semibold text-slate-300">Carregando Assistente Show...</p>
+        <p className="text-sm font-semibold text-slate-500 dark:text-slate-300">Carregando Assistente Show...</p>
       </div>
     );
   }
@@ -262,7 +262,7 @@ export default function Home() {
   const opportunitiesDueToday = opportunities.filter((o) => o.expiration_date === todayStr).length;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-[#0b0f19] text-slate-100 transition-colors duration-200">
+    <div className="flex flex-col md:flex-row min-h-screen bg-slate-100 text-slate-800 dark:bg-[#0b0f19] dark:text-slate-100 transition-colors duration-200">
       {/* Sidebar */}
       <Sidebar
         activeTab={activeTab}
@@ -333,7 +333,7 @@ export default function Home() {
 
       {/* Toast Feedback Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl bg-slate-900 border border-sky-500/50 text-sky-300 font-semibold text-xs shadow-xl flex items-center gap-2 animate-fadeIn">
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl bg-white border border-sky-500/50 text-sky-600 shadow-lg dark:bg-slate-900 dark:text-sky-300 font-semibold text-xs flex items-center gap-2 animate-fadeIn">
           <span className="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
           <span>{toastMessage}</span>
         </div>

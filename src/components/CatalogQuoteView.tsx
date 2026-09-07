@@ -524,7 +524,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
   return (
     <div className="space-y-5">
-      {/* Sub-navigation Mode Tabs */}
+      {/* Sub-navigation Mode Tabs — Orçamento Inteligente desabilitado temporariamente
       <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
         <button
           onClick={() => setCatalogMode('standard')}
@@ -549,18 +549,20 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
           <span>Orçamento Inteligente</span>
         </button>
       </div>
+      */}
 
       {/* Main Grid + Cart Drawer Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
         {/* Left Column: Products Categorized Sections OR Smart Wizard */}
         <div className="lg:col-span-2 space-y-6">
+          {/* SmartQuoteWizard desabilitado temporariamente
           {catalogMode === 'smart' ? (
             <SmartQuoteWizard
               products={products}
               onAddItemsToCart={addMultipleItemsToCart}
               onSwitchToStandardCatalog={() => setCatalogMode('standard')}
             />
-          ) : (
+          ) : ( */}
             <>
               {/* Search & Kit Templates Bar */}
               <div className="clean-card p-3 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-2.5">
@@ -647,7 +649,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                           {product.monthly_fee && product.monthly_fee > 0 ? (
-                            <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/80 backdrop-blur-md text-[10px] font-semibold text-emerald-400 border border-emerald-500/30">
+                            <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                               R$ {product.monthly_fee.toFixed(2)}/mês
                             </span>
                           ) : null}
@@ -733,7 +735,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                           {product.monthly_fee && product.monthly_fee > 0 ? (
-                            <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-slate-900/80 backdrop-blur-md text-[10px] font-semibold text-emerald-400 border border-emerald-500/30">
+                            <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                               R$ {product.monthly_fee.toFixed(2)}/mês
                             </span>
                           ) : null}
@@ -783,7 +785,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
             )}
           </div>
         </>
-      )}
+      {/* )} — fim do ternário SmartQuoteWizard */}
     </div>
 
         {/* Right Column: Orçamento */}
@@ -904,8 +906,13 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                     <div className="flex items-center gap-1.5 shrink-0">
                       <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-950">
                         <button
-                          onClick={() => updateQuantity(item.product.id, -1)}
-                          className="px-1.5 py-0.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          onMouseDown={() => {
+                            updateQuantity(item.product.id, -1);
+                            const intervalId = setInterval(() => updateQuantity(item.product.id, -1), 150);
+                            const stop = () => { clearInterval(intervalId); window.removeEventListener('mouseup', stop); };
+                            window.addEventListener('mouseup', stop);
+                          }}
+                          className="px-1.5 py-0.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 select-none"
                         >
                           <Minus className="w-3 h-3" />
                         </button>
@@ -913,8 +920,13 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => updateQuantity(item.product.id, 1)}
-                          className="px-1.5 py-0.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          onMouseDown={() => {
+                            updateQuantity(item.product.id, 1);
+                            const intervalId = setInterval(() => updateQuantity(item.product.id, 1), 150);
+                            const stop = () => { clearInterval(intervalId); window.removeEventListener('mouseup', stop); };
+                            window.addEventListener('mouseup', stop);
+                          }}
+                          className="px-1.5 py-0.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 select-none"
                         >
                           <Plus className="w-3 h-3" />
                         </button>
@@ -1296,7 +1308,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
 
       {/* Modal: Gerenciar Kits Prontos */}
       {showManageKitsModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/50 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="clean-card bg-white dark:bg-slate-900 rounded-3xl p-5 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">

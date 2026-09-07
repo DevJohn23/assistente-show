@@ -14,7 +14,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className="dark">
+    <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        {/* Anti-FOUC: aplica o tema antes do primeiro render para evitar flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('assistente_show_theme');
+                  if (!theme) {
+                    theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+                  }
+                  document.documentElement.classList.add(theme);
+                  if (theme === 'dark') document.documentElement.classList.remove('light');
+                  else document.documentElement.classList.remove('dark');
+                } catch(e) {
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="antialiased selection:bg-sky-500 selection:text-white transition-colors duration-200">
         <AuthProvider>
           <ThemeProvider>

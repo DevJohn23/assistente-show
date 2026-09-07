@@ -224,7 +224,8 @@ export default function MapLeaflet({
       />
       <div
         ref={containerRef}
-        style={{ width: '100%', height: '100%', minHeight: '320px', background: '#1e293b' }}
+        className="bg-slate-200 dark:bg-slate-800"
+        style={{ width: '100%', height: '100%', minHeight: '320px' }}
       />
     </>
   );

@@ -7,6 +7,11 @@
 :root {
   --font-outfit: 'Outfit', sans-serif;
   --font-jakarta: 'Plus Jakarta Sans', sans-serif;
+  --bg-app: #f1f5f9; /* slate-100 */
+}
+
+.dark {
+  --bg-app: #0b0f19;
 }
 
 body {
@@ -69,4 +74,9 @@ html.dark ::-webkit-scrollbar-thumb {
 ::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
   transform: scale(1.15);
+}
+
+/* Light mode calendar picker - darker indicator for visibility */
+html.light ::-webkit-calendar-picker-indicator {
+  filter: invert(0.3) sepia(1) saturate(4) hue-rotate(170deg) brightness(0.9);
 }
