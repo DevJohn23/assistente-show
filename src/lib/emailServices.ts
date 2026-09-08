@@ -1,3 +1,4 @@
+import { getLocalDateString } from "@/lib/dateUtils";
 import { Resend } from 'resend';
 import * as XLSX from 'xlsx';
 import { Commission } from '@/types';
@@ -11,7 +12,7 @@ const resend = new Resend(resendApiKey);
 export function generateWeeklyExcelBuffer(commissions: Commission[]): Buffer {
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+  const sevenDaysAgoStr = getLocalDateString(sevenDaysAgo);
 
   const recentCommissions = commissions.filter(c => c.sale_date >= sevenDaysAgoStr);
 
@@ -48,7 +49,7 @@ export async function sendWeeklyReportEmail(
   commissions: Commission[]
 ) {
   const excelBuffer = generateWeeklyExcelBuffer(commissions);
-  const dateStr = new Date().toISOString().split('T')[0];
+  const dateStr = getLocalDateString();
   const filename = `Relatorio_Semanal_Show_${dateStr}.xlsx`;
 
   const htmlContent = `

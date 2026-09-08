@@ -1,4 +1,5 @@
 'use client';
+import { getLocalDateString } from "@/lib/dateUtils";
 
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from '@/components/Sidebar';
@@ -156,7 +157,7 @@ export default function Home() {
     const daysToAdd = opp.type === 'PF' ? 15 : 30;
     const currentExp = new Date(opp.expiration_date + 'T00:00:00');
     currentExp.setDate(currentExp.getDate() + daysToAdd);
-    const newExp = currentExp.toISOString().split('T')[0];
+    const newExp = getLocalDateString(currentExp);
 
     const updated = { expiration_date: newExp, status: 'renewed' as const };
     setOpportunities((prev) =>
@@ -258,7 +259,7 @@ export default function Home() {
 
   const currentHeader = headerContent[activeTab] || headerContent.dashboard;
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalDateString();
   const opportunitiesDueToday = opportunities.filter((o) => o.expiration_date === todayStr).length;
 
   return (

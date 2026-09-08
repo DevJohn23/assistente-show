@@ -1,3 +1,4 @@
+import { getLocalDateString } from "@/lib/dateUtils";
 import { Product, Opportunity, Commission, QuoteTemplate } from '@/types';
 
 export const INITIAL_PRODUCTS: Product[] = [
@@ -2466,8 +2467,8 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
     type: 'PJ',
     phone: '11998877665',
     company_name: 'Alfa Logística Ltda',
-    registration_date: new Date(Date.now() - 15 * 86400000).toISOString().split('T')[0],
-    expiration_date: new Date().toISOString().split('T')[0],
+    registration_date:getLocalDateString( new Date(Date.now() - 15 * 86400000)),
+    expiration_date: getLocalDateString(),
     notes: 'Cliente pediu orçamento para 10 carretas frigoríficas.',
     status: 'active'
   },
@@ -2479,8 +2480,8 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
     type: 'PJ',
     phone: '35987654321',
     company_name: 'Sul-Minas Cargas',
-    registration_date: new Date(Date.now() - 20 * 86400000).toISOString().split('T')[0],
-    expiration_date: new Date(Date.now() + 1 * 86400000).toISOString().split('T')[0],
+    registration_date:getLocalDateString( new Date(Date.now() - 20 * 86400000)),
+    expiration_date:getLocalDateString( new Date(Date.now() + 1 * 86400000)),
     notes: 'Aguardando aprovação da diretoria para instalação do Omniturbo.',
     status: 'active'
   }
@@ -2493,7 +2494,7 @@ export const INITIAL_COMMISSIONS: Commission[] = [
     client_name: 'Frota Rodoviária Alfa',
     sale_amount: 15400.00,
     commission_amount: 1540.00,
-    sale_date: new Date(Date.now() - 5 * 86400000).toISOString().split('T')[0],
+    sale_date:getLocalDateString( new Date(Date.now() - 5 * 86400000)),
     installer_option: 'me',
     registration_type: 'own',
     status: 'pending',

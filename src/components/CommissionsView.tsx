@@ -1,4 +1,5 @@
 'use client';
+import { getLocalDateString } from "@/lib/dateUtils";
 
 import React, { useState } from 'react';
 import { Commission, CommissionRegistrationType } from '@/types';
@@ -56,7 +57,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
   const [clientName, setClientName] = useState('');
   const [saleAmount, setSaleAmount] = useState('');
   const [commissionAmount, setCommissionAmount] = useState('');
-  const [saleDate, setSaleDate] = useState(new Date().toISOString().split('T')[0]);
+  const [saleDate, setSaleDate] = useState(getLocalDateString());
   
   // Single explicit operation type to eliminate invalid combinations
   const [regTypeSelect, setRegTypeSelect] = useState<CommissionRegistrationType>('own');
@@ -82,7 +83,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
     setClientName('');
     setSaleAmount('');
     setCommissionAmount('');
-    setSaleDate(new Date().toISOString().split('T')[0]);
+    setSaleDate(getLocalDateString());
     setRegTypeSelect('own');
     setSelectedSeller(allSellers[0] || '');
     setNewSellerInput('');
@@ -284,7 +285,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Comissões');
-    XLSX.writeFile(workbook, `Relatorio_Comissoes_Show_${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.writeFile(workbook, `Relatorio_Comissoes_Show_${getLocalDateString()}.xlsx`);
   };
 
   return (

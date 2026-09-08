@@ -1,4 +1,5 @@
 'use client';
+import { getLocalDateString } from "@/lib/dateUtils";
 
 import React from 'react';
 import { Opportunity, Commission } from '@/types';
@@ -43,10 +44,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     greetingText = 'Boa noite';
   }
   // Calculations
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalDateString();
   const tomorrowObj = new Date();
   tomorrowObj.setDate(tomorrowObj.getDate() + 1);
-  const tomorrowStr = tomorrowObj.toISOString().split('T')[0];
+  const tomorrowStr = getLocalDateString(tomorrowObj);
 
   const dueToday = opportunities.filter((o) => o.expiration_date === todayStr);
   const dueTomorrow = opportunities.filter((o) => o.expiration_date === tomorrowStr);
@@ -56,15 +57,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   // Total Bruto previsto das operações do mês (Próprias + Implantações + A Receber)
   const totalCommissionExpected = commissions.reduce((acc, c) => acc + c.commission_amount, 0);
 
-  const chartDays = [
-    { day: 'Seg', count: 2 },
-    { day: 'Ter', count: 4 },
-    { day: 'Qua', count: 1 },
-    { day: 'Qui', count: 5 },
-    { day: 'Sex', count: 3 },
-    { day: 'Sáb', count: 0 },
-    { day: 'Dom', count: 1 },
-  ];
+  const chartDays = (() => {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0=Dom, 1=Seg, ...
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7)); // volta para segunda
+    monday.setHours(0, 0, 0, 0);
+
+    const labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    return labels.map((day, i) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const dateStr = getLocalDateString(d);
+      const count = opportunities.filter((o) => o.expiration_date === dateStr).length;
+      return { day, count };
+    });
+  })();
 
   return (
     <div className="space-y-5">
@@ -247,15 +255,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           <div className="mt-6 flex items-end justify-between gap-2 h-40 px-2">
             {chartDays.map((item, idx) => {
+              const maxCount = Math.max(...chartDays.map(d => d.count), 1);
               const maxHeight = 110;
-              const height = item.count > 0 ? (item.count / 5) * maxHeight : 6;
+              const height = item.count > 0 ? (item.count / maxCount) * maxHeight : 6;
               return (
                 <div key={idx} className="flex flex-col items-center flex-1 gap-2">
                   <span className="text-xs font-bold text-sky-600 dark:text-sky-400">{item.count > 0 ? item.count : ''}</span>
                   <div
                     style={{ height: `${height}px` }}
                     className={`w-full rounded-t-md transition-all duration-300 ${
-                      item.count > 3
+                      item.count >= maxCount * 0.6
                         ? 'bg-sky-600'
                         : item.count > 0
                         ? 'bg-sky-500/60 dark:bg-sky-600/50'

@@ -1,4 +1,5 @@
 'use client';
+import { getLocalDateString } from "@/lib/dateUtils";
 
 import React, { useState } from 'react';
 import { Opportunity, ClientType } from '@/types';
@@ -51,11 +52,11 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
     const days = clientType === 'PF' ? 15 : 30;
     const d = new Date(startDateStr + 'T00:00:00');
     d.setDate(d.getDate() + days);
-    return d.toISOString().split('T')[0];
+    return getLocalDateString(d);
   };
 
   // Form State
-  const initialToday = new Date().toISOString().split('T')[0];
+  const initialToday = getLocalDateString();
   const [formData, setFormData] = useState({
     client_name: '',
     cpf_cnpj: '',
@@ -69,7 +70,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
 
   const handleOpenAddModal = () => {
     setEditingOpp(null);
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
     setFormData({
       client_name: '',
       cpf_cnpj: '',
@@ -114,9 +115,9 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
   };
 
   // Date filters logic
-  const todayStr = new Date().toISOString().split('T')[0];
-  const tomorrowStr = new Date(Date.now() + 1 * 86400000).toISOString().split('T')[0];
-  const twoDaysStr = new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0];
+  const todayStr = getLocalDateString();
+  const tomorrowStr = getLocalDateString(new Date(Date.now() + 1 * 86400000));
+  const twoDaysStr = getLocalDateString(new Date(Date.now() + 2 * 86400000));
 
   // Filtering
   const filteredOpportunities = opportunities.filter((opp) => {

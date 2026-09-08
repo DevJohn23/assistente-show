@@ -1,3 +1,4 @@
+import { getLocalDateString } from "@/lib/dateUtils";
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendWeeklyReportEmail } from '@/lib/emailServices';
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
     // Filter to last 7 days only
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+    const sevenDaysAgoStr = getLocalDateString(sevenDaysAgo);
     const recentCommissions = allCommissions.filter(c => c.sale_date >= sevenDaysAgoStr);
 
     let sentCount = 0;
