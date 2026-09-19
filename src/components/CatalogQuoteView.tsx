@@ -552,6 +552,64 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
       </div>
       */}
 
+      {/* Search & Kit Templates Bar — full width, above the grid */}
+      <div className="clean-card p-3 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+        {/* Compact Search Input */}
+        <div className="relative w-full md:w-44 shrink-0">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Pesquisar..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-8 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 font-medium"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Scrollable Kit Templates Pills Area */}
+        <div className="flex items-center gap-1.5 overflow-x-auto min-w-0 flex-1 py-0.5">
+          {templates.map((tpl) => (
+            <button
+              key={tpl.id}
+              onClick={() => handleLoadTemplate(tpl)}
+              className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-sky-700 dark:text-sky-300 transition-all whitespace-nowrap flex items-center gap-1 shrink-0"
+            >
+              <Sparkles className="w-3 h-3 text-sky-500" />
+              <span>{tpl.name}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* 3 dots button for Kit Management */}
+        <button
+          type="button"
+          onClick={() => setShowManageKitsModal(true)}
+          className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all shrink-0"
+          title="Gerenciar Kits Prontos"
+        >
+          <MoreVertical className="w-4 h-4" />
+        </button>
+
+        {/* Financing Calculator Button — pinned far right */}
+        <button
+          type="button"
+          onClick={() => setShowFinancingCalcModal(true)}
+          className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 shadow-sm"
+          title="Calculadora de Financiamento"
+        >
+          <Calculator className="w-3.5 h-3.5" />
+          Simular
+        </button>
+      </div>
+
       {/* Main Grid + Cart Drawer Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
         {/* Left Column: Products Categorized Sections OR Smart Wizard */}
@@ -565,62 +623,6 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
             />
           ) : ( */}
             <>
-              {/* Search & Kit Templates Bar */}
-              <div className="clean-card p-3 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-2.5">
-                {/* Compact Search Input */}
-                <div className="relative w-full md:w-44 shrink-0">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                  <input
-                    type="text"
-                    placeholder="Pesquisar..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-9 pr-8 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 font-medium"
-                  />
-                  {searchTerm && (
-                    <button
-                      onClick={() => setSearchTerm('')}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                {/* Scrollable Kit Templates Pills Area */}
-                <div className="flex items-center gap-1.5 overflow-x-auto min-w-0 flex-1 py-0.5">
-                  {templates.map((tpl) => (
-                    <button
-                      key={tpl.id}
-                      onClick={() => handleLoadTemplate(tpl)}
-                      className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-sky-700 dark:text-sky-300 transition-all whitespace-nowrap flex items-center gap-1 shrink-0"
-                    >
-                      <Sparkles className="w-3 h-3 text-sky-500" />
-                      <span>{tpl.name}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Financing Calculator Button */}
-                <button
-                  type="button"
-                  onClick={() => setShowFinancingCalcModal(true)}
-                  className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-sky-100 dark:hover:bg-sky-900/40 border border-slate-200 dark:border-slate-800 hover:border-sky-400 dark:hover:border-sky-600 text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 transition-all shrink-0"
-                  title="Calculadora de Financiamento"
-                >
-                  <Calculator className="w-4 h-4" />
-                </button>
-
-                {/* Fixed 3 dots button for Kit Management (Pinned at far right) */}
-                <button
-                  type="button"
-                  onClick={() => setShowManageKitsModal(true)}
-                  className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all shrink-0"
-                  title="Gerenciar Kits Prontos"
-                >
-                  <MoreVertical className="w-4 h-4" />
-                </button>
-              </div>
           
           {/* Section 1: Rastreadores */}
           <div className="space-y-3">

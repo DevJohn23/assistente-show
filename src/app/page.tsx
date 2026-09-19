@@ -273,11 +273,13 @@ export default function Home() {
 
       {/* Main Content Area */}
       <main className="flex-1 p-5 md:p-8 max-w-7xl mx-auto w-full">
-        {/* Header */}
-        <Header
-          title={currentHeader.title}
-          description={currentHeader.description}
-        />
+        {/* Header — oculto na aba de catálogo para ganhar espaço */}
+        {activeTab !== 'catalog' && (
+          <Header
+            title={currentHeader.title}
+            description={currentHeader.description}
+          />
+        )}
 
         {/* Tab Content Views */}
         {activeTab === 'dashboard' && (
