@@ -433,7 +433,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const generateMessageText = () => {
     const greeting = clientName.trim()
       ? `Olá *${clientName.trim()}*, seu orçamento está pronto!\n\n`
-      : `Olá, seu orçamento da *Show Tecnologia / Omnilink* está pronto!\n\n`;
+      : '';
 
     let msg = greeting;
 
@@ -452,7 +452,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     msg += `\n💰 *Total Equipamentos (À Vista):* R$ ${formatCurrency(finalEquipmentPrice)}\n`;
 
     if (includeMonthlyFee && totalMonthlyFee > 0) {
-      msg += `\n📡 *Mensalidade de Serviços:* R$ ${formatCurrency(totalMonthlyFee)}/mês\n`;
+      msg += `\n📡 *Mensalidade:* R$ ${formatCurrency(totalMonthlyFee)}/mês\n`;
     }
 
     if (requireEntryFee) {
@@ -477,9 +477,10 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     }
 
     if (payFinancing && financingInstallments.length > 0) {
+      msg += `\n*Financiamento:*\n`;
       financingInstallments.forEach(n => {
         const fResult = calcularSimulacaoFinanciamento(finalEquipmentPrice, 0, 0, n, TAXA_JUROS_MENSAL);
-        msg += `• *Financiamento ${n}x:* R$ ${formatCurrency(fResult.valorParcela)}/mês\n`;
+        msg += `• ${n}x de R$ ${formatCurrency(fResult.valorParcela)}/mês\n`;
       });
     }
 
@@ -1036,7 +1037,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                     className="rounded border-slate-300 dark:border-slate-700 text-sky-600 focus:ring-0"
                   />
                   <Radio className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                  <span className="font-medium text-slate-800 dark:text-slate-200">Mensalidade de Serviços</span>
+                  <span className="font-medium text-slate-800 dark:text-slate-200">Mensalidade</span>
                 </div>
               </label>
 
@@ -1050,7 +1051,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                     className="rounded border-slate-300 dark:border-slate-700 text-rose-600 focus:ring-0"
                   />
                   <span className="w-3.5 h-3.5 flex items-center justify-center text-[10px] bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400 rounded-sm font-bold">R$</span>
-                  <span className="font-medium text-slate-800 dark:text-slate-200">Exigir Entrada PF Novo</span>
+                  <span className="font-medium text-slate-800 dark:text-slate-200">Entrada</span>
                 </div>
                 {requireEntryFee && (
                   <span className="text-[10px] font-bold text-rose-600 bg-rose-100 dark:bg-rose-900/40 dark:text-rose-400 px-1.5 py-0.5 rounded">R$ 550</span>
