@@ -147,11 +147,12 @@ export default function MapLeaflet({
 
         if (!searchMode) {
           // Modo inicial: pino estilo Google Maps colorido por categoria
+          const cat = t.categoria || '';
           const catColor =
-            t.categoria.includes('REDE PLUS') ? '#f59e0b'
-            : t.categoria.includes('PSO')     ? '#38bdf8'
-            : t.categoria === 'ATA'           ? '#f87171'
-            : t.categoria === 'SPOT'          ? '#34d399'
+            cat.includes('REDE PLUS') ? '#f59e0b'
+            : cat.includes('PSO')     ? '#38bdf8'
+            : cat === 'ATA'           ? '#f87171'
+            : cat === 'SPOT'          ? '#34d399'
             : '#94a3b8';
 
           icon = L.divIcon({

@@ -28,11 +28,12 @@ function haversine(lat1: number, lon1: number, lat2: number, lon2: number): numb
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function categoriaBadge(cat: string) {
-  if (cat.includes('REDE PLUS')) return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-  if (cat.includes('PSO')) return 'bg-sky-500/20 text-sky-300 border-sky-500/30';
-  if (cat === 'ATA') return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
-  if (cat === 'SPOT') return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+function categoriaBadge(cat: string | null | undefined) {
+  const c = cat || '';
+  if (c.includes('REDE PLUS')) return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+  if (c.includes('PSO')) return 'bg-sky-500/20 text-sky-300 border-sky-500/30';
+  if (c === 'ATA') return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
+  if (c === 'SPOT') return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
   return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
 }
 

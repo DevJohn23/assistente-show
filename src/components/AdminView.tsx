@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Product, Tecnico } from '@/types';
-import { Settings, Package, MapPin, Plus, Edit2, Trash2, X, Check, ArrowLeft, Search, Upload, ImageIcon } from 'lucide-react';
+import { Settings, Package, MapPin, Plus, Edit2, Trash2, X, Check, ArrowLeft, Search, Upload, ImageIcon, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Tab = 'products' | 'tecnicos';
@@ -24,6 +24,68 @@ export default function AdminView() {
 
   const [productSearch, setProductSearch] = useState('');
   const [tecnicoSearch, setTecnicoSearch] = useState('');
+
+  // Address search for technician modal
+  interface NominatimResult { lat: string; lon: string; display_name: string; }
+  const [addressQuery, setAddressQuery] = useState('');
+  const [addressSuggestions, setAddressSuggestions] = useState<NominatimResult[]>([]);
+  const [loadingAddressSugg, setLoadingAddressSugg] = useState(false);
+  const [addressConfirmed, setAddressConfirmed] = useState('');
+  const [showAddressSugg, setShowAddressSugg] = useState(false);
+  const addressDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const justSelectedAddressRef = useRef(false);
+
+  const fetchAddressSuggestions = useCallback(async (q: string) => {
+    if (q.length < 4) { setAddressSuggestions([]); return; }
+    setLoadingAddressSugg(true);
+    try {
+      const cepMatch = q.replace(/[^0-9]/g, '');
+      if (cepMatch.length === 8) {
+        const viaCepRes = await fetch(`https://viacep.com.br/ws/${cepMatch}/json/`);
+        const viaCepData = await viaCepRes.json();
+        if (!viaCepData.erro) {
+          const fullAddress = `${viaCepData.logradouro}, ${viaCepData.bairro}, ${viaCepData.localidade} - ${viaCepData.uf}`;
+          const nomRes = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullAddress + ', Brasil')}&format=json&limit=1`,
+            { headers: { 'Accept-Language': 'pt-BR' } }
+          );
+          const nomData: NominatimResult[] = await nomRes.json();
+          if (nomData.length > 0) {
+            setAddressSuggestions([{ lat: nomData[0].lat, lon: nomData[0].lon, display_name: `${fullAddress} (CEP: ${viaCepData.cep})` }]);
+            setShowAddressSugg(true);
+            return;
+          }
+        }
+      }
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q + ', Brasil')}&format=json&limit=5&countrycodes=br`,
+        { headers: { 'Accept-Language': 'pt-BR' } }
+      );
+      const data: NominatimResult[] = await res.json();
+      setAddressSuggestions(data);
+      setShowAddressSugg(true);
+    } catch {
+      setAddressSuggestions([]);
+    } finally {
+      setLoadingAddressSugg(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (addressDebounceRef.current) clearTimeout(addressDebounceRef.current);
+    if (justSelectedAddressRef.current) { justSelectedAddressRef.current = false; return; }
+    addressDebounceRef.current = setTimeout(() => fetchAddressSuggestions(addressQuery), 400);
+    return () => { if (addressDebounceRef.current) clearTimeout(addressDebounceRef.current); };
+  }, [addressQuery, fetchAddressSuggestions]);
+
+  const handleSelectAddress = (s: NominatimResult) => {
+    justSelectedAddressRef.current = true;
+    setAddressQuery(s.display_name);
+    setAddressSuggestions([]);
+    setShowAddressSugg(false);
+    setAddressConfirmed(s.display_name);
+    setEditingTecnico(prev => prev ? { ...prev, lat: parseFloat(s.lat), lng: parseFloat(s.lon) } : prev);
+  };
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const compressImage = (file: File, maxWidth = 400, quality = 0.7): Promise<Blob> => {
@@ -308,6 +370,9 @@ export default function AdminView() {
                   <button
                     onClick={() => {
                       setEditingTecnico({ lat: 0, lng: 0 });
+                      setAddressQuery('');
+                      setAddressConfirmed('');
+                      setAddressSuggestions([]);
                       setIsTecnicoModalOpen(true);
                     }}
                     className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded-xl transition-colors"
@@ -349,7 +414,7 @@ export default function AdminView() {
                             <td className="px-4 py-3 text-slate-500 text-xs">{t.vendedor_parceiro || '-'}</td>
                             <td className="px-4 py-3 flex items-center justify-end gap-2">
                               <button
-                                onClick={() => { setEditingTecnico(t); setIsTecnicoModalOpen(true); }}
+                                onClick={() => { setEditingTecnico(t); setAddressQuery(''); setAddressConfirmed(''); setAddressSuggestions([]); setIsTecnicoModalOpen(true); }}
                                 className="p-2 text-slate-400 hover:text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-lg transition-colors"
                               >
                                 <Edit2 className="w-4 h-4" />
@@ -486,8 +551,18 @@ export default function AdminView() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Categoria (ex: REDE PLUS)</label>
-                    <input type="text" value={editingTecnico.categoria || ''} onChange={e => setEditingTecnico({...editingTecnico, categoria: e.target.value})} className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" />
+                    <label className="block text-xs font-semibold mb-1">Categoria</label>
+                    <select
+                      value={editingTecnico.categoria || ''}
+                      onChange={e => setEditingTecnico({...editingTecnico, categoria: e.target.value})}
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:border-purple-500"
+                    >
+                      <option value="">Sem categoria</option>
+                      <option value="REDE PLUS">REDE PLUS</option>
+                      <option value="PSO">PSO</option>
+                      <option value="ATA">ATA</option>
+                      <option value="SPOT">SPOT</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-xs font-semibold mb-1">Tipo (ex: Fixo, Volante)</label>
@@ -504,15 +579,52 @@ export default function AdminView() {
                     <input type="email" value={editingTecnico.email || ''} onChange={e => setEditingTecnico({...editingTecnico, email: e.target.value})} className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold mb-1">Latitude</label>
-                    <input type="number" step="any" value={editingTecnico.lat || ''} onChange={e => setEditingTecnico({...editingTecnico, lat: parseFloat(e.target.value)})} className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" required />
+                {/* Address Search — replaces manual lat/lng */}
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Localização (endereço ou CEP)</label>
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                    {loadingAddressSugg && <Loader2 className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 animate-spin" />}
+                    <input
+                      type="text"
+                      placeholder="Ex: Av. Paulista, São Paulo ou 01310-100"
+                      value={addressQuery}
+                      onChange={e => { setAddressQuery(e.target.value); setAddressConfirmed(''); }}
+                      onFocus={() => addressSuggestions.length > 0 && setShowAddressSugg(true)}
+                      className="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:border-purple-500"
+                    />
+                    {addressQuery && (
+                      <button type="button" onClick={() => { setAddressQuery(''); setAddressConfirmed(''); setAddressSuggestions([]); setEditingTecnico(prev => prev ? { ...prev, lat: 0, lng: 0 } : prev); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    {showAddressSugg && addressSuggestions.length > 0 && (
+                      <ul className="absolute z-50 top-full mt-1 left-0 right-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden max-h-48 overflow-y-auto">
+                        {addressSuggestions.map((s, i) => (
+                          <li key={i}>
+                            <button
+                              type="button"
+                              onMouseDown={() => handleSelectAddress(s)}
+                              className="w-full text-left px-3 py-2 text-xs hover:bg-purple-50 dark:hover:bg-purple-900/30 flex items-start gap-2 border-b border-slate-100 dark:border-slate-800 last:border-0 transition-colors"
+                            >
+                              <MapPin className="w-3.5 h-3.5 text-purple-500 shrink-0 mt-0.5" />
+                              <span className="text-slate-700 dark:text-slate-200 leading-tight">{s.display_name}</span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
-                  <div>
-                    <label className="block text-xs font-semibold mb-1">Longitude</label>
-                    <input type="number" step="any" value={editingTecnico.lng || ''} onChange={e => setEditingTecnico({...editingTecnico, lng: parseFloat(e.target.value)})} className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg text-sm" required />
-                  </div>
+                  {/* Confirmation badge */}
+                  {addressConfirmed && editingTecnico.lat !== 0 && (
+                    <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg px-2.5 py-1.5">
+                      <Check className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">📍 {addressConfirmed}</span>
+                    </div>
+                  )}
+                  {/* Hidden inputs to keep lat/lng in the form — required validation */}
+                  <input type="hidden" value={editingTecnico.lat || ''} required />
+                  <input type="hidden" value={editingTecnico.lng || ''} required />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1">Vendedor Parceiro associado (opcional)</label>
