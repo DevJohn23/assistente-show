@@ -553,9 +553,9 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
       */}
 
       {/* Search & Kit Templates Bar — full width, above the grid */}
-      <div className="clean-card p-3 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-2.5">
-        {/* Compact Search Input */}
-        <div className="relative w-full md:w-44 shrink-0">
+      <div className="clean-card p-3 rounded-2xl space-y-2 lg:space-y-0 lg:flex lg:items-center lg:justify-between lg:gap-2.5">
+        {/* Compact Search Input — full width on mobile, fixed width on desktop */}
+        <div className="relative w-full lg:w-44 shrink-0">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           <input
             type="text"
@@ -574,40 +574,43 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
           )}
         </div>
 
-        {/* Scrollable Kit Templates Pills Area */}
-        <div className="flex items-center gap-1.5 overflow-x-auto min-w-0 flex-1 py-0.5">
-          {templates.map((tpl) => (
-            <button
-              key={tpl.id}
-              onClick={() => handleLoadTemplate(tpl)}
-              className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-sky-700 dark:text-sky-300 transition-all whitespace-nowrap flex items-center gap-1 shrink-0"
-            >
-              <Sparkles className="w-3 h-3 text-sky-500" />
-              <span>{tpl.name}</span>
-            </button>
-          ))}
+        {/* Bottom row on mobile: kits + buttons side by side */}
+        <div className="flex items-center gap-1.5 w-full lg:w-auto lg:flex-1 lg:min-w-0">
+          {/* Scrollable Kit Templates Pills Area */}
+          <div className="flex items-center gap-1.5 overflow-x-auto min-w-0 flex-1 py-0.5">
+            {templates.map((tpl) => (
+              <button
+                key={tpl.id}
+                onClick={() => handleLoadTemplate(tpl)}
+                className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-sky-700 dark:text-sky-300 transition-all whitespace-nowrap flex items-center gap-1 shrink-0"
+              >
+                <Sparkles className="w-3 h-3 text-sky-500" />
+                <span>{tpl.name}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* 3 dots button for Kit Management */}
+          <button
+            type="button"
+            onClick={() => setShowManageKitsModal(true)}
+            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all shrink-0"
+            title="Gerenciar Kits Prontos"
+          >
+            <MoreVertical className="w-4 h-4" />
+          </button>
+
+          {/* Financing Calculator Button */}
+          <button
+            type="button"
+            onClick={() => setShowFinancingCalcModal(true)}
+            className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 shadow-sm"
+            title="Calculadora de Financiamento"
+          >
+            <Calculator className="w-3.5 h-3.5" />
+            Simular
+          </button>
         </div>
-
-        {/* 3 dots button for Kit Management */}
-        <button
-          type="button"
-          onClick={() => setShowManageKitsModal(true)}
-          className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all shrink-0"
-          title="Gerenciar Kits Prontos"
-        >
-          <MoreVertical className="w-4 h-4" />
-        </button>
-
-        {/* Financing Calculator Button — pinned far right */}
-        <button
-          type="button"
-          onClick={() => setShowFinancingCalcModal(true)}
-          className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 shadow-sm"
-          title="Calculadora de Financiamento"
-        >
-          <Calculator className="w-3.5 h-3.5" />
-          Simular
-        </button>
       </div>
 
       {/* Main Grid + Cart Drawer Layout */}
