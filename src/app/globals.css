@@ -63,6 +63,15 @@ html.dark ::-webkit-scrollbar-thumb {
   animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* Custom Calendar Date Picker Indicator Highlight */
 ::-webkit-calendar-picker-indicator {
   filter: invert(0.6) sepia(1) saturate(6) hue-rotate(170deg) brightness(1.3);
