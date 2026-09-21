@@ -49,6 +49,10 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
   const [endDate, setEndDate] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
   // Edit State
   const [editingComm, setEditingComm] = useState<Commission | null>(null);
   const [viewingNotesComm, setViewingNotesComm] = useState<Commission | null>(null);
@@ -186,6 +190,16 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
 
     return matchesSearch && matchesStartDate && matchesEndDate;
   });
+
+  // Reset pagination when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, startDate, endDate]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredCommissions.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedCommissions = filteredCommissions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   // Calculate totals
   const totalOwnCommissions = filteredCommissions
@@ -407,14 +421,14 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
-              {filteredCommissions.length === 0 ? (
+              {paginatedCommissions.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-10 text-center text-slate-500 dark:text-slate-400">
                     Nenhum registro de comissão cadastrado neste período.
                   </td>
                 </tr>
               ) : (
-                filteredCommissions.map((c) => (
+                paginatedCommissions.map((c) => (
                   <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                     <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-white">{c.client_name}</td>
                     
@@ -500,6 +514,52 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Mostrando <span className="font-semibold text-slate-900 dark:text-white">{startIndex + 1}</span> a <span className="font-semibold text-slate-900 dark:text-white">{Math.min(startIndex + ITEMS_PER_PAGE, filteredCommissions.length)}</span> de <span className="font-semibold text-slate-900 dark:text-white">{filteredCommissions.length}</span> registros
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              >
+                Anterior
+              </button>
+              
+              <div className="flex items-center gap-1 hidden sm:flex">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-colors ${
+                      currentPage === page
+                        ? 'bg-sky-600 text-white shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              <span className="text-xs font-bold text-slate-600 dark:text-slate-400 sm:hidden">
+                Pág. {currentPage} / {totalPages}
+              </span>
+
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              >
+                Próxima
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Breakdown Report Box */}
