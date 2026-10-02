@@ -1353,6 +1353,56 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                 ))}
               </div>
 
+              {/* === ACRÉSCIMO E DESCONTO === */}
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2 text-xs mt-2">
+                {/* Acréscimo */}
+                <div className="flex items-center justify-between gap-2">
+                  <label className="text-slate-500 dark:text-slate-400 font-medium">Aplicar Acréscimo (%):</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={markupPercent || ''}
+                    onChange={(e) => setMarkupPercent(parseFloat(e.target.value) || 0)}
+                    className="w-14 px-2 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-right font-mono text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 text-xs"
+                  />
+                </div>
+                {markupPercent > 0 && (
+                  <div className="flex items-center justify-between text-sky-600 dark:text-sky-400 font-semibold">
+                    <span>Valor Acréscimo:</span>
+                    <span className="font-mono">+ R$ {formatCurrency(markupAmount)}</span>
+                  </div>
+                )}
+
+                {/* Desconto */}
+                <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+                  <label className="text-slate-500 dark:text-slate-400 font-medium">Aplicar Desconto (%):</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    placeholder="0"
+                    value={discountPercent || ''}
+                    onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
+                    className="w-14 px-2 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-right font-mono text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 text-xs"
+                  />
+                </div>
+                {discountPercent > 0 && (
+                  <div className="flex items-center justify-between text-amber-600 dark:text-amber-400 font-semibold">
+                    <span>Valor Desconto:</span>
+                    <span className="font-mono">- R$ {formatCurrency(discountAmount)}</span>
+                  </div>
+                )}
+
+                {/* Total */}
+                <div className="pt-1.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between font-bold text-slate-900 dark:text-white">
+                  <span>Total Equipamentos:</span>
+                  <span className="text-sm font-bold text-sky-600 dark:text-sky-400 font-outfit">
+                    R$ {formatCurrency(finalEquipmentPrice)}
+                  </span>
+                </div>
+              </div>
+
               {/* === OPÇÕES DE PAGAMENTO === */}
               <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mt-2">Pagamento</label>
               
