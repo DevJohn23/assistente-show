@@ -449,37 +449,39 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
       msg += `\n🏷️ *Desconto Especial (${discountPercent}%):* -R$ ${formatCurrency(discountAmount)}\n`;
     }
 
-    msg += `\n💰 *Total Equipamentos (À Vista):* R$ ${formatCurrency(finalEquipmentPrice)}\n`;
-
-    if (includeMonthlyFee && totalMonthlyFee > 0) {
-      msg += `\n📡 *Mensalidade:* R$ ${formatCurrency(totalMonthlyFee)}/mês\n`;
-    }
+    const entryDeduction = requireEntryFee ? 550 : 0;
+    const priceAfterEntry = finalEquipmentPrice - entryDeduction;
 
     if (requireEntryFee) {
       msg += `\n💵 *Entrada Mínima:* R$ 550,00\n`;
     }
 
+    msg += `\n💰 *Total Equipamentos (À Vista):* R$ ${formatCurrency(priceAfterEntry)}\n`;
+
+    if (includeMonthlyFee && totalMonthlyFee > 0) {
+      msg += `\n📡 *Mensalidade:* R$ ${formatCurrency(totalMonthlyFee)}/mês\n`;
+    }
+
     msg += `\n💳 *Formas de Pagamento:*\n`;
 
     if (payPix) {
-      const pixTotal = finalEquipmentPrice;
-      msg += `• *PIX à vista:* R$ ${formatCurrency(pixTotal)}\n`;
+      msg += `• *PIX à vista:* R$ ${formatCurrency(priceAfterEntry)}\n`;
     }
 
     if (payBoleto && boletoInstallments > 0) {
-      const boletoVal = finalEquipmentPrice / boletoInstallments;
+      const boletoVal = priceAfterEntry / boletoInstallments;
       msg += `• *Boleto Sem Juros:* ${boletoInstallments}x de R$ ${formatCurrency(boletoVal)}\n`;
     }
 
     if (payCard && cardInstallments > 0) {
-      const cardVal = finalEquipmentPrice / cardInstallments;
+      const cardVal = priceAfterEntry / cardInstallments;
       msg += `• *Cartão Sem Juros:* ${cardInstallments}x de R$ ${formatCurrency(cardVal)}\n`;
     }
 
     if (payFinancing && financingInstallments.length > 0) {
       msg += `\n*Financiamento:*\n`;
       financingInstallments.forEach(n => {
-        const fResult = calcularSimulacaoFinanciamento(finalEquipmentPrice, 0, 0, n, TAXA_JUROS_MENSAL);
+        const fResult = calcularSimulacaoFinanciamento(priceAfterEntry, 0, 0, n, TAXA_JUROS_MENSAL);
         msg += `• ${n}x de R$ ${formatCurrency(fResult.valorParcela)}/mês\n`;
       });
     }
@@ -489,7 +491,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     msg += `• Entrega e instalação gratuita\n`;
     msg += `• Treinamento completo para uso dos equipamentos e sistema\n`;
 
-    msg += `\nQualquer dúvida ou ajuste, estou à inteira disposição!`;
+
     return msg;
   };
 
