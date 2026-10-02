@@ -202,17 +202,6 @@
     "vendedor_parceiro": "Valderly Trajano de Morais"
   },
   {
-    "id": 19,
-    "nome": "PSO_JUNIOR SILVANO FELISBERTO (TUBARAO - SC)",
-    "categoria": "PSO C/ESTOQUE AVANÇADO",
-    "tipo": "Fixo",
-    "descricao": "ESTOQUE AVANÇADO",
-    "telefone": "(48) 99117-7234",
-    "email": "jamtubaraosc@hotmail.com",
-    "lat": -28.4893852,
-    "lng": -49.0056221
-  },
-  {
     "id": 20,
     "nome": "ATA119_ALEXSANDRO CARDOSO DA SILVA (MONTE MOR - SP)",
     "categoria": "PSO C/ESTOQUE AVANÇADO",
@@ -524,17 +513,6 @@
     "lat": -5.12301,
     "lng": -42.7958248,
     "vendedor_parceiro": "Beatriz"
-  },
-  {
-    "id": 47,
-    "nome": "PSO_FERNANDA FREITAS SILAVA (UBERLANDIA-MG)",
-    "categoria": "PSO C/ESTOQUE AVANÇADO",
-    "tipo": "Fixo",
-    "descricao": "ESTOQUE AVANÇADO",
-    "telefone": "(34) 991357730",
-    "email": "waengenhariarenovavel@gmail.com",
-    "lat": -18.8560658,
-    "lng": -48.2707397
   },
   {
     "id": 48,
@@ -992,17 +970,6 @@
     "lng": -51.151239
   },
   {
-    "id": 88,
-    "nome": "PSO_PEDRO BROZEGHINI (CARIACICA - ES)",
-    "categoria": "PSO",
-    "tipo": "Volante",
-    "descricao": "(27) 9 9807-4114 - POLIANA",
-    "telefone": "9807-4114",
-    "email": "vixtracker@gmail.com",
-    "lat": -20.3553154,
-    "lng": -40.3897578
-  },
-  {
     "id": 89,
     "nome": "PSO_CLOVIS FABRICIO DOS SANTOS BARBOSA (RIBEIRAO PRETO - SP)",
     "categoria": "PSO",
@@ -1386,5 +1353,225 @@
     "email": "leoaudiosascar@hotmail.com",
     "lat": -14.8078264,
     "lng": -39.2915263
+  },
+  {
+    "id": 123,
+    "nome": "PSO_PAI & FILHA TRANSPORTES (ES - CARIACICA)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "",
+    "descricao": "PSO_PAI & FILHA TRANSPORTES (ES - CARIACICA)",
+    "telefone": "",
+    "email": "",
+    "lat": -20.3553154,
+    "lng": -40.3897578
+  },
+  {
+    "id": 124,
+    "nome": "PSO TACOGRAFOS GUACU (MOGI GUACU SP)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Volante",
+    "descricao": "VL - VOLANTE Telefone: (19) 3911-87343 Jonas E-mail:administrativo@tacografosguacu.com.bR Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva Coordenador: Paulo Roberto Ferreira da Costa - +55",
+    "telefone": "(19) 3911-8734",
+    "email": "administrativo@tacografosguacu.com.bR",
+    "lat": -22.3760179,
+    "lng": -46.971347
+  },
+  {
+    "id": 125,
+    "nome": "PSO_ALESSANDRO ANTONIO PACHECO (MG - UBERLANDIA)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo",
+    "descricao": "FV- FIXO E Volante Contato:(34) 99135-7730 - ALESSANDRO E-mail: alessandroap@gmail.com Supervisor: 31 8557-3444 - Renato Coordenador: Ricardo Buitrago - +55 21 99145-9411",
+    "telefone": "(34) 99135-7730",
+    "email": "alessandroap@gmail.com",
+    "lat": -18.8865838,
+    "lng": -48.218413
+  },
+  {
+    "id": 126,
+    "nome": "PSO_BIRASAT SOLUCOES (SC - NAVEGANTES)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV - Fixo e Volante +55 47 9700-6604 - RODRIGO E-mail: financeirobirasat@gmail.com Supervisor: +55 41 9207-7643 - Vilmar Antonio Coordenador: +55 51 9183-8007 - Carlos Daniel",
+    "telefone": "47 9700-6604",
+    "email": "financeirobirasat@gmail.com",
+    "lat": -26.8954069,
+    "lng": -48.6569206
+  },
+  {
+    "id": 127,
+    "nome": "PSO_CARLOS OLIVEIRA (RIO VERDE GO)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV - Fixo e Volante Telefone: (64) 99233-0856 CARLOS OLIVEIRA  E-mail: carlosrodveira@gmail.com Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves Coordenador: (21) 99145-9411 Ricardo Buitrago",
+    "telefone": "(64) 99233-0856",
+    "email": "carlosrodveira@gmail.com",
+    "lat": -17.7544514,
+    "lng": -50.9176093
+  },
+  {
+    "id": 128,
+    "nome": "PSO_EDINILTON BARBOSA (PR -TELEMACO BORBA)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV - Fixo e Volante Telefone: (42) 8888-9985 - EDINILTON BARBOSA Email:EBSSERVICOAUTOMOTIVO19@GMAIL.COM Supervisor: +55 41 9207-7643 - Vilmar Antonio Coordenador: +55 51 9183-8007 - Carlos Daniel",
+    "telefone": "(42) 8888-9985",
+    "email": "EBSSERVICOAUTOMOTIVO19@GMAIL.COM",
+    "lat": -24.3072698,
+    "lng": -50.6372684
+  },
+  {
+    "id": 129,
+    "nome": "PSO_FRANÇA SERVICOS AUTOMOTIVOS LTDA (IGARAPÉ - MG)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "PSO_FRANÇA SERVICOS AUTOMOTIVOS LTDA (IGARAPÉ - MG) FV - Fixo e Volante Telefone:(31) 98811-4718 Anderson Email:ANDRE@FRANCASERVICOSAUTOMOTIVOS.COM.BR Supervisor: (31) 98557-3444 Renato Fernandes Gonç",
+    "telefone": "(31) 98811-4718",
+    "email": "ANDRE@FRANCASERVICOSAUTOMOTIVOS.COM.BR",
+    "lat": -20.037709,
+    "lng": -44.3058359
+  },
+  {
+    "id": 130,
+    "nome": "PSO_GARAPU DIESEL LTDA (CABO SANTO AUGUSTINHO PE)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV - Fixo e Volante Telefone:  81 98894121 - Jessica Camilla E-mail: Garapudieselpe@hotmail.com Supervisor: (81) 9205-7944 Marcus Cordeiro Leal Coordenador: Ricardo Buitrago (21) 99145-9411",
+    "telefone": "(81) 9205-7944",
+    "email": "Garapudieselpe@hotmail.com",
+    "lat": -8.2984792,
+    "lng": -35.0214163
+  },
+  {
+    "id": 131,
+    "nome": "PSO_GILMAR DAL MAGRO (LUIS EDUARDO MAGALHAES - BA)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV - Fixo e Volante Telefone: (77)3628-3846 - GILMAR E-mail: admgilsom@hotmail.com Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves Coordenador: Ricardo Buitrago (21) 99145-941",
+    "telefone": "(77)3628-3846",
+    "email": "admgilsom@hotmail.com",
+    "lat": -12.0806624,
+    "lng": -45.7786578
+  },
+  {
+    "id": 132,
+    "nome": "PSO_HERALDO ARGEMIRO DE SOUZA (TRES LAGOAS-MS)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Volante",
+    "descricao": "VL - Volante Telefone: (67) 99273-8654 E-mail: heraldoas@gmail.com Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves Coordenador: (21) 99145-9411 Ricardo Buitrago",
+    "telefone": "(67) 99273-8654",
+    "email": "heraldoas@gmail.com",
+    "lat": -20.7850891,
+    "lng": -51.7110358
+  },
+  {
+    "id": 133,
+    "nome": "PSO_MARICELIA PEDROSA (PORTO VELHO RO)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV - Fixo e Volante Telefone: - (69) 99303-1419 E-mail: lwrastreadores2017@gmail.com Supervisor: (81) 9205-7944 Marcus Cordeiro Leal Coordenador: Ricardo Buitrago (21) 99145-9411",
+    "telefone": "(69) 99303-1419",
+    "email": "lwrastreadores2017@gmail.com",
+    "lat": -8.7726388,
+    "lng": -63.83363
+  },
+  {
+    "id": 134,
+    "nome": "PSO_MATHEUS PRATA (MARILIA SP)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV - Fixo e Volante Telefone: MATHEUS PRATA - (14) 99627-6742 E-mail: agroservicosmp@gmail.com Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva Coordenador: Paulo Roberto Ferreira da Costa ",
+    "telefone": "(14) 99627-6742",
+    "email": "agroservicosmp@gmail.com",
+    "lat": -22.2126357,
+    "lng": -49.9656325
+  },
+  {
+    "id": 135,
+    "nome": "PSO_MOBILESAT (CABO FRIO - RJ)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV - Fixo e Volante (21) 2018-1948 E-mail: vinicius.l.p@outlook.com Supervisor: (27) 99204-1007 Paulo Vitor Queiros  Coordenador: (21) 99145-9411 Ricardo Buitrago",
+    "telefone": "(21) 2018-1948",
+    "email": "vinicius.l.p@outlook.com",
+    "lat": -22.7393802,
+    "lng": -42.0494346
+  },
+  {
+    "id": 136,
+    "nome": "PSO_PC SERVICOS AUTOMOTIVOS LTDA (PALMAS - TO",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Volante",
+    "descricao": "VL - Volante Telefone: 63 9282-0037 PEDRO E-mail: pedropcsat@gmail.com Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves Coordenador: Ricardo Buitrago (21) 99145-941",
+    "telefone": "63 9282-0037",
+    "email": "pedropcsat@gmail.com",
+    "lat": -10.3346492,
+    "lng": -48.2699395
+  },
+  {
+    "id": 137,
+    "nome": "PSO_PSO_KLEBESON SOUSA ( BAURU - SP)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV - Fixo e Volante Telefone:  (14) 99878098 - KLEBESON SOUSA E-mail: MODESTOEXPRESS@YAHOO.COM Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva Coordenador: Paulo Roberto Ferreira da Costa ",
+    "telefone": "19 99574-2087",
+    "email": "MODESTOEXPRESS@YAHOO.COM",
+    "lat": -22.3174531,
+    "lng": -49.1380626
+  },
+  {
+    "id": 138,
+    "nome": "PSO_RAIMUNDO TEODORO MENDES FRANCA JUNIOR (IMPERATRIZ - MA)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo",
+    "descricao": "FX - Fixo Telefone:(99)99177-1562 E-mail: juniorfranca376@gmail.com Supervisor: (81) 9205-7944 Marcus Cordeiro Leal Coordenador: Ricardo Buitrago (21) 99145-9411",
+    "telefone": "(99)99177-1562",
+    "email": "juniorfranca376@gmail.com",
+    "lat": -5.4826391,
+    "lng": -47.4721397
+  },
+  {
+    "id": 139,
+    "nome": "PSO_RUAN CARLOS DE ARAUJO (SP - SÃO JOSÉ DO RIO PRETO)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV: FIXO - Volante Telefone:(17) 9788-8877 - RUAN E-mail: @fgscontabilidade.com.br Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva Coordenador: Paulo Roberto Ferreira da Costa - +55 11 994",
+    "telefone": "(17) 9788-8877",
+    "email": "@fgscontabilidade.com.br",
+    "lat": -20.8273344,
+    "lng": -49.3564798
+  },
+  {
+    "id": 140,
+    "nome": "PSO_SOUZA CRUZ MONITORAMENTO(RIBEIRAO PRETO SP)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV - Fixo e Volante                                                      Telefone: RICARDO (16) 99713-8797 E-mail: souzacruz.monitoramento@gmail.com Supervisor: +55 19 99574-2087 - Francisco Ferreira ",
+    "telefone": "(16) 99713-8797",
+    "email": "souzacruz.monitoramento@gmail.com",
+    "lat": -21.199524,
+    "lng": -47.8475151
+  },
+  {
+    "id": 141,
+    "nome": "PSO_THERMOCAR REFRIGERACAO (ITABERAI - GO)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV - Fixo e Volante Telefone: (62) 98597-1933 - \tLAZARO E-mail: thermocarrefrigeracao@gmail.com Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves Coordenador: (21) 99145-9411 Ricardo Buitrago",
+    "telefone": "(62) 98597-1933",
+    "email": "thermocarrefrigeracao@gmail.com",
+    "lat": -16.0358591,
+    "lng": -49.7943754
+  },
+  {
+    "id": 142,
+    "nome": "PSO_THIAGO FEITOSA (SANTOS SP)",
+    "categoria": "PSO C/ESTOQUE AVANÇADO",
+    "tipo": "Fixo e Volante",
+    "descricao": "FV -Fixo e Volante Telefone: 13 98159-3010 Principal (13) 99655-4442 secundário (13) 99763-3321 E-mail: Thfeitosa08@gmail.com Supervisor: +55 11 98263-0457 - Osmir Ferreira Coordenador: Paulo Roberto ",
+    "telefone": "13 98159-3010",
+    "email": "Thfeitosa08@gmail.com",
+    "lat": -23.9272792,
+    "lng": -46.3827166
   }
 ]
