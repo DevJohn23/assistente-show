@@ -88,7 +88,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <>
       {/* Mobile Top Header Bar (< md) */}
-      <div className="md:hidden sticky top-0 z-40 bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-md">
+      <div className="md:hidden sticky top-0 z-[2100] bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-md">
             <Sparkles className="w-4 h-4 text-white" />
@@ -112,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {mobileOpen && (
         <div 
           onClick={() => setMobileOpen(false)}
-          className="md:hidden fixed inset-0 z-40 bg-black/30 dark:bg-black/60 backdrop-blur-xs animate-fadeIn"
+          className="md:hidden fixed inset-0 z-[2050] bg-black/30 dark:bg-black/60 backdrop-blur-xs animate-fadeIn"
         />
       )}
 
@@ -120,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`fixed md:sticky top-0 z-50 md:z-30 bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-800 flex flex-col justify-between h-screen select-none transition-all duration-300 ease-in-out shadow-lg dark:shadow-2xl md:shadow-none overflow-hidden ${
+        className={`fixed md:sticky top-0 z-[2100] md:z-30 bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-800 flex flex-col justify-between h-screen select-none transition-all duration-300 ease-in-out shadow-lg dark:shadow-2xl md:shadow-none overflow-hidden ${
           mobileOpen ? 'left-0 w-64' : '-left-64 md:left-0'
         } ${
           isHovered ? 'md:w-64' : 'md:w-16'
