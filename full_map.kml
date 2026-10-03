@@ -1,0 +1,1539 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Mapa Rede Técnica – 1º Semestre 2026</name>
+    <description/>
+    <Style id="icon-1499-0288D1-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1499-0288D1-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1499-0288D1">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1499-0288D1-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1499-0288D1-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1502-F9A825-normal">
+      <IconStyle>
+        <color>ff25a8f9</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1502-F9A825-highlight">
+      <IconStyle>
+        <color>ff25a8f9</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1502-F9A825">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1502-F9A825-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1502-F9A825-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1538-0288D1-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1538-0288D1-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1538-0288D1">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1538-0288D1-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1538-0288D1-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1570-A52714-normal">
+      <IconStyle>
+        <color>ff1427a5</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1570-A52714-highlight">
+      <IconStyle>
+        <color>ff1427a5</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1570-A52714">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1570-A52714-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1570-A52714-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1644-E65100-normal">
+      <IconStyle>
+        <color>ff0051e6</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1644-E65100-highlight">
+      <IconStyle>
+        <color>ff0051e6</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1644-E65100">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1644-E65100-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1644-E65100-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1899-0288D1-nodesc-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1899-0288D1-nodesc-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="icon-1899-0288D1-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-0288D1-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-0288D1-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Folder>
+      <name>REDE PLUS</name>
+      <Placemark>
+        <name>PRP_BOSCH_UNIDIESEL (CAMPINAS - SP) REDE PLUS
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO <br><br>FV - Fixo<br>(83) 99101-1964 Josarielly<br>E-mail: unidiesel.campinas@uol.com.br<br>Supervisor: (11) 98335-2612 Alessandra Araujo]]></description>
+        <styleUrl>#icon-1502-F9A825</styleUrl>
+        <Point>
+          <coordinates>
+            -47.1576292,-22.8527552,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PRP_BOSCH_BOMBAS DIESEL (ANÁPOLIS-GO) REDE PLUS</name>
+        <description><![CDATA[ESTOQUE AVANÇADO <br><br>FV - Fixo<br>(83) 99101-1964 Josarielly<br>E-mail: bdaestoque@gmail.com<br>Supervisor: (11) 98335-2612 Alessandra Araujo]]></description>
+        <styleUrl>#icon-1502-F9A825</styleUrl>
+        <Point>
+          <coordinates>
+            -48.9407047,-16.3700681,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PRP_LAGUNA TRUCK CENTER (CUBATÃO-SP) REDE PLUS</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo<br>(83) 99101-1964 Josarielly<br>E-mail: lagunatruck441@gmail.com<br>Supervisor: (11) 98335-2612 Alessandra Araujo]]></description>
+        <styleUrl>#icon-1502-F9A825</styleUrl>
+        <Point>
+          <coordinates>
+            -46.4260219,-23.8775836,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PRP_ALTA PERFORMANCE PNEUS (DUQUE DE CAXIAS-RJ) REDE PLUS</name>
+        <description><![CDATA[ESTOQUE AVANÇADO <br><br>FV - Fixo<br>(83) 99101-1964 Josarielly<br>E-mail: faturamento@altaperformancerj.com.br<br>Supervisor: (11) 98335-2612 Alessandra Araujo]]></description>
+        <styleUrl>#icon-1502-F9A825</styleUrl>
+        <Point>
+          <coordinates>
+            -43.2878252,-22.7543606,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PRP_SOROCAP PNEUS (BARUERI-SP) REDE PLUS  (EM ESPERA)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo<br>(83) 99101-1964 Josarielly<br>E-mail: sp@sorocap.com.br<br>Supervisor: (11) 98335-2612 Alessandra Araujo]]></description>
+        <styleUrl>#icon-1502-F9A825</styleUrl>
+        <Point>
+          <coordinates>
+            -46.9103512,-23.5203283,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PRP_HANNOVER PNEUS JOHN BOYD (CAMPINAS-SP) REDE PLUS</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo<br>(83) 99101-1964 Josarielly<br>E-mail: truck@hannoverpneus.com.br<br>Supervisor: (11) 98335-2612 Alessandra Araujo]]></description>
+        <styleUrl>#icon-1502-F9A825</styleUrl>
+        <Point>
+          <coordinates>
+            -47.1307834,-22.9337155,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PRP_APOLOTECH PNEUS (MOGI DAS CRUZES – SP) REDE PLUS</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo<br>(83) 99101-1964 Josarielly<br>E-mail: fernando.otavio@budini.com<br>Supervisor: (11) 98335-2612 Alessandra Araujo]]></description>
+        <styleUrl>#icon-1502-F9A825</styleUrl>
+        <Point>
+          <coordinates>
+            -46.2189188,-23.5299389,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PRP_BOSCH_STARTE DIESEL (FEIRA DE SANTANA-BA) REDE PLUS #EM ESPERA#</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo<br>(83) 99101-1964 Josarielly<br>E-mail: comercial@mecanicabosch.com.br<br>Supervisor: (11) 98335-2612 Alessandra Araujo]]></description>
+        <styleUrl>#icon-1502-F9A825</styleUrl>
+        <Point>
+          <coordinates>
+            -38.9674215,-12.231659,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PRP_SOROCAP PNEUS MATRIZ (SOROCABA-SP) REDE PLUS</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo<br>(83) 99101-1964 Josarielly<br>E-mail: crenata@sorocap.com.br<br>Supervisor: (11) 98335-2612 Alessandra Araujo]]></description>
+        <styleUrl>#icon-1502-F9A825</styleUrl>
+        <Point>
+          <coordinates>
+            -47.485598,-23.5341299,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Birasat Rastreamento e Manutenção</name>
+        <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+        <Point>
+          <coordinates>
+            -48.715072,-26.8389221,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>PSO C/ESTOQUE AVANÇADO</name>
+      <Placemark>
+        <name>PSO_ LIDIANE OLIVEIRA (PLANALTINA - DF)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>(61) 99500-0905- LIDIANE<br>E-mail: bruno.bsm1986@gmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -47.6880261,-15.6024265,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA811_ALEXSANDRO IPLA (JABOATAO DOS GUARARAPES - PE)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: 81 8885-9346 ALEXSANDRO<br>E-mail: alexsandro.ipla@omnilink.com.br<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -34.9792711,-8.1503945,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_TECNOSUL SOLUCOES EM RASTREAMENTO LTDA (PASSO FUNDO - RS)
+</name>
+        <description><![CDATA[FV - Fixo e Volante<br>(54) 99683-7653 MAURICIO JOSE FERREIRA<br>E-mail: mauriciopfferreira@gmail.com<br>Supervisor: +55 51 9263-3953 - Lucas Tups<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -52.416904,-28.2714745,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_MTRACKER MOZARLANDIA (MOZARLANDIA - GO)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO <br><br>FV -Fixo e Volante<br>Telefone: (62) 992165133 JESSICA<br>E-mail: mtrackertecnologia@outlook.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -50.5373436,-14.7598559,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA1110_JOAQUIM HELIO DA SILVA (SÃO PAULO -SP)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: (11) 94048-8317 JOAQUIM HELIO DA SILVA<br>E-mail: joaquim.silva@omnilink.com.br<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.5856859,-23.6264413,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_MTRACKER CONFRESA (CONFRESA - MT)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: (62) 992165133 JESSICA<br>E-mail: mtrackertecnologiacfs@outlook.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -51.5651787,-10.6502953,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA614_DENIVALDO RIBEIRO DA SILVA (BRASILIA - DF)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO <br><br>FV - Fixo e Volante<br>(61) 99676-8223 - DENIVALDO<br>E-mail: denivaldo.silva@omnilink.com.br<br>Supervisor: (77 ) 9976-3244 Higor Guimarães<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -47.9728284,-15.8477474,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_GNM EXATA SERVICOS AUTOMOTIVOS LTDA (SAO PAULO-SP)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: (11) 94781-8416/ (11) 996504486 -Gerson / Jane<br>E-mail: exatatelecom@msn.com<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.6039133,-23.6397507,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA1117_RAFAEL PAULINO DA SILVA (SÃO PAULO-SP)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>(11) 99895 2500 RAFAEL PAULINO DA SILVA<br>E-mail: rafael.paulino@omnilink.com.br<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.419522,-23.5100622,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_INFRATEC SOLUCOES LTDA (JACAREI - SP)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: (11) 94288-6463 - Silva<br>E-mail: universorastreadoressp@gmail.com<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -45.9525742,-23.2611777,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_JUNIOR SILVANO FELISBERTO (TUBARAO - SC)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>(48) 99117-7234 JUNIOR SILVANO FELISBERTO<br>E-mail: jamtubaraosc@hotmail.com<br>Supervisor: +55 51 9263-3953 - Lucas Tups<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -49.0056221,-28.4893852,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA119_ALEXSANDRO CARDOSO DA SILVA (MONTE MOR - SP)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>(11) 17 99659-5317 - ALEXSANDRO<br>E-mail:alexsandro.cardoso@omnilink.com.br<br>Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -47.2470454,-22.9154972,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_IMPACTO SERVICOS AUTOMOTIVOS LTDA (GUARULHOS - SP)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante <br>Telefone: (11) 98904-2964 - Daniela<br>E-mail: adm@impactoaudiocar.com.br<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.5461047,-23.4867341,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_MARTA MARIA BATISTA LOPES DOS SANTOS (LINS - SP)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV: FIXO - Volante<br>Telefone: (14) 99682-7056 ADRIANO<br>E-mail: autotechlins@gmail.com<br>Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -49.739571,-21.690981,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA766_PEDRO PAULO DA FONSECA BASTOS (FEIRA DE SANTANA - BA)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - VOLANTE<br> (071) 9677-9324 - PEDRO PAULO<br>E-mail: pedro.bastos2@omnilink.com.br<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -38.9726203,-12.2589932,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_FRANKLIN CLAUDIO DA SILVA FREITAS (SÃO JOSE DO RIBAMAR-MA)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL- VOLANTE<br>Telefone: (98) 98501-9480 - FRANKLIN<br>E-mail: frankfurt1883@gmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -44.1944485,-2.5135693,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_CONTROL (CAMPINAS - SP)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>V: Volante<br>Telefone: (19) 97115-0159 DIEGO<br>E-mail: controllsolution@outlook.com<br>Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -47.0952385,-22.9589237,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_KR CRONOTACOGRAFOS (GUARULHOS - SP)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - FIXO Volante<br> Telefone: (11) 91559-0251 - BRUNA - (11) 97355-5083<br>E-mail:KRRASTREADOR@GMAIL.COM<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.4278517,-23.4218411,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_MEGA TEC COMERCIO DE INSTRUMENTOS DE PRECISAO LTDA (OSASCO - SP)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV -Fixo e Volante<br>Telefone: (11)947578638 JOSE VILANILDO<br>E-mail: vilanildo.vdo@gmail.com<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.7515897,-23.5084632,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_TORK CRONOTACOGRAFOS (SAO PAULO - SP)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Volante Telefone: (11) 99689-2112 FABIO SCHNEIDER<br>E-mail: caroline@torkcronotacografos.com.br<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.5692198,-23.5213926,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_RIBERSAT RASTREADORES E AUTO ELETRO LTDA (RIBEIRAO PRETO - SP)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV: FIXO - Volante<br>Telefone: (16) 98262-1564 BRUNO<br>E-mail: ribersat@yahoo.com<br>Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -47.7728317,-21.1242109,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA101_ITALO DO NASCIMENTO MENDES (SANTO ANDRE - SP)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>(11) 93386-2454 - ITALO<br>E-mail: italo.mendes@omnilink.com.br<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.5451452,-23.6693498,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA1112_HALISON PEDRO DA SILVA (SÃO PAULO-SP)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: (11)96927-5786 - HALISON PEDRO<br>E-mail: halison.silva@omnilink.com.br<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.6753345,-23.4657177,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_NOGUEIRA RASTREADORES E ELETRICA AUTOMOTIVA LTDA (PIRACICABA - SP)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV: FIXO - Volante<br>Telefone: (19) 97403-7581/ (19) 97421-4061 JOÃO<br>E-mail: joao@nogueirarastreadores.com.br<br>Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -47.6933944,-22.6441657,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_ANB TECNOLOGIA (CAMPINAS -SP)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: (19) 99105-0974 WhatsApp<br> (19) 99920-7210. Ligações - Arthur Alexandre<br>E-mail: anbtecnologia@outlook.com<br>Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -47.0847837,-22.9440142,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA192_RUBENS OLIVEIRA (CAMPINAS – SP)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: (19) 99321-4222 - RUBENS<br>E-mail:rubens.filho@omnilink.com.br<br>Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -47.139175,-22.96335,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_ ANDREY MICHALOVSKI LOCATELLI (VIDEIRA - SC)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: (49) 99909-5268 - ANDREY MICHALOVSKI<br>E-mail: andreymichalovski@gmail.com<br>Supervisor: +55 51 9263-3953 - Lucas Tups<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -51.1570651,-26.9992613,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_MILENA DUTRA DE MATTOS (PORTÃO - RS)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>(51) 98169-7098 MAURO RICARDO<br>E-mail: mmservicosilimitados@gmail.com<br>Supervisor: +55 51 9263-3953 - Lucas Tups<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -51.2187206,-29.6988969,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_EDLANGELO PAULINO DOS SANTOS (NOSSA SENHORA DO SOCORRO - SE)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: (79) 8820-1134 EDLANGELO<br>E-mail: angeloequipadora@gmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -37.0828492,-10.8569724,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_AUTO ELETRICA BELCHIOR LTDA ME (NAVEGANTES - SC)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>(47) 98449-6620 VALDECIR DE OLIVEIRA<br>(47) 99271-2060 <br>E-mail: autoeletricabelchior@gmail.com<br>Supervisor: +55 41 9207-7643 - Vilmar Antonio<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -48.6322351,-26.8310218,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_ADAIR ANTONIO FIDELES CHAGA - (CHAPECO - SC)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>(49) 9906-4447 - ADAIR<br>E-mail: adairplayboi747@gmail.com<br>Supervisor: +55 51 9263-3953 - Lucas Tups<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -52.6784599,-27.1045923,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_ELEN CRISTINE NUNES (DOIS VIZINHOS - PR)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>(46) 99921-7378 FERNANDO NEVES<br>E-mail: rastlog@hotmail.com<br>Supervisor: +55 41 9207-7643 - Vilmar Antonio<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -53.0654063,-25.7630335,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA114_SINVAL LIMA (SAO PAULO - SP)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: (11) 98227-0835 SINVAL VITOR<br>E-mail: sinval.lima@omnilink.com.br<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.6901855,-23.5124503,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_CARLOS RICARDO LIMA DE SOUZA (VOLTA REDONDA -RJ)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: (24) 99932-9824 Carlos Ricardo Lima De Souza<br>E-Mail: Carlosriicardo@Gmail.Com<br>Supervisor: (27) 99204-1007 Paulo Vitor Queiros<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -44.0795474,-22.4839232,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_ FILIAL - RASTERSUL (TOLEDO - PR)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: 41 999368516 - Antony <br>E-mail: rastersulcascavel@gmail.com<br>Supervisor: +55 41 9207-7643 - Vilmar Antonio<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -53.7553987,-24.7371131,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_ALEXIA GOULART (CURITIBA - PR)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>Atendimento: Volante<br>(41) 98427-0774 THIAGO<br>E-mail: t.hyago@hotmail.com<br>Supervisor: +55 41 9207-7643 - Vilmar Antonio<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -49.2927838,-25.5566822,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_DSF REPARACAO E MANUTENCAO LTDA (DUQUE DE CAXIAS -RJ)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: (21) 97018-4683 Fernanda<br>Email:Omnitrac@outlook.com<br>Supervisor: (27) 99204-1007 Paulo Vitor Queiros<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -43.3002308,-22.6788866,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_VANGUARD AUTOMOTIVOS (TERESINA - PI)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: 86 98867-6816 RAIANY<br>E-mail: vanguard.rastreadores@gmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -42.7958248,-5.12301,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_FERNANDA FREITAS SILAVA (UBERLANDIA-MG)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone:(34) 991357730 ALESSANDRO<br>E-mail: waengenhariarenovavel@gmail.com<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -48.2707397,-18.8560658,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA545_THIAGO RIGO FERRARO (GRAVATAÍ-RS)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>(51) 99207-2166 THIAGO RIGO FERRARO<br>E-mail: thiago.ferraro@omnilink.com.br<br>Supervisor: +55 51 9263-3953 - Lucas Tups<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -51.0621549,-29.9150925,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_RICARDO BORGES DA COSTA (CURITIBA - PR)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>(41)99577-9904 RICARDO BORGES DA COSTA<br>E-mail: rp.rastreamentos@gmail.com<br>Supervisor: +55 41 9207-7643 - Vilmar Antonio<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -49.1992518,-25.4695855,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA216_EDSON BONFIM DOS SANTOS (DUQUE DE CAXIAS-RJ)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone:(21) 97545 -1920 EDSON SANTOS<br>E-mail: edson.santos@omnilink.com.br<br>Supervisor: Paulo Vitor+55 27 99204-1007<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -43.2957697,-22.7518215,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_MANUTENSAT RASTREAMENTO E MANUTENCAO DE VEICULOS LTDA (JABOATAO DOS GUARARAPES-PE)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV- Fixo e volante<br>Telefone:81991961879 - FELIPE<br>E-mail: manutensatadm@gmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -34.9583333,-8.152741,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_RASTREAR SAT (APARECIDA DE GOIÂNIA-GO)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: (62) 98196-0089/(62) 991725209 Cristiano<br>E-mail: rastrearsatgyn@gmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -49.2957417,-16.7777074,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA218_ ARTHUR INACIO DA SILVA (DUQUE DE CAXIAS - RJ)
+</name>
+        <description><![CDATA[FV - Fixo e Volante<br> (21) 97472-6459 ARTHUR INACIO<br>E-mail: arthur.inacio@omnilink.com.br<br>Supervisor: (27) 99204-1007 Paulo Vitor Queiros <br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -43.2200625,-22.6244771,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_RASTER SUL (CURITIBA - PR)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>(41) 99699-1992 Fernando<br>E-mail: rastersul@gmail.com<br>Supervisor: +55 41 9207-7643 - Vilmar Antonio<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -49.314565,-25.5846747,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_START TEC RASTREADORES LTDA (CUIABA-MT)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: 65 98158-1111 - ELITON FREITAS<br>E-mail: startecrastreadores@gmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -56.0415273,-15.6737646,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_LD RASTREAMENTO (CAMPO GRANDE - MS)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV -Fixo e Volante<br>Telefone:  (67) 99119-8863 - Lucas<br>E-mail: ldrastreamento2022@gmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -54.5877036,-20.5215484,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA215_GILMAR DA APARECIDA IBA (SÃO JOÃO DE MERITI - RJ)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone:(19) 99404-7768 GILMAR<br>E-mail: gilmar.iba@omnilink.com.br<br>Supervisor: (27) 99204-1007 Paulo Vitor Queiros<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -43.3889824,-22.8056161,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_SOLUTECH ASSISTENCIA TECNICA (CASTANHAL-PA)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone:  (94) 99103-7317 - GILVAN<br>E-mail: Solutechassistenciatecnica9@gmail.com<br>Supervisor: +55 81 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago - +55 21 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -47.9460126,-1.2922861,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_RICARDO RASTREADORES LTDA (BETIM - MG)</name>
+        <description><![CDATA[PSO_RICARDO RASTREADORES LTDA (BETIM - MG)<br>FX- FIXO<br>Telefone:(31) 99118-4581 RICARDO ANTONIO<br>E-mail: ricardo@ricardorastreadores.com.br<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -44.0755592,-19.9608227,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_JAMIKLELSE LACERDA LOPES (GOIANIA-GO)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO <br><br>VL - Volante<br>Telefone:(62) 99138-0144 JAMIKLELSE LOPES<br>E-mail: klelse.gyn@gmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -49.3406695,-16.586088,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_RODRIGUES AUTO ELÉTRICA (VITÓRIA-ES)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO <br><br>VL - Volante<br>telefone: (27) 98877-5020<br>Emaill: otaviosjcezar@gmail.com<br>Supervisor: (27) 99204-1007 Paulo Vitor Queiros<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -40.3314066,-20.2782351,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_ERSAT SOLUÇÕES E RASTREAMENTOS</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo <br>(11)97688-2186 - EWERTON<br>E-mail:gisele.vidal@ersat.com.br<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.6859433,-23.5028205,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_G-TRACK SOLUÇÕES TECNÓGICA (BALSAS-MA)</name>
+        <description><![CDATA[FV -Fixo e Volante<br>Telefone: (94) 99103-7317 - Gilvan Batista<br>E-mail: rastreamentogtrack@gmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.041197,-7.5205481,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_BH RASTREAR (BELO HORIZONTE - MG)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: (31) 98455-7326 (31) 3295-5589 RITA DE CASSIA<br>E-mail: ritabhmg@gmail.com<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -43.999407,-19.9191203,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA314_CLAYTON FRANCISCO OLIVEIRA MORAES (BELO HORIZONTE - MG)
+</name>
+        <description><![CDATA[FV - Fixo e Volante<br>(31) 9102-1096 - CLAYTON FRANCISCO<br>E-mail: clayton.moraes@omnilink.com.br<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -43.9892726,-19.8278766,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_ANDERLAN GONCALVES BRITO - FORSEG SOLUCOES (EUSEBIO-CE)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO <br><br>VL - Volante<br>Telefone: (85) 98709-7000 -ANDERLAN GONCALVES BRITO<br>E-mail: forseg.solucoes@gmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -38.450145,-3.912493,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_A.C COUTINHO SAT (LAURO DE FREITAS-BA)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone:(71)992517778 Antonio Coutinho<br>E-mail: tl_sat@hotmail.com<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -38.2993595,-12.876345,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA211_EDVALDO FERREIRA (CAXIAS-RJ)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: (21) 98103-7021/ (21) 995634073<br>Email: edvaldo.silva@omnilink.com.br<br>Supervisor: (27) 99204-1007 Paulo Vitor Queiros<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -43.3222978,-22.7879121,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_SUELTON ALVES LOPES DOS SANTOS (SENADOR CANEGO - GO)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: (62) 9368-4229<br>E-mail: sueltt01@gmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -49.1627482,-16.662115,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_UNITY SERVICOS (DUQUE DE CAXIAS - RJ)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FX - Fixo<br>Telefone:(21) 97903-9685 VLADIMIR<br>E-mail: unity.rastreadores@gmail.com<br>Supervisor: (27) 99204-1007 Paulo Vitor Queiros<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -43.2872833,-22.7908334,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_MARQUINHOS MANUTENCOES (SÃO LUDGERO - SC)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>(48) 99683-1862 - MARQUINHOS<br>E-mail:marquinhosmanutencaoeletricas@gmail.com<br>Supervisor: +55 51 9263-3953 - Lucas Tups<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -49.1820549,-28.332181,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_DIEGO DE OLIVEIRA SANTOS (CARAPICUIBA - SP)
+</name>
+        <description><![CDATA[Volante<br>Telefone: (11)94928-8334 DIEGO DE OLIVEIRA SANTOS<br>E-mail: diegorastreador104@gmail.com<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -46.8316578,-23.5524143,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_HEITOR DOS REIS ARAUJO (APARECIDA DE GOIANIA -GO)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>E-mail: heitordosreis1996@gmail.com<br>Telefone: (62) 98623-5979 HEITOR DOS REIS ARAUJO<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -49.2442712,-16.8399354,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_BRASIL SAT RASTREADORES (FEIRA DE SANTANA - BA) -
+ESTOQUE AVANÇADO</name>
+        <description><![CDATA[FV - Fixo e Volante<br>Telefone: (75) 99260-1574 Ana<br>E-mail: brasilsat1@gmail.com<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -38.983035,-12.241091,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_JRF SERVICOS (LONDRINA - PR)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>FV - Fixo e Volante<br>Telefone: (43) 99916-2325 RODOLFO DE FAVERI <br>E-mail: jrfservicoautomotivo@gmail.com<br>Supervisor: +55 41 9207-7643 - Vilmar Antonio<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -51.1489652,-23.2986963,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA_912 ALESSANDRO DE SOUZA CONCEIÇÃO</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: +55 91 8184-2932 - ALESSANDRO <br>E-mail: alessandro.conceicao@omnilink.com.br<br>Supervisor: +55 81 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago - +55 21 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -48.395663,-1.4055609,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_LUNA NASCIMENTO DA SILVA (MANAUS-AM)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: (92) 98473-2115 EDSON<br>E-mail: edson.veras2013@gmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -59.9665022,-3.0101821,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_MRG RASTREADORES LTDA (MANDAGUACU - PR)
+</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>V- Volante<br>Telefone: (44) 98806-7889 RAUL DE AZEVEDO<br>E-mail: raulazevedo2708@gmail.com<br>Supervisor: +55 41 9207-7643 - Vilmar Antonio<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1570-A52714</styleUrl>
+        <Point>
+          <coordinates>
+            -52.0884266,-23.3371728,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>ATA</name>
+      <Placemark>
+        <name>ATA JOAO PAULO PARPINELLI DA SILVA (CURITIBA - PR)</name>
+        <description><![CDATA[VL - Volante<br>(41) 99103-5086 JOÃO<br>E-mail:joao.silva@omnilink.com.br<br>Supervisor: +55 41 9207-7643 - Vilmar Antonio<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1538-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -49.1967725,-25.4001516,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA979_THIAGO NEGRIS (MS - CAMPO GRANDE)</name>
+        <description><![CDATA[V- Volante<br>Telefone: (67) 99268-7445 THIAGO<br>E-mail: thiago.negris@omnilink.com.br<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1538-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -54.6054224,-20.4273914,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA_HEITOR FERNANDES (VITORIA - ES)</name>
+        <description><![CDATA[VL - Volante<br>E-mail: heitor.rodrigues@omnilink.com.br<br>Telefone: +55 27 99909-3652 - HEITOR FERNANDES<br>Supervisor: Paulo Vitor+55 27 99204-1007<br>Coordenador: Ricardo Buitrago (21) 99145-9411<br><br>Obs, número 70, apartamento 301 bloco 1, ]]></description>
+        <styleUrl>#icon-1538-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -40.2642661,-20.2593734,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA111_ANTHONY FELISBINO RIBEIRO SANTANA (EMBU DAS ARTES - SP)</name>
+        <description><![CDATA[ESTOQUE AVANÇADO<br><br>VL - Volante<br>Telefone: +55 11 93263-8781<br>E-mail: anthony.santana@omnilink.com.br<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1538-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -46.8039174,-23.6609413,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>ATA981_RICARDO MAIA FRANCA (SAO LUIS - MA)</name>
+        <description><![CDATA[VL- VOLANTE<br>Telefone: (98) 81315633 - RICARDO<br>E-mail: ricardo.franca@omnilink.com.br<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1538-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -44.051062,-2.5077371,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>PSO</name>
+      <Placemark>
+        <name>PSO_RTS RASTREAMENTO LTDA (SERRA - ES)
+</name>
+        <description><![CDATA[FV - Fixo e Volante<br>Telefone +55 27 99665-0036 - Lúcio<br>E-mail: rts.comerciales@gmail.com<br>Supervisor: (27) 99204-1007 Paulo Vitor Queiros<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -40.200513,-20.173796,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_SCA SILVA (BARRA MANSA - RJ)
+</name>
+        <description><![CDATA[VL - Volante<br>Telefone: (21) 99837-6226 LUANA<br>E-Mail: scadiretoria@scasilva.com.br<br>Supervisor: (27) 99204-1007 Paulo Vitor Queiros<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -44.1412159,-22.560478,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_EDSON CARLOS MARTINS (URUGUAIANA - RS)
+</name>
+        <description><![CDATA[FV - Fixo e Volante<br>55 99936-8153 EDSON CARLOS MARTINS<br>E-mail: edsonmartins864201@gmail.com<br>Supervisor: +55 51 9263-3953 - Lucas Tups<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -57.0810189,-29.7797112,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_WAGNER DAVI GOETTEMS (VIDEIRA - SC)
+</name>
+        <description><![CDATA[FV - Fixo e Volante<br>Telefone: (46) 99907-0162 WAGNER DAVI <br>E-mail: wagnergoettems@gmail.com<br>Supervisor: +55 51 9263-3953 - Lucas Tups<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -51.151239,-26.9979996,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_PEDRO BROZEGHINI (CARIACICA - ES)
+</name>
+        <description><![CDATA[VL - Volante<br>(27) 9 9807-4114 - POLIANA<br>E-mail:vixtracker@gmail.com<br>Supervisor: (27) 99204-1007 Paulo Vitor Queiros<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -40.3897578,-20.3553154,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_CLOVIS FABRICIO DOS SANTOS BARBOSA (RIBEIRAO PRETO - SP)
+</name>
+        <description><![CDATA[VL - Volante<br>Telefone: (16) 99251-7654 CLOVIS<br>E-mail: contato.worldservice@gmail.com<br>Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -47.5974126,-21.2067333,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_LUCAS BRESSA COMELLI (VOTORANTIM - SP)
+</name>
+        <description><![CDATA[FV: FIXO - Volante<br>Telefone: (15) 99636-7465 LUCAS BRESSA COMELLI<br>E-mail: lucas.comelli@hotmail.com<br>Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -47.4563094,-23.5448963,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_4 RODAS AUTO CENTER LTDA (JUIZ DE FORA - MG)
+</name>
+        <description><![CDATA[FV - Fixo e Volante<br>Telefone: (32) 9839-4142 - JOYCE<br>E-mail: autocenter.alfenas@outlook.com<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -43.4263527,-21.7060906,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_G6 RASTREADORES (CUBATAO - SP)</name>
+        <description><![CDATA[FV -Fixo e Volante<br><br>Telefone: <br>Principal     (13) 99655-4442<br>secundário (13) 99763-3321<br><br>E-mail: G6rastreadores@gmail.com<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -46.4162192,-23.8795023,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_APARECIDA MARIA DE CARVALHO RIBEIRO (BELO HORIZONTE - MG)
+</name>
+        <description><![CDATA[FV - Fixo e Volante<br>Telefone: (31) 99518-1432 ADENILSON<br>E-mail: adenilsonronibeiro3@gmail.com<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -43.9304165,-19.8263775,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_BIRASAT SOLUCOES (SC - ITAJAI)</name>
+        <description><![CDATA[FV - Fixo e Volante<br>+55 47 9700-6604 - Ubiraci<br>E-mail: financeirobirasat@gmail.com<br>Supervisor: +55 41 9207-7643 - Vilmar Antonio<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -48.7150501,-26.8388559,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_LUANA BRESSAN DUARTE (ELOI MENDES - MG)
+</name>
+        <description><![CDATA[FV - Fixo e Volante<br>Telefone: (35) 99189-8939 LUANA<br>E-mail: luanabressanduarte@gmail.com<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -45.5511859,-21.6042314,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_SDTRACKERS LTDA (RONDONOPOLIS - MT)
+</name>
+        <description><![CDATA[FV - Fixo e Volante<br>Telefone: 66 992088919 - ANDRE<br>E-mail: Sdrastreadores@gmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -54.5610573,-16.4714539,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_WESLEYJAN LACERDA LOPES (ANAPOLIS-GO)</name>
+        <description><![CDATA[VL - Volante<br>Telefone: 62 99138-0144 - WESLEYJAN<br>E-mail: jamiklelselacerda@gmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -48.965204,-16.3812949,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_VIETECH DAVIDSON DANILO VIEIRA (MONTES CLAROS - MG)</name>
+        <description><![CDATA[Volante<br>Contato: 038 99801-2689 - DANILO<br>E-mail: vietechrastreadores@hotmail.com<br>Supervisor:  31 8557-3444 - Renato<br>Coordenador: Ricardo Buitrago - +55 21 99145-9411]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -43.8771733,-16.6854174,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_AUTOTECH SOLUCOES TECNOLOGICAS (PARAUAPEBAS-PA)
+</name>
+        <description><![CDATA[VL - Volante<br>Telefone: (94) 98804-8353 - RIBAMAR<br>E-mail: portelaesilva.tec@gmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -49.8903411,-6.0404491,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_DIOGO ROBERTO LOPES DOS SANTOS (FEIRA DE SANTANA - BA)
+</name>
+        <description><![CDATA[FV - Fixo e Volante<br>Telefone: 75 99223-7611 - DIOGO ROBERTO<br>E-mail: DIOGOELETROSERV@YAHOO.COM.BR<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -38.9820047,-12.2388849,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_ELTON MACEDO SERVICOS (MACEIO-AL)</name>
+        <description><![CDATA[FV- Fixo e volante<br>Telefone: (82) 99909-6907 Jose Elton Macedo<br>E-mail: elton-marcolino@hotmail.com<br>upervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -35.7259741,-9.5420775,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_LIMA RASTREADORES (VITORIA DA CONQUISTA - BA)
+</name>
+        <description><![CDATA[VL - Volante<br>Telefone: (77) 9952-5604<br>E-mail: lima.rastreadores230591@gmail.com<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -40.8778049,-14.8296966,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_MICHELLINE RAMOS DO NASCIMENTO (SAO CAITANO -PE)</name>
+        <description><![CDATA[VL - Volante<br>Telefone: (81) 98144-2407 MICHELLINE<br>E-mail: michellineramos@hotmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -36.1343869,-8.3198465,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_THYSCIANE DE ALMEIDA (FORTALEZA - CE)
+</name>
+        <description><![CDATA[VL - Volante<br>Telefone: (85) 98961-1354<br>E-mail: ELETROSAT.CONT@GMAIL.COM<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -38.5170546,-3.8503958,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_AMIZAEL INSTALACOES (CAXIAS DO SUL - RS)
+</name>
+        <description><![CDATA[VL - Volante<br>54984038275 <br>Telefone: (54) 98403-8275 AMIZAEL PARÉ LOPES<br>E-mail: amizaelgps@outlook.com<br>Supervisor: +55 51 9263-3953 - Lucas Tups<br>Coordenador: +55 51 9183-80 - Carlos Daniel]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -51.209,-29.1648618,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_BRENDA RENATA DA SILVA (CUIABA-MT)</name>
+        <description><![CDATA[PSO_BRENDA RENATA DA SILVA (CUIABA-MT)<br><br>VL - Volante<br>Telefone: (65) 99230-9727 / (65) 99957-4807 - RAIANE<br>E-mail: reb.rastreadores@gmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -55.9522642,-15.6345241,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_MOOBI RASTREAMENTO (SORRISO - MT)</name>
+        <description><![CDATA[VL - Volante<br>Telefone: 66 992576389 - Tiago<br>E-mail: moobirastreamento@autlook.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -55.7491303,-12.5867927,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_ALTO TIETE TRUCK CENTER LTDA (MOGI DAS CRUZES – SP)</name>
+        <description><![CDATA[FV - Fixo e Volante<br>Telefone: (11) 94778 2276/ (11) 4721-1233 Jonas<br>E-mail:jonas@truckcenteraltotiete.com.br<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -46.2502705,-23.5453352,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_DARIO GOMES (CURVELO MG)</name>
+        <description><![CDATA[FV-  FIXO E Volante<br>Contato: (11) 93017-8212 - DARIO<br>E-mail: Santosgomes1418@gmail.com<br>Supervisor: 31 8557-3444 - Renato<br>Coordenador: Ricardo Buitrago - +55 21 99145-9411]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -44.4501153,-18.7869994,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>PSO_ZAYON RASTREAMENTO (RIO BRANCO - AC)</name>
+        <description><![CDATA[VL - Volante<br>Telefone: (68) 99227-2025<br>E-mail: lucas33lopes@gmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1644-E65100</styleUrl>
+        <Point>
+          <coordinates>
+            -67.8370054,-9.9703238,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>SPOT</name>
+      <Placemark>
+        <name>SPOT_EVANDRO SOUZA MASCARENHAS (SÃO PAULO - SP)
+</name>
+        <description><![CDATA[VL - Volante<br>Volante Telefone: (11) 96314-4268 - Evandro<br>E-mail: esmevandro@yahoo.com.br<br>Supervisor: +55 11 98263-0457 - Osmir Ferreira<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -46.4500716,-23.5495043,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_STARTRACKCONECT (BAURU - SP)
+</name>
+        <description><![CDATA[VL - Volante<br>Telefone: +55 14 98183-9053 - ROBERTO<br>E-mail: startrack01@yahoo.com.br<br>Supervisor: +55 19 99574-2087 - Francisco Ferreira Da Silva<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -49.078016,-22.3110001,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_K.A.B AUTO ELETRICA DOURADO MS LTDA (DOURADOS - MS)
+</name>
+        <description><![CDATA[FV -Fixo e Volante<br>Telefone: (67) 996650-8161 - Kauê<br>E-mail: kauebaptista9@gmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -54.6842206,-22.2193511,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_LEANDRO RUI (VILHENA - RO )</name>
+        <description><![CDATA[VL - Volante<br>Telefone:(69) 9282-1161 - LEANDRO<br>E-mail: LEANDROVHA157@GMAIL.COM<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -60.1398217,-12.7138868,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_GABRIEL FERREIRA (TRES LAGOAS - MS)
+</name>
+        <description><![CDATA[FV -Fixo e Volante<br>Telefone: (67) 99247-3530<br>E-mail: leonardoff740@gmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: Paulo Roberto Ferreira da Costa - +55 11 99475-3084]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -51.720619,-20.8111989,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_M.J.L DA SILVA (MACAPÁ - AP)
+</name>
+        <description><![CDATA[VL - Volante<br>Telefone: (96) 99167-5157 - Mario José<br>E-mail: saomiguel1.mj@hotmail.com<br>Supervisor: (77 ) 9976-3244 Higor Guimarães Gonçalves<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -51.0695031,0.0248765,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_BALSAS GPS RASTREAMENTO (BALSAS - MA)
+</name>
+        <description><![CDATA[VL - Volante<br>Telefone: (99) 999874017 Cesár -<br>E-mail: balsasgps@gmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -46.0744462,-7.5438961,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_TECHNOHALL ELETRICA (TIMOTEO - MG)
+</name>
+        <description><![CDATA[FX - Fixo<br>Telefone: (31) 993386673/(31) 973565453 MAURICIO<br>E-mail: technohalleletrica@gmail.com<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -42.6596144,-19.5291173,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_MAGNU RASTREAMENTO (BOA VISTA - RR)
+</name>
+        <description><![CDATA[VL - Volante<br>Telefone: (95) 98420-8840<br>E-mail: elieziomeireles2@gmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -60.7067478,2.8029042,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_MULTSAT COMERCIO E SERVICOS (CABO DE SANTO AGOSTINHO - PE)
+</name>
+        <description><![CDATA[FV -Fixo e Volante<br>Telefone: (81) 99646-2001 - Ana<br>E-mail: Contato.multsat@hotmail.com<br>Supervisor: (81) 9205-7944 Marcus Cordeiro Leal<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -35.0214953,-8.2982245,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_THIAGO DA SILVA (ARAGUAINA - TO)
+</name>
+        <description><![CDATA[FV -Fixo e Volante<br>Telefone: 63 991049356 THIAGO<br>E-mail: capturerastreamento@gmail.com<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: Ricardo Buitrago (21) 99145-9411]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -48.1944429,-7.1975351,0
+          </coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>SPOT_JULIANA CORREIA SANTOS (ITABUNA - BA)
+</name>
+        <description><![CDATA[VL - Volante<br>(73) 98826-4325 LEANDRO<br>E-mail: leoaudiosascar@hotmail.com<br>Supervisor: (31) 98557-3444 Renato Fernandes Gonçalves<br>Coordenador: (21) 99145-9411 Ricardo Buitrago]]></description>
+        <styleUrl>#icon-1499-0288D1</styleUrl>
+        <Point>
+          <coordinates>
+            -39.2915263,-14.8078264,0
+          </coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>Camada sem título</name>
+    </Folder>
+  </Document>
+</kml>

@@ -69,7 +69,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 shadow-lg shadow-sky-500/25 mb-1">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight font-outfit">Assistente Show</h1>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight font-outfit">Assistente Omnilink</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Show Tecnologia • Omnilink</p>
         </div>
 

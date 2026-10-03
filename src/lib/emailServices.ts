@@ -55,7 +55,7 @@ export async function sendWeeklyReportEmail(
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; rounded-radius: 12px;">
       <div style="background-color: #0f172a; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
-        <h1 style="color: #ffffff; font-size: 20px; margin: 0;">Assistente Show • Relatório Semanal</h1>
+        <h1 style="color: #ffffff; font-size: 20px; margin: 0;">Assistente Omnilink • Relatório Semanal</h1>
         <p style="color: #38bdf8; font-size: 12px; margin: 5px 0 0 0;">Show Tecnologia • Omnilink</p>
       </div>
 
@@ -75,13 +75,13 @@ export async function sendWeeklyReportEmail(
 
       <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 25px 0;">
       <p style="font-size: 11px; color: #94a3b8; text-align: center;">
-        © ${new Date().getFullYear()} Assistente Show • Show Tecnologia. Todos os direitos reservados.
+        © ${new Date().getFullYear()} Assistente Omnilink • Show Tecnologia. Todos os direitos reservados.
       </p>
     </div>
   `;
 
   const response = await resend.emails.send({
-    from: 'Assistente Show <onboarding@resend.dev>',
+    from: 'Assistente Omnilink <onboarding@resend.dev>',
     to: [toEmail],
     subject: `📊 Seu Relatório Semanal de Comissões - Show Tecnologia (${dateStr})`,
     html: htmlContent,

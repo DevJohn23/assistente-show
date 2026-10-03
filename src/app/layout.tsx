@@ -4,7 +4,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
 
 export const metadata: Metadata = {
-  title: 'Assistente Show — Show Tecnologia & Omnilink',
+  title: 'Assistente Omnilink — Show Tecnologia',
   description: 'Aplicação web para aumento de produtividade da equipe comercial da Show Tecnologia',
 };
 

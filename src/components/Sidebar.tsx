@@ -89,12 +89,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <>
       {/* Mobile Top Header Bar (< md) */}
       <div className="md:hidden sticky top-0 z-[2100] bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-md">
-        <div className="flex items-center gap-2.5">
+        <div 
+          className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => handleTabClick('dashboard')}
+        >
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-md">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-sm text-slate-800 dark:text-white font-outfit">Assistente Show</h1>
+            <h1 className="font-bold text-sm text-slate-800 dark:text-white font-outfit">Assistente Omnilink</h1>
             <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Show Tecnologia</p>
           </div>
         </div>
@@ -129,7 +132,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="w-full">
           {/* App Logo & Header - Fixed height to avoid vertical shift */}
           <div className="h-[72px] px-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-3.5 min-w-0">
+            <div 
+              className="flex items-center gap-3.5 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => handleTabClick('dashboard')}
+            >
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-md shadow-sky-500/20 shrink-0">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
@@ -137,8 +143,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap ${
                 isExpanded ? 'opacity-100 max-w-[180px]' : 'opacity-0 max-w-0'
               }`}>
-                <h1 className="font-bold text-base text-slate-800 dark:text-white tracking-wide font-outfit truncate">Assistente Show</h1>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">Show Tecnologia • Omnilink</p>
+                <h1 className="font-bold text-base text-slate-800 dark:text-white tracking-wide font-outfit truncate">Assistente Omnilink</h1>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">Show Tecnologia</p>
               </div>
             </div>
 

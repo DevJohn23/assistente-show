@@ -111,7 +111,7 @@ export default function Home() {
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-sky-500/25 animate-bounce mb-4">
           <Sparkles className="w-6 h-6 text-white" />
         </div>
-        <p className="text-sm font-semibold text-slate-500 dark:text-slate-300">Carregando Assistente Show...</p>
+        <p className="text-sm font-semibold text-slate-500 dark:text-slate-300">Carregando Assistente Omnilink...</p>
       </div>
     );
   }
