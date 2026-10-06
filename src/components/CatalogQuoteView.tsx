@@ -843,7 +843,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               </label>
               <input
                 type="text"
-                placeholder="ex: Carlos (Alfa Logística)"
+                placeholder="Digite o nome..."
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
                 className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-sky-500 font-medium"
@@ -1275,7 +1275,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                 <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">Nome do Cliente</label>
                 <input
                   type="text"
-                  placeholder="ex: Carlos (Alfa Logística)"
+                  placeholder="Digite o nome..."
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                   className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:border-sky-500 font-medium"
