@@ -4,6 +4,7 @@ import { getLocalDateString } from "@/lib/dateUtils";
 import React from 'react';
 import { Opportunity, Commission } from '@/types';
 import { useAuth } from '@/context/AuthContext';
+import { getMonthlyCommissionSummary } from '@/lib/dashboardSummary';
 import { 
   AlertTriangle, 
   Hourglass, 
@@ -52,10 +53,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const dueToday = opportunities.filter((o) => o.expiration_date === todayStr);
   const dueTomorrow = opportunities.filter((o) => o.expiration_date === tomorrowStr);
   
-  const currentMonthSales = commissions.length;
+  const { salesCount: currentMonthSales, expectedCommission: totalCommissionExpected } = getMonthlyCommissionSummary(commissions);
   
   // Total Bruto previsto das operações do mês (Próprias + Implantações + A Receber)
-  const totalCommissionExpected = commissions.reduce((acc, c) => acc + c.commission_amount, 0);
 
   const chartDays = (() => {
     const today = new Date();

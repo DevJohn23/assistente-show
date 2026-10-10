@@ -12,13 +12,6 @@ import { TecnicosBuscadorView } from '@/components/TecnicosBuscadorView';
 import { LoginView } from '@/components/LoginView';
 
 import { useAuth } from '@/context/AuthContext';
-import { 
-  INITIAL_PRODUCTS, 
-  INITIAL_OPPORTUNITIES, 
-  INITIAL_COMMISSIONS, 
-  INITIAL_TEMPLATES,
-  INITIAL_SELLERS
-} from '@/lib/mockData';
 import { Opportunity, Commission, QuoteTemplate, Product } from '@/types';
 import {
   fetchOpportunities,
@@ -58,12 +51,15 @@ export default function Home() {
   }, [activeTab]);
 
   // Application State
-  const [opportunities, setOpportunities] = useState<Opportunity[]>(INITIAL_OPPORTUNITIES);
-  const [commissions, setCommissions] = useState<Commission[]>(INITIAL_COMMISSIONS);
-  const [sellers, setSellers] = useState<string[]>(INITIAL_SELLERS);
-  const [templates, setTemplates] = useState<QuoteTemplate[]>(INITIAL_TEMPLATES);
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [commissions, setCommissions] = useState<Commission[]>([]);
+  const [sellers, setSellers] = useState<string[]>([]);
+  const [templates, setTemplates] = useState<QuoteTemplate[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isDataLoading, setIsDataLoading] = useState(false);
+  const [dataOwner, setDataOwner] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadVersion, setReloadVersion] = useState(0);
 
   // Modal open triggers
   const [isOppModalOpen, setIsOppModalOpen] = useState(false);
@@ -72,40 +68,58 @@ export default function Home() {
   // Toast / Feedback State
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const showToast = (msg: string) => {
+  const [toastIsError, setToastIsError] = useState(false);
+
+  const showToast = (msg: string, isError = false) => {
+    setToastIsError(isError);
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Load data from Supabase when user logs in
+  // Ignore stale requests after a logout/account switch and never use demo records.
+  const userId = user?.id;
   useEffect(() => {
-    if (!user) return;
+    let cancelled = false;
+    setDataOwner(null);
+    setOpportunities([]);
+    setCommissions([]);
+    setSellers([]);
+    setTemplates([]);
+    setProducts([]);
+    setLoadError(false);
+    if (!userId) return;
 
     async function loadUserSupabaseData() {
       setIsDataLoading(true);
-      const [oppsData, commsData, sellersData, tplsData, productsData] = await Promise.all([
-        fetchOpportunities(user!.id),
-        fetchCommissions(user!.id),
-        fetchSellers(user!.id),
-        fetchQuoteTemplates(user!.id),
-        supabase.from('products').select('*')
-      ]);
-
-      setOpportunities(oppsData);
-      setCommissions(commsData);
-      setSellers(sellersData);
-      setTemplates(tplsData);
-      if (productsData.data && productsData.data.length > 0) {
-        setProducts(productsData.data);
+      try {
+        const [oppsData, commsData, sellersData, tplsData, productsData] = await Promise.all([
+          fetchOpportunities(userId!),
+          fetchCommissions(userId!),
+          fetchSellers(userId!),
+          fetchQuoteTemplates(userId!),
+          supabase.from('products').select('*')
+        ]);
+        if (productsData.error) throw productsData.error;
+        if (cancelled) return;
+        setOpportunities(oppsData);
+        setCommissions(commsData);
+        setSellers(sellersData);
+        setTemplates(tplsData);
+        setProducts(productsData.data ?? []);
+        setDataOwner(userId!);
+      } catch {
+        if (!cancelled) setLoadError(true);
+      } finally {
+        if (!cancelled) setIsDataLoading(false);
       }
-      setIsDataLoading(false);
     }
 
-    loadUserSupabaseData();
-  }, [user]);
+    void loadUserSupabaseData();
+    return () => { cancelled = true; };
+  }, [userId, reloadVersion]);
 
   // If Auth is loading, show clean loading screen
-  if (authLoading) {
+  if (authLoading || (user && !loadError && (isDataLoading || dataOwner !== user.id))) {
     return (
       <div className="min-h-screen bg-slate-100 dark:bg-[#0b0f19] text-slate-800 dark:text-white flex flex-col items-center justify-center p-4">
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-sky-500/25 animate-bounce mb-4">
@@ -121,116 +135,107 @@ export default function Home() {
     return <LoginView />;
   }
 
-  // Opportunity Handlers
+  if (loadError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-white p-6">
+        <p role="alert">Não foi possível carregar seus dados. Verifique a conexão e tente novamente.</p>
+        <button onClick={() => setReloadVersion((value) => value + 1)} className="rounded-xl bg-sky-600 px-4 py-2 text-white">Tentar novamente</button>
+      </div>
+    );
+  }
+
+  const failed = (action: string) => {
+    showToast(`Não foi possível ${action}. Verifique a conexão e tente novamente.`, true);
+    return false;
+  };
+
   const handleAddOpportunity = async (opp: Omit<Opportunity, 'id' | 'user_id'>) => {
-    const payload = { ...opp, user_id: user.id };
-    const saved = await createOpportunity(payload);
-    
-    if (saved) {
-      setOpportunities((prev) => [saved, ...prev]);
-      showToast('Oportunidade salva no Supabase.');
-    } else {
-      const fallback: Opportunity = { ...opp, id: `opp-${Date.now()}`, user_id: user.id };
-      setOpportunities((prev) => [fallback, ...prev]);
-      showToast('Oportunidade registrada (Modo Offline).');
-    }
+    const saved = await createOpportunity({ ...opp, user_id: user.id });
+    if (!saved) return failed('salvar a oportunidade');
+    setOpportunities((prev) => [saved, ...prev]);
+    showToast('Oportunidade salva.');
+    return true;
   };
 
   const handleEditOpportunity = async (id: string, updated: Partial<Opportunity>) => {
-    setOpportunities((prev) =>
-      prev.map((o) => (o.id === id ? { ...o, ...updated } : o))
-    );
-    await updateOpportunity(id, updated);
+    if (!await updateOpportunity(id, updated)) return failed('atualizar a oportunidade');
+    setOpportunities((prev) => prev.map((o) => o.id === id ? { ...o, ...updated } : o));
     showToast('Oportunidade atualizada.');
+    return true;
   };
 
   const handleDeleteOpportunity = async (id: string) => {
+    if (!await deleteOpportunity(id)) return failed('excluir a oportunidade');
     setOpportunities((prev) => prev.filter((o) => o.id !== id));
-    await deleteOpportunity(id);
     showToast('Oportunidade excluída.');
+    return true;
   };
 
   const handleRenewOpportunity = async (id: string) => {
     const opp = opportunities.find((o) => o.id === id);
-    if (!opp) return;
-
+    if (!opp) return failed('encontrar a oportunidade');
     const daysToAdd = opp.type === 'PF' ? 15 : 30;
     const currentExp = new Date(opp.expiration_date + 'T00:00:00');
     currentExp.setDate(currentExp.getDate() + daysToAdd);
-    const newExp = getLocalDateString(currentExp);
-
-    const updated = { expiration_date: newExp, status: 'renewed' as const };
-    setOpportunities((prev) =>
-      prev.map((o) => (o.id === id ? { ...o, ...updated } : o))
-    );
-    await updateOpportunity(id, updated);
+    const updated = { expiration_date: getLocalDateString(currentExp), status: 'renewed' as const };
+    if (!await updateOpportunity(id, updated)) return failed('renovar a oportunidade');
+    setOpportunities((prev) => prev.map((o) => o.id === id ? { ...o, ...updated } : o));
     showToast(`Oportunidade renovada (+${daysToAdd} dias para ${opp.type})!`);
+    return true;
   };
 
-  // Commission Handlers
   const handleAddCommission = async (comm: Omit<Commission, 'id' | 'user_id'>) => {
-    const payload = { ...comm, user_id: user.id };
-    const saved = await createCommission(payload);
-
-    if (saved) {
-      setCommissions((prev) => [saved, ...prev]);
-      showToast('Venda gravada no Supabase.');
-    } else {
-      const fallback: Commission = { ...comm, id: `comm-${Date.now()}`, user_id: user.id };
-      setCommissions((prev) => [fallback, ...prev]);
-      showToast('Venda registrada.');
-    }
+    const saved = await createCommission({ ...comm, user_id: user.id });
+    if (!saved) return failed('salvar a venda');
+    setCommissions((prev) => [saved, ...prev]);
+    showToast('Venda salva.');
+    return true;
   };
 
   const handleEditCommission = async (id: string, updated: Partial<Commission>) => {
-    setCommissions((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...updated } : c))
-    );
-    await updateCommission(id, updated);
+    if (!await updateCommission(id, updated)) return failed('atualizar a venda');
+    setCommissions((prev) => prev.map((c) => c.id === id ? { ...c, ...updated } : c));
     showToast('Venda / Observação atualizada.');
+    return true;
   };
 
   const handleDeleteCommission = async (id: string) => {
+    if (!await deleteCommission(id)) return failed('excluir a venda');
     setCommissions((prev) => prev.filter((c) => c.id !== id));
-    await deleteCommission(id);
     showToast('Registro excluído.');
+    return true;
   };
 
   const handleAddSeller = async (name: string) => {
     const trimmed = name.trim();
-    if (trimmed && !sellers.includes(trimmed)) {
-      setSellers((prev) => [...prev, trimmed]);
-      await createSeller(user.id, trimmed);
-      showToast(`Vendedor "${trimmed}" cadastrado.`);
-    }
+    if (!trimmed) return failed('salvar o vendedor');
+    if (sellers.includes(trimmed)) return true;
+    if (!await createSeller(user.id, trimmed)) return failed('salvar o vendedor');
+    setSellers((prev) => [...prev, trimmed]);
+    showToast(`Vendedor "${trimmed}" cadastrado.`);
+    return true;
   };
 
-  // Save Template Handler
   const handleSaveTemplate = async (name: string, items: { product_id: string; quantity: number }[]) => {
-    const payload = { user_id: user.id, name, items };
-    const saved = await createQuoteTemplate(payload);
-
-    if (saved) {
-      setTemplates((prev) => [...prev, saved]);
-    } else {
-      const fallback: QuoteTemplate = { id: `tpl-${Date.now()}`, ...payload };
-      setTemplates((prev) => [...prev, fallback]);
-    }
-    showToast('Modelo de Orçamento salvo!');
+    const saved = await createQuoteTemplate({ user_id: user.id, name, items });
+    if (!saved) return failed('salvar o modelo de orçamento');
+    setTemplates((prev) => [...prev, saved]);
+    showToast('Modelo de orçamento salvo!');
+    return true;
   };
 
   const handleUpdateTemplate = async (id: string, updated: Partial<QuoteTemplate>) => {
-    setTemplates((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, ...updated } : t))
-    );
-    await updateQuoteTemplate(id, updated);
+    if (!await updateQuoteTemplate(id, updated)) return failed('atualizar o modelo de orçamento');
+    setTemplates((prev) => prev.map((t) => t.id === id ? { ...t, ...updated } : t));
     showToast('Modelo de orçamento atualizado.');
+    return true;
   };
 
   const handleDeleteTemplate = async (id: string) => {
+    if (!await deleteQuoteTemplate(id)) return failed('excluir o modelo de orçamento');
     setTemplates((prev) => prev.filter((t) => t.id !== id));
-    await deleteQuoteTemplate(id);
     showToast('Modelo de orçamento excluído.');
+    return true;
   };
 
   // Header Titles Map
@@ -336,7 +341,7 @@ export default function Home() {
 
       {/* Toast Feedback Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl bg-white border border-sky-500/50 text-sky-600 shadow-lg dark:bg-slate-900 dark:text-sky-300 font-semibold text-xs flex items-center gap-2 animate-fadeIn">
+        <div role={toastIsError ? "alert" : "status"} className={`fixed bottom-6 right-6 z-[100] max-w-sm px-4 py-3 rounded-xl bg-white border shadow-lg dark:bg-slate-900 font-semibold text-xs flex items-center gap-2 animate-fadeIn ${toastIsError ? "border-red-500 text-red-700 dark:text-red-300" : "border-sky-500/50 text-sky-600 dark:text-sky-300"}`}>
           <span className="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
           <span>{toastMessage}</span>
         </div>

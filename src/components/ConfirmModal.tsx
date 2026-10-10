@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
+import { usePendingAction } from '@/lib/usePendingAction';
 import { AlertTriangle, X } from 'lucide-react';
 
 interface ConfirmModalProps {
   isOpen: boolean;
   title: string;
   message: string;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void>;
   onCancel: () => void;
 }
 
@@ -18,12 +19,14 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onConfirm,
   onCancel,
 }) => {
+  const { isPending, run } = usePendingAction();
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-xl relative">
         <button
+          disabled={isPending}
           onClick={onCancel}
           className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
         >
@@ -42,16 +45,18 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
         <div className="mt-5 flex items-center justify-end gap-2.5">
           <button
+            disabled={isPending}
             onClick={onCancel}
             className="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-medium transition-colors"
           >
             Cancelar
           </button>
           <button
-            onClick={onConfirm}
+            disabled={isPending}
+            onClick={() => run(async () => { await onConfirm(); return true; })}
             className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-sm transition-colors"
           >
-            Confirmar
+            {isPending ? 'Aguarde...' : 'Confirmar'}
           </button>
         </div>
       </div>

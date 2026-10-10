@@ -4,6 +4,16 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## Correções de confiabilidade — 10/10/2026
+
+- **Supabase aplicado:** migração `restrict_product_image_management_to_admins`; gestão de imagens restrita a administradores autenticados. URLs públicas preservadas; quatro cenários de autorização conferidos.
+- **Aplicação preparada para PR:** salvamento confirmado pelo banco, falhas visíveis com formulários preservados, bloqueio de submissões repetidas, remoção de dados fictícios em falhas de leitura e dashboard limitado ao mês/ano atuais.
+- **Validação:** TypeScript, build de produção, 14 testes de regressão e fluxos de navegador com Supabase simulado passaram.
+- **Decisão do usuário:** PRD é referência inicial; Orçamento Inteligente permanece desabilitado.
+- **Publicação:** frontend ainda não incorporado à `main` nem publicado em produção. Detalhes em `docs/correcoes-2026-10-10.md`.
+
+---
+
 ## 🚀 Informações Gerais do Projeto
 
 - **Nome do Projeto**: Assistente Show
