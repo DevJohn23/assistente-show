@@ -2,6 +2,7 @@
 import { getLocalDateString } from "@/lib/dateUtils";
 
 import React, { useState } from 'react';
+import { usePendingAction } from '@/lib/usePendingAction';
 import { Opportunity, ClientType } from '@/types';
 import { 
   Search, 
@@ -22,10 +23,10 @@ import { ConfirmModal } from './ConfirmModal';
 
 interface OpportunitiesViewProps {
   opportunities: Opportunity[];
-  onAddOpportunity: (opp: Omit<Opportunity, 'id' | 'user_id'>) => void;
-  onEditOpportunity: (id: string, updated: Partial<Opportunity>) => void;
-  onDeleteOpportunity: (id: string) => void;
-  onRenewOpportunity: (id: string) => void;
+  onAddOpportunity: (opp: Omit<Opportunity, 'id' | 'user_id'>) => Promise<boolean>;
+  onEditOpportunity: (id: string, updated: Partial<Opportunity>) => Promise<boolean>;
+  onDeleteOpportunity: (id: string) => Promise<boolean>;
+  onRenewOpportunity: (id: string) => Promise<boolean>;
   isModalOpen: boolean;
   setIsModalOpen: (open: boolean) => void;
 }
@@ -39,6 +40,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
+  const { isPending, run } = usePendingAction();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'table' | 'calendar'>('table');
@@ -99,19 +101,13 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
     setIsModalOpen(true);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.client_name || !formData.phone) return;
-
-    if (editingOpp) {
-      onEditOpportunity(editingOpp.id, formData);
-    } else {
-      onAddOpportunity({
-        ...formData,
-        status: 'active',
-      });
-    }
-    setIsModalOpen(false);
+    const saved = await run(() => editingOpp
+      ? onEditOpportunity(editingOpp.id, formData)
+      : onAddOpportunity({ ...formData, status: 'active' }));
+    if (saved) setIsModalOpen(false);
   };
 
   // Date filters logic
@@ -419,6 +415,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
               </h3>
               <button
                 type="button"
+                disabled={isPending}
                 onClick={() => setIsModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
@@ -562,6 +559,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
               <div className="px-6 py-3.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2.5 shrink-0 bg-slate-50 dark:bg-slate-950/40">
                 <button
                   type="button"
+                  disabled={isPending}
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
@@ -569,9 +567,10 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
                 </button>
                 <button
                   type="submit"
+                  disabled={isPending}
                   className="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-sm transition-all"
                 >
-                  Salvar Registro
+                  {isPending ? 'Salvando...' : 'Salvar Registro'}
                 </button>
               </div>
             </form>
@@ -585,9 +584,8 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
           isOpen={!!renewingOpp}
           title="Renovar Oportunidade"
           message={`Deseja renovar a oportunidade de "${renewingOpp.client_name}" (${renewingOpp.type}) por mais ${renewingOpp.type === 'PF' ? 15 : 30} dias?`}
-          onConfirm={() => {
-            onRenewOpportunity(renewingOpp.id);
-            setRenewingOpp(null);
+          onConfirm={async () => {
+            if (await onRenewOpportunity(renewingOpp.id)) setRenewingOpp(null);
           }}
           onCancel={() => setRenewingOpp(null)}
         />
@@ -598,9 +596,8 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
         isOpen={!!deletingId}
         title="Excluir Oportunidade"
         message="Tem certeza que deseja remover esta oportunidade da sua carteira?"
-        onConfirm={() => {
-          if (deletingId) onDeleteOpportunity(deletingId);
-          setDeletingId(null);
+        onConfirm={async () => {
+          if (deletingId && await onDeleteOpportunity(deletingId)) setDeletingId(null);
         }}
         onCancel={() => setDeletingId(null)}
       />

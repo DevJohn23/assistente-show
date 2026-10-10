@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { usePendingAction } from '@/lib/usePendingAction';
 import { Product, CartItem, QuoteTemplate } from '@/types';
 import { 
   Search, 
@@ -30,9 +31,9 @@ import { SmartQuoteWizard } from '@/components/SmartQuoteWizard';
 interface CatalogQuoteViewProps {
   products: Product[];
   templates: QuoteTemplate[];
-  onSaveTemplate: (name: string, items: { product_id: string; quantity: number }[]) => void;
-  onUpdateTemplate?: (id: string, updated: Partial<QuoteTemplate>) => void;
-  onDeleteTemplate?: (id: string) => void;
+  onSaveTemplate: (name: string, items: { product_id: string; quantity: number }[]) => Promise<boolean>;
+  onUpdateTemplate?: (id: string, updated: Partial<QuoteTemplate>) => Promise<boolean>;
+  onDeleteTemplate?: (id: string) => Promise<boolean>;
 }
 
 const formatCurrency = (val: number) => {
@@ -46,6 +47,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   onUpdateTemplate,
   onDeleteTemplate,
 }) => {
+  const { isPending, run } = usePendingAction();
   const [searchTerm, setSearchTerm] = useState('');
   
   // Catalog View Mode: 'standard' | 'smart'
@@ -514,13 +516,14 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     setCart(newCart);
   };
 
-  const handleSaveTemplateSubmit = (e: React.FormEvent) => {
+  const handleSaveTemplateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTemplateName || cart.length === 0) return;
-    onSaveTemplate(
+    const saved = await run(() => onSaveTemplate(
       newTemplateName,
       cart.map((i) => ({ product_id: i.product.id, quantity: i.quantity }))
-    );
+    ));
+    if (!saved) return;
     setNewTemplateName('');
     setShowSaveTemplateModal(false);
   };
@@ -1669,6 +1672,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 max-w-md w-full shadow-xl relative">
             <button
+              disabled={isPending}
               onClick={() => setShowSaveTemplateModal(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
             >
@@ -1696,6 +1700,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               <div className="flex items-center justify-end gap-2.5 pt-2">
                 <button
                   type="button"
+                  disabled={isPending}
                   onClick={() => setShowSaveTemplateModal(false)}
                   className="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
@@ -1703,6 +1708,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                 </button>
                 <button
                   type="submit"
+                  disabled={isPending}
                   className="px-4 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-sm"
                 >
                   Salvar Kit
@@ -1724,6 +1730,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
               </div>
               <button
                 type="button"
+                disabled={isPending}
                 onClick={() => setShowManageKitsModal(false)}
                 className="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
               >
@@ -1751,11 +1758,12 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                         />
                         <button
                           type="button"
-                          onClick={() => {
+                          disabled={isPending}
+                          onClick={async () => {
                             if (editingTemplateName.trim() && onUpdateTemplate) {
-                              onUpdateTemplate(tpl.id, { name: editingTemplateName.trim() });
+                              const saved = await run(() => onUpdateTemplate(tpl.id, { name: editingTemplateName.trim() }));
+                              if (saved) setEditingTemplateId(null);
                             }
-                            setEditingTemplateId(null);
                           }}
                           className="p-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-500 shrink-0"
                           title="Salvar Nome"
@@ -1801,9 +1809,9 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
                             <div className="flex items-center gap-1">
                               <button
                                 type="button"
-                                onClick={() => {
-                                  if (onDeleteTemplate) onDeleteTemplate(tpl.id);
-                                  setDeleteConfirmId(null);
+                                disabled={isPending}
+                                onClick={async () => {
+                                  if (onDeleteTemplate && await run(() => onDeleteTemplate(tpl.id))) setDeleteConfirmId(null);
                                 }}
                                 className="px-2 py-1 bg-red-600 hover:bg-red-500 text-white text-[10px] font-bold rounded-lg"
                               >
@@ -1838,6 +1846,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
             <div className="pt-2 flex justify-end border-t border-slate-100 dark:border-slate-800">
               <button
                 type="button"
+                disabled={isPending}
                 onClick={() => setShowManageKitsModal(false)}
                 className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
               >

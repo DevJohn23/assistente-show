@@ -2,6 +2,7 @@
 import { getLocalDateString } from "@/lib/dateUtils";
 
 import React, { useState } from 'react';
+import { usePendingAction } from '@/lib/usePendingAction';
 import { Commission, CommissionRegistrationType } from '@/types';
 import { 
   Search, 
@@ -26,10 +27,10 @@ import { ConfirmModal } from './ConfirmModal';
 interface CommissionsViewProps {
   commissions: Commission[];
   sellers: string[];
-  onAddSeller: (name: string) => void;
-  onAddCommission: (comm: Omit<Commission, 'id' | 'user_id'>) => void;
-  onEditCommission: (id: string, updated: Partial<Commission>) => void;
-  onDeleteCommission: (id: string) => void;
+  onAddSeller: (name: string) => Promise<boolean>;
+  onAddCommission: (comm: Omit<Commission, 'id' | 'user_id'>) => Promise<boolean>;
+  onEditCommission: (id: string, updated: Partial<Commission>) => Promise<boolean>;
+  onDeleteCommission: (id: string) => Promise<boolean>;
   isModalOpen: boolean;
   setIsModalOpen: (open: boolean) => void;
 }
@@ -44,6 +45,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
+  const { isPending, run } = usePendingAction();
   const [searchTerm, setSearchTerm] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -121,17 +123,17 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
   };
 
   // Handle explicit confirmation of new seller button
-  const handleConfirmNewSeller = () => {
+  const handleConfirmNewSeller = async () => {
     const trimmed = newSellerInput.trim();
     if (trimmed) {
-      onAddSeller(trimmed);
+      if (!await run(() => onAddSeller(trimmed))) return;
       setSelectedSeller(trimmed);
       setIsAddingNewSellerInline(false);
       setNewSellerInput('');
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const numericSale = parseFloat(saleAmount) || 0;
@@ -150,32 +152,34 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
 
     const installerOpt = regTypeSelect === 'implanted_for_other' ? 'me' : 'other';
 
-    if (editingComm) {
-      onEditCommission(editingComm.id, {
-        client_name: clientName,
-        sale_amount: numericSale,
-        commission_amount: numericComm,
-        sale_date: saleDate,
-        installer_option: installerOpt,
-        registration_type: regTypeSelect,
-        other_installer_name: finalOtherInstaller,
-        notes: notes || undefined,
-      });
-    } else {
-      onAddCommission({
-        client_name: clientName,
-        sale_amount: numericSale,
-        commission_amount: numericComm,
-        sale_date: saleDate,
-        installer_option: installerOpt,
-        registration_type: regTypeSelect,
-        other_installer_name: finalOtherInstaller,
-        status: 'pending',
-        notes: notes || undefined,
-      });
-    }
+    const saved = await run(async () => {
+      if (editingComm) {
+        return onEditCommission(editingComm.id, {
+          client_name: clientName,
+          sale_amount: numericSale,
+          commission_amount: numericComm,
+          sale_date: saleDate,
+          installer_option: installerOpt,
+          registration_type: regTypeSelect,
+          other_installer_name: finalOtherInstaller,
+          notes: notes || undefined,
+        });
+      } else {
+        return onAddCommission({
+          client_name: clientName,
+          sale_amount: numericSale,
+          commission_amount: numericComm,
+          sale_date: saleDate,
+          installer_option: installerOpt,
+          registration_type: regTypeSelect,
+          other_installer_name: finalOtherInstaller,
+          status: 'pending',
+          notes: notes || undefined,
+        });
+      }
 
-    setIsModalOpen(false);
+    });
+    if (saved) setIsModalOpen(false);
   };
 
   // Filter commissions
@@ -619,6 +623,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
               </h3>
               <button
                 type="button"
+                disabled={isPending}
                 onClick={() => setIsModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
@@ -819,7 +824,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
                           <button
                             type="button"
                             onClick={handleConfirmNewSeller}
-                            disabled={!newSellerInput.trim()}
+                            disabled={isPending || !newSellerInput.trim()}
                             className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white font-semibold text-xs flex items-center gap-1 shrink-0 transition-all"
                           >
                             <Check className="w-3.5 h-3.5" />
@@ -861,6 +866,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
               <div className="px-6 py-3.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2.5 shrink-0 bg-slate-50 dark:bg-slate-950/40">
                 <button
                   type="button"
+                  disabled={isPending}
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
@@ -868,9 +874,10 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
                 </button>
                 <button
                   type="submit"
+                  disabled={isPending}
                   className="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-sm transition-all"
                 >
-                  {editingComm ? 'Salvar Alterações' : 'Salvar Venda'}
+                  {isPending ? 'Salvando...' : editingComm ? 'Salvar Alterações' : 'Salvar Venda'}
                 </button>
               </div>
             </form>
@@ -928,9 +935,8 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
         isOpen={!!deletingId}
         title="Excluir Registro de Comissão"
         message="Tem certeza que deseja remover esta venda do seu histórico de comissões?"
-        onConfirm={() => {
-          if (deletingId) onDeleteCommission(deletingId);
-          setDeletingId(null);
+        onConfirm={async () => {
+          if (deletingId && await onDeleteCommission(deletingId)) setDeletingId(null);
         }}
         onCancel={() => setDeletingId(null)}
       />
