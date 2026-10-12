@@ -9,3 +9,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
   },
 });
+
+// Subscribe before React mounts: the SDK can consume an email callback during hydration.
+if (typeof window !== 'undefined') {
+  supabase.auth.onAuthStateChange((event, session) => {
+    try {
+      if (event === 'PASSWORD_RECOVERY' && session) sessionStorage.setItem('omnilink_recovery_user', session.user.id);
+      if (event === 'SIGNED_OUT') sessionStorage.removeItem('omnilink_recovery_user');
+    } catch { /* Session storage is only a presentation marker, never authorization. */ }
+  });
+}

@@ -1,269 +1,133 @@
 'use client';
 
-import React, { useState } from 'react';
-import { 
-  LayoutDashboard, 
-  CalendarClock, 
-  Wallet, 
-  ShoppingBag, 
-  Sparkles,
-  LogOut,
-  Menu,
-  X,
-  MapPin,
-  Settings,
-  Sun,
-  Moon
-} from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Home, FileText, ChartNoAxesColumn, CalendarClock, MapPin, Settings,
+  ChevronsLeft, ChevronsRight, ChevronDown, LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
+import { AccountView } from './AccountView';
+import { useRouter } from 'next/navigation';
 
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   opportunitiesCountToday: number;
 }
+const navigation = [
+  { id: 'dashboard', label: 'Início', icon: Home },
+  { id: 'catalog', label: 'Orçamentos', icon: FileText },
+  { id: 'commissions', label: 'Comissões', icon: ChartNoAxesColumn },
+  { id: 'opportunities', label: 'Oportunidades', icon: CalendarClock },
+  { id: 'tecnicos', label: 'Rede técnica', icon: MapPin },
+];
 
-export const Sidebar: React.FC<SidebarProps> = ({ 
-  activeTab, 
-  setActiveTab,
-  opportunitiesCountToday 
-}) => {
+function AccountMenu({ compact = false }: { compact?: boolean }) {
   const { user, isAdmin, signOut } = useAuth();
+  const { preference, setTheme } = useTheme();
+  const [showAccount, setShowAccount] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+  const [error, setError] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const select = useRef<HTMLSelectElement>(null);
+  const name = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Vendedor';
+  useEffect(() => {
+    if (!open) return;
+    select.current?.focus();
+    const outside = (event: PointerEvent) => {
+      if (!root.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { event.stopPropagation(); setOpen(false); trigger.current?.focus(); }
+    };
+    document.addEventListener('pointerdown', outside);
+    const element = root.current;
+    element?.addEventListener('keydown', escape);
+    return () => { document.removeEventListener('pointerdown', outside); element?.removeEventListener('keydown', escape); };
+  }, [open]);
+  return <div ref={root} className="account-root" onBlur={(event) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node)) setOpen(false);
+  }}>
+    {showAccount && <AccountView onClose={() => { setShowAccount(false); trigger.current?.focus(); }} />}
+    {open && <section aria-label="Opções da conta" className={`account-panel ${compact ? 'account-panel-compact' : ''}`}>
+      <p className="font-semibold truncate">{name}</p>
+      <p className="ui-muted text-xs break-all mb-4">{user?.email}</p>
+      <button className="ui-button ui-button-secondary w-full mb-4" onClick={() => { setOpen(false); setShowAccount(true); }}>Minha conta</button>
+      <label className="block text-sm font-medium mb-2" htmlFor={compact ? 'theme-compact' : 'theme-expanded'}>Tema</label>
+      <select ref={select} id={compact ? 'theme-compact' : 'theme-expanded'} className="ui-input w-full" value={preference}
+        onChange={(event) => setTheme(event.target.value as 'light' | 'dark' | 'system')}>
+        <option value="light">Claro</option><option value="dark">Escuro</option><option value="system">Automático</option>
+      </select>
+      <button className="ui-button ui-button-secondary mt-4 w-full" disabled={leaving} onClick={async () => {
+        setLeaving(true); setError(false);
+        try { await signOut(); } catch { setError(true); } finally { setLeaving(false); }
+      }}><LogOut size={16} />{leaving ? 'Saindo…' : 'Sair da conta'}</button>
+      {error && <p role="alert" className="text-sm text-red-600 mt-2">Não foi possível sair. Tente novamente.</p>}
+    </section>}
+    <button ref={trigger} className="account-trigger" aria-label="Abrir opções da conta" aria-expanded={open}
+      onClick={() => setOpen(!open)} title={compact ? 'Minha conta' : undefined}>
+      <span className="account-avatar">{name.charAt(0).toUpperCase()}</span>
+      {!compact && <><span className="min-w-0 flex-1 text-left"><span className="block truncate font-medium">{name}</span>
+        <span className="block ui-muted text-xs">{isAdmin ? 'Administrador' : 'Vendedor'}</span></span><ChevronDown size={16} /></>}
+    </button>
+  </div>;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, opportunitiesCountToday }) => {
+  const { isAdmin } = useAuth();
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Marcos (Vendedor)';
-  const userInitial = userName.charAt(0).toUpperCase();
-
-  const navItems = [
-    {
-      id: 'dashboard',
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-      iconColor: 'text-sky-400',
-      badge: null,
-    },
-    {
-      id: 'opportunities',
-      label: 'Oportunidades',
-      icon: CalendarClock,
-      iconColor: 'text-sky-400',
-      badge: opportunitiesCountToday > 0 ? opportunitiesCountToday : null,
-      badgeColor: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
-    },
-    {
-      id: 'commissions',
-      label: 'Comissões',
-      icon: Wallet,
-      iconColor: 'text-emerald-400',
-      badge: null,
-    },
-    {
-      id: 'catalog',
-      label: 'Catálogo / Orçamento',
-      icon: ShoppingBag,
-      iconColor: 'text-amber-400',
-      badge: null,
-    },
-    {
-      id: 'tecnicos',
-      label: 'Rede de Técnicos',
-      icon: MapPin,
-      iconColor: 'text-rose-400',
-      badge: null,
-    },
-  ];
-
-  const handleTabClick = (id: string) => {
-    setActiveTab(id);
-    setMobileOpen(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const mobileTrigger = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    try { setCollapsed(localStorage.getItem('omnilink_sidebar_collapsed') === 'true'); } catch { /* Optional preference. */ }
+    const media = window.matchMedia('(min-width: 768px)');
+    const close = () => { if (media.matches) dialog.current?.close(); };
+    media.addEventListener('change', close);
+    return () => media.removeEventListener('change', close);
+  }, []);
+  const toggle = () => {
+    const next = !collapsed; setCollapsed(next);
+    try { localStorage.setItem('omnilink_sidebar_collapsed', String(next)); } catch { /* Optional persistence. */ }
   };
-
-  const isExpanded = isHovered || mobileOpen;
-
-  return (
-    <>
-      {/* Mobile Top Header Bar (< md) */}
-      <div className="md:hidden sticky top-0 z-[2100] bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-md">
-        <div 
-          className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => handleTabClick('dashboard')}
-        >
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-md">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <h1 className="font-bold text-sm text-slate-800 dark:text-white font-outfit">Assistente Omnilink</h1>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Show Tecnologia</p>
-          </div>
-        </div>
-
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="p-2 rounded-xl bg-slate-100 text-slate-600 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-300 dark:hover:text-white transition-colors"
-          aria-label="Abrir Menu"
-        >
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+  const content = (mobile: boolean) => {
+    const compact = collapsed && !mobile;
+    return <>
+      <div className={`sidebar-brand ${compact ? 'sidebar-brand-compact' : ''}`}>
+        {!compact && <button className="brand-signature text-left" onClick={() => { setActiveTab('dashboard'); dialog.current?.close(); }} aria-label="Assistente Omnilink — início">
+          <span className="block">omnilink<span className="brand-dot">.</span></span><small>Assistente comercial</small>
+        </button>}
+        <button className="ui-icon-button shrink-0" onClick={mobile ? () => dialog.current?.close() : toggle}
+          aria-label={mobile ? 'Fechar menu' : compact ? 'Expandir menu' : 'Recolher menu'} aria-expanded={mobile || !collapsed}
+          title={mobile ? 'Fechar menu' : compact ? 'Expandir menu' : 'Recolher menu'}>
+          {mobile ? <X size={18} /> : compact ? <ChevronsRight size={18} /> : <ChevronsLeft size={18} />}
         </button>
       </div>
-
-      {/* Backdrop overlay for mobile drawer */}
-      {mobileOpen && (
-        <div 
-          onClick={() => setMobileOpen(false)}
-          className="md:hidden fixed inset-0 z-[2050] bg-black/30 dark:bg-black/60 backdrop-blur-xs animate-fadeIn"
-        />
-      )}
-
-      {/* Sidebar Container (Hover Expandable on Desktop + Mobile Drawer) */}
-      <aside 
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={`fixed md:sticky top-0 z-[2100] md:z-30 bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-800 flex flex-col justify-between h-screen select-none transition-all duration-300 ease-in-out shadow-lg dark:shadow-2xl md:shadow-none overflow-hidden ${
-          mobileOpen ? 'left-0 w-64' : '-left-64 md:left-0'
-        } ${
-          isHovered ? 'md:w-64' : 'md:w-16'
-        }`}
-      >
-        <div className="w-full">
-          {/* App Logo & Header - Fixed height to avoid vertical shift */}
-          <div className="h-[72px] px-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
-            <div 
-              className="flex items-center gap-3.5 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => handleTabClick('dashboard')}
-            >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center shadow-md shadow-sky-500/20 shrink-0">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
-              
-              <div className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap ${
-                isExpanded ? 'opacity-100 max-w-[180px]' : 'opacity-0 max-w-0'
-              }`}>
-                <h1 className="font-bold text-base text-slate-800 dark:text-white tracking-wide font-outfit truncate">Assistente Omnilink</h1>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">Show Tecnologia</p>
-              </div>
-            </div>
-
-            {/* Mobile close button */}
-            <button 
-              onClick={() => setMobileOpen(false)}
-              className="md:hidden p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Navigation Links - Fixed vertical padding without Menu Principal header */}
-          <nav className="p-2.5 space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleTabClick(item.id)}
-                  title={!isExpanded ? item.label : undefined}
-                  className={`w-full flex items-center justify-between px-3 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
-                    isActive
-                      ? 'bg-sky-600 text-white font-semibold shadow-md shadow-sky-600/20'
-                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60'
-                  }`}
-                >
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : item.iconColor}`} />
-                    <span className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap text-left ${
-                      isExpanded ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0'
-                    }`}>
-                      {item.label}
-                    </span>
-                  </div>
-
-                  {item.badge && (
-                    <span className={`transition-all duration-300 ease-in-out text-[11px] px-2 py-0.5 rounded-full border font-bold shrink-0 ${item.badgeColor} ${
-                      isExpanded ? 'opacity-100 max-w-[50px]' : 'opacity-0 max-w-0 overflow-hidden'
-                    }`}>
-                      {item.badge}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Admin Panel Button */}
-          {isAdmin && (
-            <div className="px-2.5 mt-1">
-              <button
-                onClick={() => router.push('/admin')}
-                title={!isExpanded ? 'Painel Admin' : undefined}
-                className="w-full flex items-center gap-3.5 px-3 py-3 rounded-xl font-medium text-sm transition-all duration-200 text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
-              >
-                <Settings className="w-5 h-5 shrink-0" />
-                <span className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap text-left ${
-                  isExpanded ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0'
-                }`}>
-                  Painel Admin
-                </span>
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Theme Toggle — acima do footer do perfil */}
-        <div className="px-2.5 mb-1">
-          <button
-            onClick={toggleTheme}
-            title={!isExpanded ? (theme === 'dark' ? 'Tema Claro' : 'Tema Escuro') : undefined}
-            className="w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60"
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-5 h-5 shrink-0 text-amber-400" />
-            ) : (
-              <Moon className="w-5 h-5 shrink-0 text-indigo-400" />
-            )}
-            <span className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap text-left ${
-              isExpanded ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0'
-            }`}>
-              {theme === 'dark' ? 'Tema Claro' : 'Tema Escuro'}
-            </span>
-          </button>
-        </div>
-
-        {/* User Info & Logout Footer */}
-        <div className="h-[68px] px-3.5 border-t border-slate-200 bg-slate-50 dark:bg-slate-950/40 dark:border-slate-800 flex items-center shrink-0">
-          <div className="w-full flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-9 h-9 rounded-full bg-sky-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
-                {userInitial}
-              </div>
-
-              <div className={`transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap ${
-                isExpanded ? 'opacity-100 max-w-[140px]' : 'opacity-0 max-w-0'
-              }`}>
-                <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate">{userName}</p>
-                <p className="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  Online (Supabase)
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => signOut()}
-              title="Sair da Conta"
-              className={`transition-all duration-300 ease-in-out p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:text-rose-400 dark:hover:bg-slate-800 shrink-0 ${
-                isExpanded ? 'opacity-100 max-w-[40px]' : 'opacity-0 max-w-0 overflow-hidden pointer-events-none'
-              }`}
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </aside>
-    </>
-  );
+      <nav aria-label="Navegação principal" className="sidebar-navigation">
+        {navigation.map(({ id, label, icon: Icon }) => <button key={id} aria-label={label} aria-current={activeTab === id ? 'page' : undefined}
+          title={compact ? label : undefined} className={`sidebar-link ${activeTab === id ? 'is-active' : ''} ${compact ? 'justify-center' : ''}`}
+          onClick={() => { setActiveTab(id); dialog.current?.close(); }}>
+          <Icon size={20} strokeWidth={1.7} />{!compact && <span>{label}</span>}
+          {!compact && id === 'opportunities' && opportunitiesCountToday > 0 && <span className="sidebar-count">{opportunitiesCountToday}</span>}
+        </button>)}
+      </nav>
+      <div className="sidebar-bottom">
+        {isAdmin && <button className={`sidebar-link ${compact ? 'justify-center' : ''}`} aria-label="Administração" title={compact ? 'Administração' : undefined}
+          onClick={() => { dialog.current?.close(); router.push('/admin'); }}><Settings size={20} strokeWidth={1.7} />{!compact && <span>Administração</span>}</button>}
+        <AccountMenu compact={compact} />
+      </div>
+    </>;
+  };
+  return <>
+    <div className="mobile-navigation md:hidden">
+      <button className="font-semibold text-lg" onClick={() => setActiveTab('dashboard')}>omnilink<span className="brand-dot">.</span></button>
+      <button ref={mobileTrigger} className="ui-icon-button" aria-label="Abrir menu" onClick={() => dialog.current?.showModal()}><Menu size={22} /></button>
+    </div>
+    <aside className={`desktop-sidebar hidden md:flex ${collapsed ? 'is-collapsed' : ''}`}>{content(false)}</aside>
+    <dialog ref={dialog} className="mobile-sidebar" aria-label="Menu de navegação" onClose={() => mobileTrigger.current?.focus()}
+      onClick={(event) => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
+      <div className="mobile-sidebar-content">{content(true)}</div>
+    </dialog>
+  </>;
 };

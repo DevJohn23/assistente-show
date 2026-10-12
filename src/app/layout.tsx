@@ -23,10 +23,11 @@ export default function RootLayout({
               (function() {
                 try {
                   var theme = localStorage.getItem('assistente_show_theme');
-                  if (!theme) {
+                  if (theme !== 'light' && theme !== 'dark') {
                     theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
                   }
                   document.documentElement.classList.add(theme);
+                  document.documentElement.style.colorScheme = theme;
                   if (theme === 'dark') document.documentElement.classList.remove('light');
                   else document.documentElement.classList.remove('dark');
                 } catch(e) {

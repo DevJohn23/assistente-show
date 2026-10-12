@@ -1,598 +1,200 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { MapPin, Search, Mail, Star, Loader2, X, Navigation, Users, Map } from 'lucide-react';
+import { MapPin, Search, Mail, Loader2, Navigation, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { WhatsAppIcon } from './WhatsAppIcon';
 import { Tecnico } from '@/types';
 
-interface TecnicoComDistancia extends Tecnico {
-  distancia: number;
+export type TecnicoResultado = Tecnico & { distancia?: number };
+type Location = { lat: number; lng: number; label: string; approximate?: boolean };
+const categories = ['Rede Plus', 'PSO', 'ATA', 'SPOT'];
+export const technicianName = (name: string) => name.replace(/^(ATA\d+_|PSO_|SPOT_|PRP_BOSCH_|PRP_)/, '');
+export const technicianCategory = (cat: string) => cat?.includes('REDE PLUS') ? 'Rede Plus' : cat?.includes('PSO') ? 'PSO' : cat || 'Outros';
+const normalize = (text: string) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+function distance(a: Location, t: Tecnico) {
+  const rad = Math.PI / 180;
+  const h = Math.sin((t.lat-a.lat)*rad/2)**2 + Math.cos(a.lat*rad)*Math.cos(t.lat*rad)*Math.sin((t.lng-a.lng)*rad/2)**2;
+  return 6371 * 2 * Math.asin(Math.sqrt(Math.min(1, h)));
 }
-
-interface NominatimResult {
-  lat: string;
-  lon: string;
-  display_name: string;
+const whatsapp = (phone: string) => { const n = phone.replace(/\D/g, ''); return `https://wa.me/${n.startsWith('55') && n.length >= 12 ? n : `55${n}`}`; };
+const MapLeaflet = dynamic(() => import('./MapLeaflet'), { ssr: false, loading: () => <div className="technical-state" role="status"><Loader2 className="animate-spin" /> Carregando mapa…</div> });
+async function getJson(url: string, signal: AbortSignal) {
+  const response = await fetch(url, { signal, headers: { 'Accept-Language': 'pt-BR' } });
+  if (!response.ok) throw new Error('request failed');
+  return response.json();
 }
-
-function haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+async function locations(query: string, signal: AbortSignal): Promise<Location[]> {
+  const lookup = async (q: string): Promise<Location[]> => {
+    const data = await getJson(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&countrycodes=br`, signal);
+    return data.map((item: { lat: string; lon: string; display_name: string }) => ({lat: Number(item.lat), lng: Number(item.lon), label: item.display_name})).filter((item: Location) => Number.isFinite(item.lat) && Number.isFinite(item.lng));
+  };
+  if (/^\d{5}-?\d{3}$/.test(query.trim())) {
+    const cep = await getJson(`https://viacep.com.br/ws/${query.replace(/\D/g, '')}/json/`, signal);
+    if (cep.erro) return [];
+    const city = `${cep.localidade} - ${cep.uf}`;
+    if (cep.logradouro) {
+      const exact = await lookup(`${cep.logradouro}, ${city}, Brasil`);
+      if (exact.length) return exact.map(item => ({...item, label: `${cep.logradouro}, ${cep.bairro}, ${city} · CEP ${cep.cep}`}));
+    }
+    return (await lookup(`${city}, Brasil`)).map(item => ({...item, label: `${city} · CEP ${cep.cep}`, approximate: true}));
+  }
+  return lookup(`${query}, Brasil`);
 }
-
-function categoriaBadge(cat: string | null | undefined) {
-  const c = cat || '';
-  if (c.includes('REDE PLUS')) return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-  if (c.includes('PSO')) return 'bg-sky-500/20 text-sky-300 border-sky-500/30';
-  if (c === 'ATA') return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
-  if (c === 'SPOT') return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-  return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
-}
-
-const MapLeaflet = dynamic(() => import('./MapLeaflet'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-slate-200/60 dark:bg-slate-200/60 dark:bg-slate-800/60 rounded-2xl">
-      <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
-    </div>
-  ),
-});
 
 export const TecnicosBuscadorView: React.FC = () => {
-  const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<NominatimResult[]>([]);
-  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
-  const [searching, setSearching] = useState(false);
-  const [clientePos, setClientePos] = useState<{ lat: number; lng: number } | null>(null);
-  const [clienteLabel, setClienteLabel] = useState('');
-  const [tecnicos5, setTecnicos5] = useState<TecnicoComDistancia[]>([]);
-  const [mapTecnicos, setMapTecnicos] = useState<Tecnico[]>([]);
-  const [searchMode, setSearchMode] = useState(false);
-  const [selectedTecnico, setSelectedTecnico] = useState<TecnicoComDistancia | null>(null);
-  const [mapCenter, setMapCenter] = useState<[number, number]>([-15.788, -47.879]);
-  const [mapZoom, setMapZoom] = useState(5);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const justSelectedRef = useRef(false);
-
-  const [tecnicoNameQuery, setTecnicoNameQuery] = useState('');
-  const [enderecoSelecionado, setEnderecoSelecionado] = useState('');
-  const [loadingEndereco, setLoadingEndereco] = useState(false);
-
   const [tecnicos, setTecnicos] = useState<Tecnico[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [retry, setRetry] = useState(0);
+  const [mode, setMode] = useState<'address' | 'name'>('address');
+  const [query, setQuery] = useState('');
+  const [nameQuery, setNameQuery] = useState('');
+  const [category, setCategory] = useState('');
+  const [origin, setOrigin] = useState<Location | null>(null);
+  const [suggestions, setSuggestions] = useState<Location[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState('');
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [address, setAddress] = useState('');
+  const [addressLoading, setAddressLoading] = useState(false);
+  const [fitVersion, setFitVersion] = useState(0);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
+  const suggestionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suggestionCache = useRef(new Map<string, Location[]>());
+  const searchRequest = useRef<AbortController | null>(null);
+  const cards = useRef<Map<number, HTMLElement>>(new Map());
 
   useEffect(() => {
-    const fetchTecnicos = async () => {
-      const { data } = await supabase.from('tecnicos').select('*');
-      if (data) {
-        setTecnicos(data);
-        setMapTecnicos(data); // Inicia o mapa com os dados
-      }
-    };
-    fetchTecnicos();
+    let active = true;
+    setLoading(true); setLoadError(false);
+    (async () => {
+      try {
+        const {data, error} = await supabase.from('tecnicos').select('*');
+        if (error) throw error;
+        if (active) setTecnicos((data || []).filter(t => Number.isFinite(t.lat) && Number.isFinite(t.lng)));
+      } catch { if (active) setLoadError(true); }
+      finally { if (active) setLoading(false); }
+    })();
+    return () => { active = false; };
+  }, [retry]);
+  useEffect(() => () => { searchRequest.current?.abort(); if (suggestionTimer.current) clearTimeout(suggestionTimer.current); }, []);
+
+  const results = useMemo<TecnicoResultado[]>(() => {
+    const filtered = tecnicos.filter(t => !category || technicianCategory(t.categoria) === category);
+    if (mode === 'address') return origin ? filtered.map(t => ({...t, distancia: distance(origin,t)})).sort((a,b) => a.distancia-b.distancia).slice(0,5) : filtered;
+    const term = normalize(nameQuery.trim());
+    return filtered.filter(t => normalize(`${t.nome} ${t.categoria} ${t.vendedor_parceiro || ''}`).includes(term));
+  }, [tecnicos, category, mode, origin, nameQuery]);
+  const selected = results.find(t => t.id === selectedId);
+  const showList = mode === 'name' || !!origin;
+  const visibleCards = showList ? results : selected ? [selected] : [];
+
+  useEffect(() => {
+    if (!selected) { setAddress(''); return; }
+    const controller = new AbortController();
+    setAddress(''); setAddressLoading(true);
+    getJson(`https://nominatim.openstreetmap.org/reverse?lat=${selected.lat}&lon=${selected.lng}&format=json`, controller.signal)
+      .then(data => setAddress(data.display_name || 'Endereço indisponível. Consulte a localização no mapa.'))
+      .catch(() => { if (!controller.signal.aborted) setAddress('Não foi possível consultar o endereço. A localização continua disponível no mapa.'); })
+      .finally(() => { if (!controller.signal.aborted) setAddressLoading(false); });
+    return () => controller.abort();
+  }, [selected]);
+
+  const selectTechnician = useCallback((t: TecnicoResultado) => {
+    setSelectedId(t.id);
+    requestAnimationFrame(() => cards.current.get(t.id)?.scrollIntoView({block:'nearest', behavior: 'auto'}));
   }, []);
-
-  useEffect(() => {
-    if (selectedTecnico) {
-      setLoadingEndereco(true);
-      setEnderecoSelecionado('');
-      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${selectedTecnico.lat}&lon=${selectedTecnico.lng}&format=json`, {
-        headers: { 'Accept-Language': 'pt-BR' }
-      })
-      .then(res => res.json())
-      .then(data => {
-        setEnderecoSelecionado(data.display_name || 'Endereço não encontrado');
-      })
-      .catch(() => setEnderecoSelecionado('Falha ao buscar endereço'))
-      .finally(() => setLoadingEndereco(false));
-    }
-  }, [selectedTecnico]);
-
-  const filteredTecnicos = tecnicoNameQuery.trim() === '' ? [] : tecnicos.filter(t => 
-    t.nome.toLowerCase().includes(tecnicoNameQuery.toLowerCase()) ||
-    (t.categoria || '').toLowerCase().includes(tecnicoNameQuery.toLowerCase()) ||
-    (t.vendedor_parceiro || '').toLowerCase().includes(tecnicoNameQuery.toLowerCase())
-  );
-
-  const fetchSuggestions = useCallback(async (q: string) => {
-    if (q.length < 4) { setSuggestions([]); return; }
-    setLoadingSuggestions(true);
-    try {
-      // Verifica se é um CEP (8 números seguidos, com ou sem traço)
-      const cepMatch = q.replace(/[^0-9]/g, '');
-      if (cepMatch.length === 8) {
-        // Tenta buscar no ViaCEP
-        const viaCepRes = await fetch(`https://viacep.com.br/ws/${cepMatch}/json/`);
-        const viaCepData = await viaCepRes.json();
-        
-        if (!viaCepData.erro) {
-          // Monta o endereço completo
-          const fullAddress = `${viaCepData.logradouro}, ${viaCepData.bairro}, ${viaCepData.localidade} - ${viaCepData.uf}`;
-          const fallbackAddress = `${viaCepData.logradouro}, ${viaCepData.localidade} - ${viaCepData.uf}`;
-          const cityAddress = `${viaCepData.localidade} - ${viaCepData.uf}`;
-          
-          // Busca as coordenadas no Nominatim usando o endereço retornado pelo ViaCEP
-          let nomRes = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullAddress + ', Brasil')}&format=json&limit=1`,
-            { headers: { 'Accept-Language': 'pt-BR' } }
-          );
-          let nomData: NominatimResult[] = await nomRes.json();
-          
-          // Fallback 1: Sem o bairro
-          if (nomData.length === 0 && viaCepData.logradouro) {
-            nomRes = await fetch(
-              `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fallbackAddress + ', Brasil')}&format=json&limit=1`,
-              { headers: { 'Accept-Language': 'pt-BR' } }
-            );
-            nomData = await nomRes.json();
-          }
-
-          // Fallback 2: Apenas a cidade e estado
-          if (nomData.length === 0) {
-            nomRes = await fetch(
-              `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityAddress + ', Brasil')}&format=json&limit=1`,
-              { headers: { 'Accept-Language': 'pt-BR' } }
-            );
-            nomData = await nomRes.json();
-          }
-          
-          if (nomData.length > 0) {
-            setSuggestions([{
-              lat: nomData[0].lat,
-              lon: nomData[0].lon,
-              display_name: `${fullAddress} (CEP: ${viaCepData.cep})`
-            }]);
-            setShowSuggestions(true);
-            return;
-          }
-        }
-      }
-
-      // Se não for CEP ou o CEP falhou, busca normalmente no Nominatim
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q + ', Brasil')}&format=json&limit=5&countrycodes=br`,
-        { headers: { 'Accept-Language': 'pt-BR' } }
-      );
-      const data: NominatimResult[] = await res.json();
-      setSuggestions(data);
-      setShowSuggestions(true);
-    } catch {
-      setSuggestions([]);
-    } finally {
-      setLoadingSuggestions(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (justSelectedRef.current) {
-      justSelectedRef.current = false;
-      return;
-    }
-    debounceRef.current = setTimeout(() => fetchSuggestions(query), 400);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [query, fetchSuggestions]);
-
-  const buscarTecnicos = useCallback(async (lat: number, lng: number, label: string) => {
-    setSearching(true);
-    setSearchMode(true);
-    setClientePos({ lat, lng });
-    setClienteLabel(label);
-    setSelectedTecnico(null);
-    setShowSuggestions(false);
-
-    // Sort all tecnicos by distance
-    const ranked = tecnicos
-      .map((t) => ({ ...t, distancia: haversine(lat, lng, t.lat, t.lng) }))
-      .sort((a, b) => a.distancia - b.distancia)
-      .slice(0, 5);
-
-    setTecnicos5(ranked);
-    setMapTecnicos(ranked);
-    setMapCenter([lat, lng]);
-    setMapZoom(10);
-    setSearching(false);
-  }, [tecnicos]);
-
-  const handleSelectSuggestion = (s: NominatimResult) => {
-    justSelectedRef.current = true;
-    setQuery(s.display_name);
-    setSuggestions([]);
-    setShowSuggestions(false);
-    buscarTecnicos(parseFloat(s.lat), parseFloat(s.lon), s.display_name);
+  const cancelSearch = () => { if (suggestionTimer.current) clearTimeout(suggestionTimer.current); setActiveSuggestion(-1); searchRequest.current?.abort(); setSearching(false); setSuggestions([]); setSearchError(''); };
+  const chooseLocation = (location: Location) => { cancelSearch(); setOrigin(location); setQuery(location.label); setSuggestions([]); setSelectedId(null); setFitVersion(v=>v+1); };
+  const suggest = (value: string) => {
+    cancelSearch(); setQuery(value);
+    const term = value.trim();
+    if (term.length < 4) return;
+    suggestionTimer.current = setTimeout(async () => {
+      const cached = suggestionCache.current.get(term);
+      if (cached) { setSuggestions(cached); return; }
+      const controller = new AbortController(); searchRequest.current = controller;
+      setSearching(true);
+      try {
+        const data = await getJson(`https://photon.komoot.io/api/?q=${encodeURIComponent(term)}&limit=5&countrycode=BR`, controller.signal);
+        const found: Location[] = (data.features || []).map((item: {geometry: {coordinates: number[]}; properties: Record<string,string>}) => {
+          const p = item.properties;
+          return {lat:item.geometry.coordinates[1], lng:item.geometry.coordinates[0], label:Array.from(new Set([p.name, p.street, p.housenumber, p.district, p.city, p.state, p.postcode].filter(Boolean))).join(', ')};
+        }).filter((item: Location) => item.label && Number.isFinite(item.lat) && Number.isFinite(item.lng));
+        if (controller.signal.aborted) return;
+        if (suggestionCache.current.size >= 40) suggestionCache.current.clear();
+        suggestionCache.current.set(term, found); setSuggestions(found);
+      } catch { if (!controller.signal.aborted) setSearchError('Sugestões indisponíveis. Use Buscar para consultar o endereço.'); }
+      finally { if (!controller.signal.aborted) setSearching(false); }
+    }, 600);
   };
-
-  const handleSearchSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const search = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (activeSuggestion >= 0 && suggestions[activeSuggestion]) { chooseLocation(suggestions[activeSuggestion]); return; }
+    cancelSearch();
     if (!query.trim()) return;
-    if (suggestions.length > 0) {
-      handleSelectSuggestion(suggestions[0]);
-      return;
-    }
+    const controller = new AbortController(); searchRequest.current = controller;
     setSearching(true);
     try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ', Brasil')}&format=json&limit=1&countrycodes=br`,
-        { headers: { 'Accept-Language': 'pt-BR' } }
-      );
-      const data: NominatimResult[] = await res.json();
-      if (data.length > 0) {
-        buscarTecnicos(parseFloat(data[0].lat), parseFloat(data[0].lon), data[0].display_name);
-      } else {
-        setSearching(false);
-      }
-    } catch {
-      setSearching(false);
-    }
+      const found = await locations(query.trim(), controller.signal);
+      if (controller.signal.aborted) return;
+      if (found.length === 1) chooseLocation(found[0]);
+      else if (found.length) setSuggestions(found);
+      else setSearchError('Endereço não encontrado. Confira o CEP ou inclua a cidade e o estado.');
+    } catch { if (!controller.signal.aborted) setSearchError('Não foi possível buscar o endereço. Tente novamente.'); }
+    finally { if (!controller.signal.aborted) setSearching(false); }
   };
 
-  const resetSearch = () => {
-    setQuery('');
-    setSuggestions([]);
-    setClientePos(null);
-    setClienteLabel('');
-    setTecnicos5([]);
-    setMapTecnicos(tecnicos);
-    setSearchMode(false);
-    setSelectedTecnico(null);
-    setMapCenter([-15.788, -47.879]);
-    setMapZoom(5);
-    inputRef.current?.focus();
-  };
-
-  const waHref = (tel: string) => {
-    const digits = tel.replace(/\D/g, '');
-    // Se já tem 12+ dígitos (com código do país), usa direto; senão adiciona 55
-    const full = digits.startsWith('55') && digits.length >= 12 ? digits : `55${digits}`;
-    return `https://wa.me/${full}`;
-  };
-
-  return (
-    <div className="flex flex-col gap-4 h-[calc(100vh-130px)] min-h-[600px]">
-      {/* Search Bar */}
-      <div className="relative z-[2000]">
-        <form onSubmit={handleSearchSubmit} className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-              placeholder="Digite o endereço do cliente (ex: Rua Pedro II, Guarabira - PB)"
-              className="w-full pl-10 pr-10 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/40 transition-all"
-            />
-            {query && (
-              <button type="button" onClick={resetSearch}
-                className="absolute right-12 top-1/2 -translate-y-1/2 p-2 text-slate-500 dark:text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
-                title="Limpar busca"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-          <button
-            type="submit"
-            disabled={searching || !query.trim()}
-            className="px-5 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-sky-600/20"
-          >
-            {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
-            {searching ? 'Buscando...' : 'Buscar'}
-          </button>
-        </form>
-
-        {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute top-full mt-1 left-0 right-0 z-50 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl shadow-lg dark:shadow-2xl overflow-hidden">
-            {loadingSuggestions && (
-              <div className="px-4 py-2 text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                <Loader2 className="w-3 h-3 animate-spin" /> Buscando...
-              </div>
-            )}
-            {suggestions.map((s, i) => (
-              <button key={i} type="button" onClick={() => handleSelectSuggestion(s)}
-                className="w-full px-4 py-2.5 text-left text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors flex items-start gap-2 border-b border-slate-300/60 dark:border-slate-700/60 last:border-0">
-                <MapPin className="w-3.5 h-3.5 mt-0.5 text-sky-400 shrink-0" />
-                <span className="line-clamp-1">{s.display_name}</span>
-              </button>
-            ))}
-          </div>
-        )}
+  return <section className="technical-page">
+    <header className="technical-heading"><h1>Rede técnica</h1><p>Encontre um técnico e consulte as opções de atendimento.</p></header>
+    <div className="ui-panel technical-search" onBlur={e=>{if (!e.currentTarget.contains(e.relatedTarget as Node | null)) cancelSearch();}}>
+      <div className="technical-modes" role="group" aria-label="Tipo de busca">
+        {([['address','Por endereço ou CEP'],['name','Por técnico']] as const).map(([value,label]) => <button key={value} type="button" aria-pressed={mode===value} onClick={()=>{cancelSearch();setMode(value);setSelectedId(null);}}>{label}</button>)}
       </div>
-
-      {/* Body */}
-      <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
-        {/* Map */}
-        <div className="flex-1 min-h-[320px] lg:min-h-0 rounded-2xl overflow-hidden border border-slate-300/60 dark:border-slate-700/60 shadow-xl">
-          <MapLeaflet
-            center={mapCenter}
-            zoom={mapZoom}
-            clientePos={clientePos}
-            clienteLabel={clienteLabel}
-            tecnicos={mapTecnicos}
-            selectedId={selectedTecnico?.id ?? null}
-            searchMode={searchMode}
-            onSelectTecnico={(t) => setSelectedTecnico(t as TecnicoComDistancia)}
-          />
-        </div>
-
-        {/* Lista */}
-        <div className="w-full lg:w-80 xl:w-96 flex flex-col gap-3 overflow-y-auto">
-          <div className="flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs">
-              <Users className="w-3.5 h-3.5" />
-              <span>{tecnicos5.length > 0 ? `${tecnicos5.length} técnicos encontrados` : `${tecnicos.length} técnicos na rede`}</span>
-            </div>
-            {clienteLabel && (
-              <span className="text-xs text-sky-400 font-medium truncate max-w-[160px]" title={clienteLabel}>
-                📍 {clienteLabel.split(',')[0]}
-              </span>
-            )}
-          </div>
-
-          {/* Estado inicial sem pesquisa */}
-          {!searchMode && !selectedTecnico && (
-            <div className="flex-1 flex flex-col gap-3">
-              {/* Instrução */}
-              <div className="flex flex-col items-center justify-center text-center py-8 px-4 bg-slate-100 dark:bg-slate-800/40 rounded-2xl border border-slate-300 dark:border-slate-700/40">
-                <div className="w-12 h-12 rounded-2xl bg-slate-700/60 flex items-center justify-center mb-3">
-                  <MapPin className="w-6 h-6 text-slate-500 dark:text-slate-400" />
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 font-semibold text-sm mb-1">Clique em um pino</p>
-                <p className="text-slate-500 text-xs max-w-[210px]">
-                  ou busque um endereço para encontrar os 5 técnicos mais próximos
-                </p>
-              </div>
-              {/* Busca por Nome do Técnico */}
-              <div className="bg-slate-100 dark:bg-slate-800/40 rounded-2xl border border-slate-300 dark:border-slate-700/40 p-4">
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">Localizar Técnico Específico</p>
-                <div className="relative mb-3">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
-                  <input
-                    type="text"
-                    value={tecnicoNameQuery}
-                    onChange={(e) => setTecnicoNameQuery(e.target.value)}
-                    placeholder="Nome, categoria ou parceiro..."
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-all shadow-sm"
-                  />
-                </div>
-                {tecnicoNameQuery.trim() !== '' && (
-                  <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
-                    {filteredTecnicos.length === 0 ? (
-                      <p className="text-xs text-slate-500 text-center py-2">Nenhum técnico encontrado.</p>
-                    ) : (
-                      filteredTecnicos.map(t => (
-                        <button key={t.id} onClick={() => {
-                          setSelectedTecnico(t as TecnicoComDistancia);
-                          setMapCenter([t.lat, t.lng]);
-                          setMapZoom(13);
-                          setTecnicoNameQuery('');
-                        }} className="text-left px-3 py-2 text-xs text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors bg-slate-200/60 dark:bg-slate-800/60 border border-slate-300/60 dark:border-slate-700/60 flex items-center justify-between group">
-                          <div className="min-w-0">
-                            <p className="font-semibold truncate">{t.nome.replace(/^(ATA\d+_|PSO_|SPOT_|PRP_BOSCH_|PRP_)/, '')}</p>
-                            <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{t.categoria} {t.tipo ? `• ${t.tipo}` : ''}</p>
-                          </div>
-                          <MapPin className="w-3.5 h-3.5 text-sky-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-2" />
-                        </button>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
-              {/* Legenda de categorias */}
-              <div className="bg-slate-100 dark:bg-slate-800/40 rounded-2xl border border-slate-300 dark:border-slate-700/40 p-4">
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">Legenda</p>
-                <div className="space-y-2">
-                  {[
-                    { label: 'Rede Plus', color: '#f59e0b' },
-                    { label: 'PSO / PSO c/ Estoque', color: '#38bdf8' },
-                    { label: 'ATA', color: '#f87171' },
-                    { label: 'SPOT', color: '#34d399' },
-                  ].map(({ label, color }) => (
-                    <div key={label} className="flex items-center gap-2.5">
-                      <svg viewBox="0 0 24 36" className="w-3.5 h-5 shrink-0" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24S24 21 24 12C24 5.373 18.627 0 12 0z" fill={color}/>
-                        <circle cx="12" cy="12" r="5" fill="white" opacity="0.9"/>
-                      </svg>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">{label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Técnico selecionado pelo mapa no modo inicial */}
-          {!searchMode && selectedTecnico && (
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={() => setSelectedTecnico(null)}
-                className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors self-start"
-              >
-                <X className="w-3 h-3" /> Voltar para legenda
+      <div className="technical-search-row">
+        {mode === 'address' ? <form onSubmit={search} className="technical-search-form">
+          <label className="technical-input"><Search size={17}/><input className="ui-input" aria-label="Endereço ou CEP do cliente" placeholder="Endereço, cidade ou CEP do cliente" value={query} role="combobox" aria-autocomplete="list" aria-expanded={suggestions.length > 0} aria-controls="technical-address-options" aria-activedescendant={activeSuggestion >= 0 ? `technical-address-${activeSuggestion}` : undefined} autoComplete="off" onChange={e=>suggest(e.target.value)} onKeyDown={e=>{
+            if (e.key === 'Escape') { e.preventDefault(); cancelSearch(); }
+            if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && suggestions.length) {
+              e.preventDefault(); setActiveSuggestion(i=>e.key === 'ArrowDown' ? (i+1)%suggestions.length : (i<=0?suggestions.length-1:i-1));
+            }
+          }} /></label>
+          <button className="ui-button ui-button-primary" disabled={!query.trim()}>{searching ? <Loader2 size={16} className="animate-spin"/> : <Search size={16}/>} {searching ? 'Buscando…' : 'Buscar'}</button>
+        </form> : <label className="technical-input"><Search size={17}/><input className="ui-input" aria-label="Nome, categoria ou parceiro" placeholder="Nome, categoria ou parceiro" value={nameQuery} onChange={e=>{setNameQuery(e.target.value);setSelectedId(null);}}/></label>}
+        <select className="ui-input technical-category" aria-label="Categoria do técnico" value={category} onChange={e=>{setCategory(e.target.value);setSelectedId(null);}}><option value="">Todas as categorias</option>{categories.map(c=><option key={c}>{c}</option>)}</select>
+        {(query || nameQuery || category || origin) && <button className="ui-button ui-button-secondary" onClick={()=>{cancelSearch();setQuery('');setNameQuery('');setCategory('');setOrigin(null);setSelectedId(null);setFitVersion(v=>v+1);}}>Limpar</button>}
+      </div>
+      {searchError && <p className="technical-error" role="alert">{searchError}</p>}
+      {suggestions.length>0 && <div className="technical-suggestions"><p>Selecione o endereço do cliente</p><div id="technical-address-options" role="listbox" aria-label="Endereços sugeridos">{suggestions.map((s,i)=><button type="button" role="option" aria-selected={activeSuggestion===i} id={`technical-address-${i}`} key={i} onMouseDown={e=>e.preventDefault()} onClick={()=>chooseLocation(s)}><MapPin size={16}/>{s.label}</button>)}</div><small>Dados © OpenStreetMap · Sugestões Photon</small></div>}
+    </div>
+    <div className="technical-workspace">
+      <aside className="ui-panel technical-results" aria-label="Técnicos encontrados">
+        <div className="technical-results-heading"><h2>{origin && mode==='address' ? 'Técnicos mais próximos' : 'Técnicos da rede'}</h2><span aria-live="polite">{loading ? 'Carregando…' : loadError ? 'Consulta indisponível' : `${results.length} ${results.length===1?'técnico':'técnicos'}`}</span></div>
+        {origin && mode==='address' && <div className="technical-origin"><MapPin size={16}/><div>{origin.label}{origin.approximate && <small>Localização aproximada: centro da cidade.</small>}</div></div>}
+        <div className="technical-list">
+          {loading ? <div className="technical-state" role="status"><Loader2 className="animate-spin"/>Carregando técnicos…</div> : loadError ? <div className="technical-state" role="alert"><p>Não foi possível carregar a rede técnica.</p><button className="ui-button ui-button-secondary" onClick={()=>setRetry(v=>v+1)}>Tentar novamente</button></div> : results.length===0 ? <div className="technical-state"><Search/><h3>Nenhum técnico encontrado</h3><p>Tente outro nome ou categoria.</p></div> : !showList && !selected ? <div className="technical-state"><MapPin/><h3>Onde o cliente precisa de atendimento?</h3><p>Busque um endereço para ver os cinco técnicos mais próximos ou selecione um ponto no mapa.</p></div> : visibleCards.map((t,index)=>{
+            const name = technicianName(t.nome); const active = t.id===selectedId;
+            return <article key={t.id} ref={el=>{if(el)cards.current.set(t.id,el);else cards.current.delete(t.id);}} className={`technical-card ${active?'is-selected':''}`}>
+              <button className="technical-card-select" aria-label={`Ver detalhes de ${name}`} aria-expanded={active} onClick={()=>active?setSelectedId(null):selectTechnician(t)}>
+                <div className="technical-card-title"><strong>{name}</strong>{t.distancia!==undefined && index===0 && <span className="technical-nearest">Mais próximo</span>}</div>
+                <div className="technical-meta"><span>{t.categoria || 'Outros'}</span>{t.tipo && <span>{t.tipo}</span>}</div>
+                {t.distancia!==undefined && <p className="technical-distance">{t.distancia.toLocaleString('pt-BR',{maximumFractionDigits:1})} km em linha reta</p>}
               </button>
-              <div className="p-4 rounded-2xl border bg-sky-600/20 border-sky-500/60 shadow-lg shadow-sky-500/10 text-left">
-                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug mb-2">
-                  {selectedTecnico.nome.replace(/^(ATA\d+_|PSO_|SPOT_|PRP_BOSCH_|PRP_)/, '')}
-                </p>
-                <div className="flex flex-wrap gap-1.5 mb-3">
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${categoriaBadge(selectedTecnico.categoria)}`}>
-                    {selectedTecnico.categoria}
-                  </span>
-                  {selectedTecnico.tipo && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-slate-600/30 text-slate-500 dark:text-slate-400 border-slate-300/40 dark:border-slate-600/40">
-                      {selectedTecnico.tipo}
-                    </span>
-                  )}
-                  {selectedTecnico.vendedor_parceiro && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-violet-600/30 text-violet-400 border-violet-600/40 flex items-center gap-1">
-                      <Users className="w-3 h-3" /> Parceiro: {selectedTecnico.vendedor_parceiro}
-                    </span>
-                  )}
-                </div>
-                {/* Endereço Dinâmico */}
-                <div className="mb-4 text-xs">
-                  {loadingEndereco ? (
-                    <div className="flex flex-col gap-1.5 animate-pulse">
-                      <div className="h-3.5 bg-slate-600/30 rounded w-full"></div>
-                      <div className="h-3.5 bg-slate-600/30 rounded w-2/3"></div>
-                    </div>
-                  ) : (
-                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-                      <MapPin className="w-3.5 h-3.5 inline text-slate-500 dark:text-slate-400 mr-1.5 mb-0.5" />
-                      {enderecoSelecionado}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  {selectedTecnico.telefone && (
-                    <a href={waHref(selectedTecnico.telefone)} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-xs text-emerald-400 hover:text-emerald-300 font-semibold transition-colors group">
-                      <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/30 transition-colors">
-                        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                        </svg>
-                      </div>
-                      {selectedTecnico.telefone}
-                    </a>
-                  )}
-                  {selectedTecnico.email && (
-                    <a href={`mailto:${selectedTecnico.email}`}
-                      className="flex items-center gap-2 text-xs text-sky-400 hover:text-sky-300 font-semibold transition-colors group">
-                      <div className="w-6 h-6 rounded-lg bg-sky-500/20 flex items-center justify-center group-hover:bg-sky-500/30 transition-colors">
-                        <Mail className="w-3 h-3" />
-                      </div>
-                      <span className="truncate">{selectedTecnico.email}</span>
-                    </a>
-                  )}
-                  <a href={`https://www.google.com/maps/dir/?api=1${clientePos ? `&origin=${clientePos.lat},${clientePos.lng}` : ''}&destination=${selectedTecnico.lat},${selectedTecnico.lng}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-xs text-amber-400 hover:text-amber-300 font-semibold transition-colors group">
-                      <div className="w-6 h-6 rounded-lg bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-colors">
-                        <Map className="w-3 h-3" />
-                      </div>
-                      <span className="truncate">Ver rota no Google Maps</span>
-                    </a>
-                </div>
+              <div className="technical-actions">
+                {t.telefone && <a className="ui-button ui-button-secondary technical-whatsapp" href={whatsapp(t.telefone)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp de ${name}`}><WhatsAppIcon size={15}/>WhatsApp</a>}
+                <a className="ui-button ui-button-secondary" href={`https://www.google.com/maps/dir/?api=1${origin && mode==='address'?`&origin=${origin.lat},${origin.lng}`:''}&destination=${t.lat},${t.lng}`} target="_blank" rel="noopener noreferrer" aria-label={`Ver rota para ${name}`}><Navigation size={15}/>Ver rota</a>
               </div>
-            </div>
-          )}
-
-
-          {tecnicos5.map((t, idx) => {
-            const isRecomendado = idx === 0;
-            const isSelected = selectedTecnico?.id === t.id;
-            return (
-              <button key={t.id} onClick={() => setSelectedTecnico(isSelected ? null : t)}
-                className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 ${
-                  isSelected
-                    ? 'bg-sky-600/20 border-sky-500/60 shadow-lg shadow-sky-500/10'
-                    : 'bg-slate-50 border-slate-200 hover:bg-slate-100 hover:border-slate-300 dark:bg-slate-800/60 dark:border-slate-700/60 dark:hover:bg-slate-800 dark:hover:border-slate-600'
-                }`}>
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
-                      isRecomendado ? 'bg-rose-500 text-white shadow-sm shadow-rose-500/40' : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
-                    }`}>{idx + 1}</div>
-                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug line-clamp-2">
-                      {t.nome.replace(/^(ATA\d+_|PSO_|SPOT_|PRP_BOSCH_|PRP_)/, '')}
-                    </p>
-                  </div>
-                  {isRecomendado && (
-                    <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/30 text-[10px] font-bold whitespace-nowrap">
-                      <Star className="w-2.5 h-2.5" /> Recomendado
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap gap-1.5 mb-2.5">
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${categoriaBadge(t.categoria)}`}>
-                    {t.categoria}
-                  </span>
-                  {t.tipo && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-slate-600/30 text-slate-500 dark:text-slate-400 border-slate-300/40 dark:border-slate-600/40">
-                      {t.tipo}
-                    </span>
-                  )}
-                  {t.vendedor_parceiro && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-violet-600/30 text-violet-400 border-violet-600/40 flex items-center gap-1">
-                      <Users className="w-3 h-3" /> Parceiro: {t.vendedor_parceiro}
-                    </span>
-                  )}
-                </div>
-
-                {isSelected && (
-                  <div className="mt-3 pt-3 border-t border-slate-300/60 dark:border-slate-700/60 space-y-3">
-                    {/* Endereço Dinâmico */}
-                    <div className="text-xs">
-                      {loadingEndereco ? (
-                        <div className="flex flex-col gap-1.5 animate-pulse">
-                          <div className="h-3.5 bg-slate-600/30 rounded w-full"></div>
-                          <div className="h-3.5 bg-slate-600/30 rounded w-2/3"></div>
-                        </div>
-                      ) : (
-                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-                          <MapPin className="w-3.5 h-3.5 inline text-slate-500 dark:text-slate-400 mr-1.5 mb-0.5" />
-                          {enderecoSelecionado}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      {t.telefone && (
-                      <a
-                        href={waHref(t.telefone)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex items-center gap-2 text-xs text-emerald-400 hover:text-emerald-300 font-semibold transition-colors group"
-                      >
-                        <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/30 transition-colors">
-                          {/* WhatsApp icon */}
-                          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                          </svg>
-                        </div>
-                        {t.telefone}
-                      </a>
-                    )}
-                    {t.email && (
-                      <a href={`mailto:${t.email}`} onClick={(e) => e.stopPropagation()}
-                        className="flex items-center gap-2 text-xs text-sky-400 hover:text-sky-300 font-semibold transition-colors group">
-                        <div className="w-6 h-6 rounded-lg bg-sky-500/20 flex items-center justify-center group-hover:bg-sky-500/30 transition-colors">
-                          <Mail className="w-3 h-3" />
-                        </div>
-                        <span className="truncate">{t.email}</span>
-                      </a>
-                    )}
-                    <a href={`https://www.google.com/maps/dir/?api=1${clientePos ? `&origin=${clientePos.lat},${clientePos.lng}` : ''}&destination=${t.lat},${t.lng}`}
-                      target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-2 text-xs text-amber-400 hover:text-amber-300 font-semibold transition-colors group">
-                      <div className="w-6 h-6 rounded-lg bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-colors">
-                        <Map className="w-3 h-3" />
-                      </div>
-                      <span className="truncate">Ver rota no Google Maps</span>
-                    </a>
-                  </div>
-                </div>
-              )}
-                {!isSelected && (t.telefone || t.email) && (
-                  <p className="text-[10px] text-slate-500 mt-1">Clique para ver contato</p>
-                )}
-              </button>
-            );
+              {active && <div className="technical-details"><p>{addressLoading?'Consultando endereço…':address}</p>{t.vendedor_parceiro && <p>Parceiro: {t.vendedor_parceiro}</p>}{t.telefone && <p>{t.telefone}</p>}{t.email && <a href={`mailto:${t.email}`}><Mail size={15}/>{t.email}</a>}{!t.telefone && !t.email && <p>Contato não informado.</p>}<button className="ui-button ui-button-secondary" onClick={()=>setSelectedId(null)}><X size={14}/>Fechar detalhes</button></div>}
+            </article>;
           })}
         </div>
+      </aside>
+      <div className="ui-panel technical-map-panel">
+        <div className="technical-map-toolbar"><button className="ui-button ui-button-secondary" onClick={()=>{setSelectedId(null);setFitVersion(v=>v+1);}}><MapPin size={15}/>Ver todos no mapa</button><details><summary>Legenda</summary><div>{['Cliente',...categories,'Outros'].map((c,i)=><span key={c}><i style={{background:['#2563eb','#b7791f','#0284c7','#be5269','#15856c','#64748b'][i]}}/>{c}</span>)}</div></details></div>
+        <MapLeaflet tecnicos={results} selectedId={selected?.id ?? null} clientePos={mode==='address'?origin:null} searchMode={mode==='address' && !!origin} fitVersion={fitVersion} onSelectTecnico={selectTechnician}/>
       </div>
     </div>
-  );
+  </section>;
 };

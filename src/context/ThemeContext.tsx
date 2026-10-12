@@ -3,70 +3,52 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';
-
+type ThemePreference = Theme | 'system';
 interface ThemeContextType {
   theme: Theme;
+  preference: ThemePreference;
   toggleTheme: () => void;
-  setTheme: (theme: Theme) => void;
+  setTheme: (theme: ThemePreference) => void;
 }
-
 const STORAGE_KEY = 'assistente_show_theme';
-
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-function getInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'dark';
-
-  const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-  if (stored === 'light' || stored === 'dark') return stored;
-
-  if (window.matchMedia('(prefers-color-scheme: light)').matches) return 'light';
-  return 'dark';
-}
-
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<Theme>('dark'); // SSR-safe default
+  const [preference, setPreference] = useState<ThemePreference>('system');
+  const [systemTheme, setSystemTheme] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
+  const theme = preference === 'system' ? systemTheme : preference;
 
   useEffect(() => {
-    const initial = getInitialTheme();
-    setThemeState(initial);
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved === 'light' || saved === 'dark' || saved === 'system') setPreference(saved);
+    } catch { /* Preferences remain usable when browser storage is unavailable. */ }
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const sync = () => setSystemTheme(media.matches ? 'dark' : 'light');
+    sync();
+    media.addEventListener('change', sync);
     setMounted(true);
+    return () => media.removeEventListener('change', sync);
   }, []);
 
   useEffect(() => {
     if (!mounted) return;
-
     const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    } else {
-      root.classList.remove('dark');
-      root.classList.add('light');
-    }
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme, mounted]);
+    root.classList.toggle('dark', theme === 'dark');
+    root.classList.toggle('light', theme === 'light');
+    root.style.colorScheme = theme;
+    try { localStorage.setItem(STORAGE_KEY, preference); } catch { /* Optional persistence. */ }
+  }, [theme, preference, mounted]);
 
-  const toggleTheme = () => {
-    setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
-
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-  };
-
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, preference, setTheme: setPreference,
+    toggleTheme: () => setPreference(theme === 'dark' ? 'light' : 'dark') }}>
+    {children}
+  </ThemeContext.Provider>;
 };
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme deve ser usado dentro de um ThemeProvider');
-  }
+  if (!context) throw new Error('useTheme deve ser usado dentro de um ThemeProvider');
   return context;
 };

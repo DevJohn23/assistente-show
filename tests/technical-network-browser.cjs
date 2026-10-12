@@ -1,0 +1,130 @@
+// Run with Playwright available in NODE_PATH and a local server at TEST_BASE_URL.
+// Supabase requests are intercepted; these tests never write production data.
+const { chromium } = require('playwright');
+const assert = require('node:assert/strict');
+const baseURL = process.env.TEST_BASE_URL || 'http://127.0.0.1:3100';
+const userId = '00000000-0000-4000-8000-000000000001';
+const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'America/Sao_Paulo' });
+const month = today.slice(0, 7);
+const oldMonth = `${Number(month.slice(0, 4)) - 1}${month.slice(4)}`;
+const product = { id:'test-product', category_id:'cat-1', name:'Equipamento Teste', default_price:1000, monthly_fee:20, is_active:true, commercial_rules:{allow_pix:true,allow_boleto:true,allow_card:true,allow_financing:false,max_card_installments:12,max_boleto_installments:3} };
+const opportunity = { id:'test-opp',user_id:userId,client_name:'Cliente Existente',cpf_cnpj:'12345678901',type:'PF',phone:'83999999999',registration_date:month+'-01',expiration_date:today,status:'active' };
+const commission = {id:'test-comm',user_id:userId,client_name:'Venda Atual',sale_amount:1000,commission_amount:100,sale_date:month+'-01',installer_option:'me',registration_type:'own',status:'pending'};
+const tables = {products:[product],opportunities:[opportunity],commissions:[commission,{...commission,id:'old-sale',client_name:'Venda Antiga',sale_date:oldMonth+'-01',commission_amount:900}],sellers:[],quote_templates:[],admin_users:[]};
+let failWrites = false, failReads = true, writes = 0;
+tables.tecnicos = Array.from({length:8},(_,i)=>({id:i+1,nome:'PSO_Técnico '+(i+1),categoria:i<6?'PSO':'ATA',tipo:'Instalação',telefone:'11999998888',email:'tecnico@example.invalid',lat:-23.55+i*.05,lng:-46.63, vendedor_parceiro:'Parceiro Teste'}));
+let failGeo=false;
+(async () => {
+ const browser = await chromium.launch({headless:true, executablePath:process.env.TEST_BROWSER_EXECUTABLE});
+ let debugPage;
+ try {
+ const context = await browser.newContext({viewport:{width:1440,height:1000},timezoneId:'America/Sao_Paulo'});
+ await context.addInitScript(({userId}) => {
+   const user = {id:userId,email:'test@example.invalid',user_metadata:{full_name:'Teste'},aud:'authenticated',role:'authenticated'};
+   const exp = Math.floor(Date.now()/1000)+3600;
+   const token = btoa(JSON.stringify({alg:'HS256',typ:'JWT'}))+'.'+btoa(JSON.stringify({sub:userId,exp,role:'authenticated'}))+'.test-signature';
+   localStorage.setItem('sb-nwuheljjsviakffyeqmx-auth-token',JSON.stringify({access_token:token,refresh_token:'test-refresh',token_type:'bearer',expires_in:3600,expires_at:exp,user}));
+ },{userId});
+ await context.route('**/*', async route => {
+   const request=route.request(),url=new URL(request.url());
+   if(url.hostname==='127.0.0.1') return route.continue();
+   if(url.hostname==='photon.komoot.io') return route.fulfill({contentType:'application/json',body:JSON.stringify({features:[{geometry:{coordinates:[-46.63,-23.55]},properties:{name:'Sugestão automática',city:'São Paulo',countrycode:'BR'}}]})});
+   if(url.hostname==='nominatim.openstreetmap.org') {
+     if(failGeo) return route.fulfill({status:503,body:'unavailable'});
+     let body=url.pathname==='/reverse' ? {display_name:'Rua do Técnico, São Paulo'} : [{lat:'-23.55',lon:'-46.63',display_name:'São Paulo, Brasil'}];
+     if(url.searchParams.get('q')?.includes('Inexistente')) body=[];
+     if(url.searchParams.get('q')?.includes('Ambíguo')) body=[{lat:'-23.55',lon:'-46.63',display_name:'Opção São Paulo'},{lat:'-22',lon:'-45',display_name:'Opção alternativa'}];
+     if(url.searchParams.get('q')?.includes('Rua sem coordenadas')) body=[];
+     return route.fulfill({contentType:'application/json',body:JSON.stringify(body)});
+   }
+   if(url.hostname==='viacep.com.br') return route.fulfill({contentType:'application/json',body:JSON.stringify({logradouro:'Rua sem coordenadas',bairro:'Centro',localidade:'São Paulo',uf:'SP',cep:'01001-000'})});
+   if(url.hostname.endsWith('.tile.openstreetmap.org')) return route.fulfill({contentType:'image/png',body:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64')});
+   if(!url.hostname.endsWith('.supabase.co')) return route.abort();
+   const table=url.pathname.split('/').pop();
+   const json=(status,body)=>route.fulfill({status,contentType:'application/json',body:JSON.stringify(body)});
+   if(url.pathname === '/auth/v1/logout') return route.fulfill({status:204});
+   if(request.method()==='OPTIONS') return route.fulfill({status:204});
+   if(request.method()==='GET') {
+     if(failReads && table==='tecnicos') return json(503,{message:'Simulated read outage'});
+     if(!(table in tables)) return json(200,{});
+     const single=request.headers().accept?.includes('pgrst.object');
+     return json(200,single ? tables[table][0] || null : tables[table]);
+   }
+   writes++;
+   await new Promise(resolve=>setTimeout(resolve,150));
+   if(failWrites) return json(403,{message:'Simulated write rejection',code:'42501'});
+   let body=request.postDataJSON();
+   if(Array.isArray(body)) body=body[0];
+   if(request.method()==='POST') { const row={...body,id:'created-'+writes}; tables[table].push(row); return json(201,row); }
+   const id=url.searchParams.get('id')?.replace(/^eq\./,'');
+   const index=tables[table].findIndex(row=>row.id===id);
+   if(index<0) return json(406,{message:'No row affected',code:'PGRST116'});
+   if(request.method()==='DELETE') tables[table].splice(index,1);
+   else tables[table][index]={...tables[table][index],...body};
+   return json(200,{id});
+ });
+ const page=await context.newPage(); debugPage=page;
+ page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(120000);
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(baseURL);
+ await page.getByRole('button',{name:'Rede técnica',exact:true}).click();
+ await page.getByText('Não foi possível carregar a rede técnica.').waitFor();
+ failReads=false;await page.getByRole('button',{name:'Tentar novamente',exact:true}).click();
+ await page.getByText('8 técnicos',{exact:true}).waitFor();
+ await page.locator('.technical-marker').first().waitFor();
+ assert.equal(await page.locator('.technical-marker').count(),8);
+ await page.getByLabel('Endereço ou CEP do cliente').fill('Avenida Paulista');
+ await page.getByRole('option',{name:'Sugestão automática, São Paulo'}).waitFor();
+ await page.getByLabel('Endereço ou CEP do cliente').press('Escape');
+ assert.equal(await page.locator('.technical-suggestions [role=option]').count(),0);
+ await page.getByLabel('Endereço ou CEP do cliente').fill('Avenida Paulist');
+ await page.getByRole('option',{name:'Sugestão automática, São Paulo'}).waitFor();
+ await page.getByLabel('Endereço ou CEP do cliente').press('ArrowDown');
+ await page.getByLabel('Endereço ou CEP do cliente').press('Enter');
+ await page.getByText('5 técnicos',{exact:true}).waitFor();
+ assert.equal(await page.locator('.technical-suggestions [role=option]').count(),0);
+ assert.equal(await page.locator('.technical-marker svg').count(),5);
+ await page.getByLabel('Endereço ou CEP do cliente').fill('São Paulo');
+ await page.getByRole('button',{name:'Buscar',exact:true}).click();
+ await page.getByText('5 técnicos',{exact:true}).waitFor();
+ assert.equal(await page.locator('.technical-card').count(),5);
+ await page.getByText('Mais próximo',{exact:true}).waitFor();
+ await page.getByText('0 km em linha reta',{exact:true}).waitFor();
+ assert.equal(await page.getByRole('link',{name:'WhatsApp de Técnico 1',exact:true}).getAttribute('href'),'https://wa.me/5511999998888');
+ assert.match(await page.getByRole('link',{name:'Ver rota para Técnico 1',exact:true}).getAttribute('href'),/origin=-23.55,-46.63&destination=-23.55,-46.63/);
+ await page.getByRole('button',{name:'Ver detalhes de Técnico 2',exact:true}).click();
+ await page.getByText('Rua do Técnico, São Paulo',{exact:true}).waitFor();
+ assert.equal(await page.locator('.technical-marker.is-selected').count(),1);
+ await page.locator('.technical-marker[title="Técnico 3"]').click();
+ await page.locator('.technical-card.is-selected').filter({hasText:'Técnico 3'}).waitFor();
+ await page.getByRole('button',{name:'Ver todos no mapa',exact:true}).click();
+ assert.equal(await page.locator('.technical-card.is-selected').count(),0);
+ await page.getByLabel('Categoria do técnico').selectOption('ATA');
+ await page.getByText('2 técnicos',{exact:true}).waitFor();assert.equal(await page.locator('.technical-card').count(),2);
+ await page.getByLabel('Categoria do técnico').selectOption('Rede Plus');
+ await page.getByRole('heading',{name:'Nenhum técnico encontrado'}).waitFor();
+ await page.getByRole('button',{name:'Limpar',exact:true}).click();
+ await page.getByLabel('Endereço ou CEP do cliente').fill('01001000');
+ await page.getByRole('button',{name:'Buscar',exact:true}).click();
+ await page.getByText('Localização aproximada: centro da cidade.').waitFor();
+ await page.getByLabel('Endereço ou CEP do cliente').fill('Ambíguo');
+ await page.getByRole('button',{name:'Buscar',exact:true}).click();
+ await page.getByRole('option',{name:'Opção São Paulo',exact:true}).click();
+ await page.getByLabel('Endereço ou CEP do cliente').fill('Inexistente');
+ await page.getByRole('button',{name:'Buscar',exact:true}).click();await page.getByRole('alert').filter({hasText:'Endereço não encontrado'}).waitFor();
+ failGeo=true;await page.getByLabel('Endereço ou CEP do cliente').fill('Falha');await page.getByRole('button',{name:'Buscar',exact:true}).click();await page.getByRole('alert').filter({hasText:'Não foi possível buscar'}).waitFor();
+ failGeo=false;await page.getByLabel('Endereço ou CEP do cliente').fill('São Paulo');await page.getByRole('button',{name:'Buscar',exact:true}).click();await page.getByText('5 técnicos',{exact:true}).waitFor();
+ await page.screenshot({path:'/tmp/omnilink-technical-desktop.png',fullPage:true});
+ await page.getByRole('button',{name:'Por técnico',exact:true}).click();
+ await page.getByLabel('Nome, categoria ou parceiro').fill('tecnico 4');
+ await page.getByText('1 técnico',{exact:true}).waitFor();
+ await page.getByRole('button',{name:'Ver detalhes de Técnico 4',exact:true}).click();
+ await page.getByLabel('Nome, categoria ou parceiro').fill('Parceiro Teste');await page.getByText('8 técnicos',{exact:true}).waitFor();
+ await page.getByRole('button',{name:'Abrir opções da conta'}).click();await page.getByRole('combobox',{name:'Tema'}).selectOption('dark');await page.keyboard.press('Escape');
+ await page.screenshot({path:'/tmp/omnilink-technical-dark.png',fullPage:true});
+ await page.setViewportSize({width:390,height:844});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+ await page.screenshot({path:'/tmp/omnilink-technical-mobile.png',fullPage:true});
+ assert.equal(writes,0);assert.deepEqual(errors,[]);
+ console.log('PASS network read/retry, nearest five, category ranking, map/list selection, contacts/routes, CEP city fallback, address choice, empty/errors/retry, accent-insensitive name/partner search, themes/mobile; zero writes');
+ }catch(error){if(debugPage){console.error((await debugPage.locator('body').innerText()).slice(0,2000));await debugPage.screenshot({path:'/tmp/omnilink-technical-failure.png'});}throw error;}finally{await browser.close();}
+})().catch(error=>{console.error(error);process.exitCode=1;});

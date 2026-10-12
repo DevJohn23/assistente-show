@@ -2,6 +2,7 @@
 import { getLocalDateString } from "@/lib/dateUtils";
 
 import React, { useState } from 'react';
+import { usePendingAction } from '@/lib/usePendingAction';
 import { Opportunity, ClientType } from '@/types';
 import { 
   Search, 
@@ -12,26 +13,26 @@ import {
   Edit2, 
   RefreshCw, 
   Trash2, 
-  MessageSquare,
-  X,
-  Building2,
-  UserCheck
+  X
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
-import { ConfirmModal } from './ConfirmModal';
+import { WhatsAppIcon } from './WhatsAppIcon';
+import { QuoteDialog } from './QuoteControls';
 
 interface OpportunitiesViewProps {
+  initialFilter?: 'all' | 'today' | 'expired';
   opportunities: Opportunity[];
-  onAddOpportunity: (opp: Omit<Opportunity, 'id' | 'user_id'>) => void;
-  onEditOpportunity: (id: string, updated: Partial<Opportunity>) => void;
-  onDeleteOpportunity: (id: string) => void;
-  onRenewOpportunity: (id: string) => void;
+  onAddOpportunity: (opp: Omit<Opportunity, 'id' | 'user_id'>) => Promise<boolean>;
+  onEditOpportunity: (id: string, updated: Partial<Opportunity>) => Promise<boolean>;
+  onDeleteOpportunity: (id: string) => Promise<boolean>;
+  onRenewOpportunity: (id: string) => Promise<boolean>;
   isModalOpen: boolean;
   setIsModalOpen: (open: boolean) => void;
 }
 
 export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
   opportunities,
+  initialFilter = 'all',
   onAddOpportunity,
   onEditOpportunity,
   onDeleteOpportunity,
@@ -39,8 +40,11 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
+  const { isPending, run } = usePendingAction();
+  const [formError, setFormError] = useState('');
+  const [notesOpp, setNotesOpp] = useState<Opportunity | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [activeFilter, setActiveFilter] = useState<string>(initialFilter);
   const [viewMode, setViewMode] = useState<'table' | 'calendar'>('table');
   
   // Edit & Delete state
@@ -49,6 +53,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
   const [renewingOpp, setRenewingOpp] = useState<Opportunity | null>(null);
 
   const calcExpirationDate = (clientType: ClientType, startDateStr: string) => {
+    if (!startDateStr) return '';
     const days = clientType === 'PF' ? 15 : 30;
     const d = new Date(startDateStr + 'T00:00:00');
     d.setDate(d.getDate() + days);
@@ -69,6 +74,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
   });
 
   const handleOpenAddModal = () => {
+    setFormError('');
     setEditingOpp(null);
     const today = getLocalDateString();
     setFormData({
@@ -85,6 +91,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
   };
 
   const handleOpenEditModal = (opp: Opportunity) => {
+    setFormError('');
     setEditingOpp(opp);
     setFormData({
       client_name: opp.client_name,
@@ -99,19 +106,18 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
     setIsModalOpen(true);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.client_name || !formData.phone) return;
-
-    if (editingOpp) {
-      onEditOpportunity(editingOpp.id, formData);
-    } else {
-      onAddOpportunity({
-        ...formData,
-        status: 'active',
-      });
-    }
-    setIsModalOpen(false);
+    await run(async () => {
+      setFormError('');
+      const saved = editingOpp
+        ? await onEditOpportunity(editingOpp.id, formData)
+        : await onAddOpportunity({ ...formData, status: 'active' });
+      if (saved) setIsModalOpen(false);
+      else setFormError('Não foi possível salvar. Seus dados foram mantidos para tentar novamente.');
+      return saved;
+    });
   };
 
   // Date filters logic
@@ -131,7 +137,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
 
     if (activeFilter === 'PF') return opp.type === 'PF';
     if (activeFilter === 'PJ') return opp.type === 'PJ';
-    if (activeFilter === 'today') return opp.expiration_date === todayStr;
+    if (activeFilter === 'today') return opp.expiration_date === todayStr && opp.status !== 'won' && opp.status !== 'lost';
     if (activeFilter === 'tomorrow') return opp.expiration_date === tomorrowStr;
     if (activeFilter === 'twoDays') return opp.expiration_date === twoDaysStr;
     if (activeFilter === 'thisWeek') {
@@ -140,7 +146,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
       const diffDays = (exp - now) / (1000 * 3600 * 24);
       return diffDays >= 0 && diffDays <= 7;
     }
-    if (activeFilter === 'expired') return opp.expiration_date < todayStr;
+    if (activeFilter === 'expired') return opp.expiration_date < todayStr && opp.status !== 'won' && opp.status !== 'lost';
 
     return true;
   });
@@ -165,445 +171,53 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
     XLSX.writeFile(workbook, `Oportunidades_Assistente_Show_${todayStr}.xlsx`);
   };
 
-  return (
-    <div className="space-y-5">
-      {/* Top Action Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        {/* Search Bar */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Pesquisar por Nome, Empresa, CPF/CNPJ ou Telefone..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-8 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-sky-500 transition-colors shadow-sm"
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-
-        {/* View Toggle & Actions */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center p-0.5 bg-slate-200 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl">
-            <button
-              onClick={() => setViewMode('table')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                viewMode === 'table' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <TableIcon className="w-3.5 h-3.5" />
-              <span>Tabela</span>
-            </button>
-            <button
-              onClick={() => setViewMode('calendar')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                viewMode === 'calendar' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              <CalendarIcon className="w-3.5 h-3.5" />
-              <span>Calendário</span>
-            </button>
-          </div>
-
-          <button
-            onClick={handleExportExcel}
-            className="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
-          >
-            <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="hidden sm:inline">Exportar (.xlsx)</span>
-          </button>
-
-          <button
-            onClick={handleOpenAddModal}
-            className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Nova Oportunidade</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Quick Filters */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-        {[
-          { id: 'all', label: 'Todos' },
-          { id: 'PF', label: 'PF (Pessoa Física)' },
-          { id: 'PJ', label: 'PJ (Pessoa Jurídica)' },
-          { id: 'today', label: 'Vencem hoje' },
-          { id: 'tomorrow', label: 'Vencem amanhã' },
-          { id: 'twoDays', label: 'Vencem em 2 dias' },
-          { id: 'thisWeek', label: 'Esta semana' },
-          { id: 'expired', label: 'Vencidas' },
-        ].map((filter) => (
-          <button
-            key={filter.id}
-            onClick={() => setActiveFilter(filter.id)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap border transition-all ${
-              activeFilter === filter.id
-                ? 'bg-sky-600 text-white border-sky-600 font-semibold shadow-sm'
-                : 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700'
-            }`}
-          >
-            {filter.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Main Content: Table or Calendar */}
-      {viewMode === 'table' ? (
-        <div className="clean-card rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-800 dark:text-slate-300">
-              <thead className="bg-slate-100 dark:bg-slate-900 text-[11px] uppercase font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800">
-                <tr>
-                  <th className="px-5 py-3.5">Cliente / Empresa</th>
-                  <th className="px-5 py-3.5">Contato / CPF-CNPJ</th>
-                  <th className="px-5 py-3.5">Tipo</th>
-                  <th className="px-5 py-3.5">Vencimento</th>
-                  <th className="px-5 py-3.5">Observações</th>
-                  <th className="px-5 py-3.5 text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
-                {filteredOpportunities.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-10 text-center text-slate-500 dark:text-slate-400">
-                      Nenhuma oportunidade encontrada com os filtros selecionados.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredOpportunities.map((opp) => {
-                    const isDueToday = opp.expiration_date === todayStr;
-                    const isExpired = opp.expiration_date < todayStr;
-
-                    return (
-                      <tr key={opp.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td className="px-5 py-3.5">
-                          <div className="font-bold text-slate-900 dark:text-white">{opp.client_name}</div>
-                          {opp.company_name && (
-                            <div className="text-[11px] text-slate-600 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-                              <Building2 className="w-3 h-3 text-slate-400" />
-                              {opp.company_name}
-                            </div>
-                          )}
-                        </td>
-
-                        <td className="px-5 py-3.5">
-                          <div className="font-mono text-slate-900 dark:text-slate-200 font-semibold">{opp.phone}</div>
-                          <div className="font-mono text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{opp.cpf_cnpj}</div>
-                        </td>
-
-                        <td className="px-5 py-3.5">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${
-                              opp.type === 'PJ'
-                                ? 'bg-indigo-100 dark:bg-indigo-500/10 text-indigo-800 dark:text-indigo-300 border-indigo-300 dark:border-indigo-500/20'
-                                : 'bg-teal-100 dark:bg-teal-500/10 text-teal-800 dark:text-teal-300 border-teal-300 dark:border-teal-500/20'
-                            }`}
-                          >
-                            {opp.type === 'PJ' ? <Building2 className="w-3 h-3" /> : <UserCheck className="w-3 h-3" />}
-                            {opp.type}
-                          </span>
-                        </td>
-
-                        <td className="px-5 py-3.5">
-                          <div
-                            className={`font-bold ${
-                              isDueToday
-                                ? 'text-amber-600 dark:text-amber-400 font-extrabold'
-                                : isExpired
-                                ? 'text-rose-600 dark:text-rose-400'
-                                : 'text-slate-900 dark:text-slate-200'
-                            }`}
-                          >
-                            {opp.expiration_date}
-                          </div>
-                          {isDueToday && <span className="text-[10px] text-amber-700 dark:text-amber-400 font-bold">Vence Hoje</span>}
-                          {isExpired && <span className="text-[10px] text-rose-700 dark:text-rose-400 font-bold">Vencida</span>}
-                        </td>
-
-                        <td className="px-5 py-3.5 max-w-xs">
-                          <p className="text-[11px] text-slate-600 dark:text-slate-400 truncate">{opp.notes || '-'}</p>
-                        </td>
-
-                        <td className="px-5 py-3.5 text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            {/* WhatsApp Direct Link */}
-                            <a
-                              href={`https://wa.me/55${opp.phone.replace(/\D/g, '')}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              title="Abrir no WhatsApp"
-                              className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-600 text-emerald-700 dark:text-emerald-400 hover:text-white border border-emerald-300 dark:border-emerald-500/20 transition-all"
-                            >
-                              <MessageSquare className="w-3.5 h-3.5" />
-                            </a>
-
-                            {/* Renovar */}
-                            <button
-                              onClick={() => setRenewingOpp(opp)}
-                              title={`Renovar Oportunidade (+${opp.type === 'PF' ? '15' : '30'} dias)`}
-                              className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-500/10 hover:bg-sky-600 text-sky-700 dark:text-sky-400 hover:text-white border border-sky-300 dark:border-sky-500/20 transition-all"
-                            >
-                              <RefreshCw className="w-3.5 h-3.5" />
-                            </button>
-
-                            {/* Editar */}
-                            <button
-                              onClick={() => handleOpenEditModal(opp)}
-                              title="Editar Oportunidade"
-                              className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-all"
-                            >
-                              <Edit2 className="w-3.5 h-3.5" />
-                            </button>
-
-                            {/* Excluir */}
-                            <button
-                              onClick={() => setDeletingId(opp.id)}
-                              title="Excluir Oportunidade"
-                              className="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white border border-rose-200 dark:border-rose-500/20 transition-all"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : (
-        /* Calendar Grid View */
-        <div className="clean-card p-5 rounded-2xl">
-          <h3 className="font-bold text-base text-slate-900 dark:text-white mb-4 font-outfit">Visualização por Calendário</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
-            {filteredOpportunities.map((opp) => (
-              <div
-                key={opp.id}
-                onClick={() => handleOpenEditModal(opp)}
-                className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-sky-500 dark:hover:border-sky-500 cursor-pointer transition-all shadow-sm space-y-2"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400 font-mono">{opp.expiration_date}</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-sky-300 font-bold border border-slate-300 dark:border-slate-700">
-                    {opp.type}
-                  </span>
-                </div>
-                <h4 className="font-bold text-slate-900 dark:text-white text-sm truncate">{opp.client_name}</h4>
-                <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">{opp.notes || 'Sem detalhes'}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Form Modal (Add / Edit): Fixed Header + Scrollable Body + Fixed Footer */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden relative">
-            
-            {/* Fixed Header */}
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-white dark:bg-slate-900 z-10">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white font-outfit">
-                {editingOpp ? 'Editar Oportunidade' : 'Nova Oportunidade'}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Form wrapping scrollable body and fixed footer */}
-            <form onSubmit={handleFormSubmit} className="flex flex-col flex-1 min-h-0">
-              {/* Scrollable Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-3.5 text-left">
-                <div>
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                    Nome do Cliente
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="ex: Transportadora Alfa"
-                    value={formData.client_name}
-                    onChange={(e) => setFormData({ ...formData, client_name: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                      Tipo de Pessoa *
-                    </label>
-                    <select
-                      value={formData.type}
-                      onChange={(e) => {
-                        const newType = e.target.value as ClientType;
-                        setFormData((prev) => ({
-                          ...prev,
-                          type: newType,
-                          expiration_date: calcExpirationDate(newType, prev.registration_date),
-                        }));
-                      }}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-                    >
-                      <option value="PF">Pessoa Física (15 dias)</option>
-                      <option value="PJ">Pessoa Jurídica (30 dias)</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                      CPF ou CNPJ *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="00.000.000/0000-00"
-                      value={formData.cpf_cnpj}
-                      onChange={(e) => setFormData({ ...formData, cpf_cnpj: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                      Telefone / WhatsApp
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="11999998888"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                      Empresa (opcional)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Nome da empresa"
-                      value={formData.company_name}
-                      onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                      <CalendarIcon className="w-3.5 h-3.5 text-sky-400" />
-                      <span>Data de Cadastro</span>
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.registration_date}
-                      onChange={(e) => {
-                        const newRegDate = e.target.value;
-                        setFormData((prev) => ({
-                          ...prev,
-                          registration_date: newRegDate,
-                          expiration_date: calcExpirationDate(prev.type, newRegDate),
-                        }));
-                      }}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                      <CalendarIcon className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Data de Vencimento *</span>
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      value={formData.expiration_date}
-                      onChange={(e) => setFormData({ ...formData, expiration_date: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                    Observações
-                  </label>
-                  <textarea
-                    rows={3}
-                    placeholder="Ex: Cliente pediu retorno semana que vem..."
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 resize-none"
-                  ></textarea>
-                </div>
-              </div>
-
-              {/* Fixed Footer */}
-              <div className="px-6 py-3.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2.5 shrink-0 bg-slate-50 dark:bg-slate-950/40">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-sm transition-all"
-                >
-                  Salvar Registro
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Renewal Confirmation Modal */}
-      {renewingOpp && (
-        <ConfirmModal
-          isOpen={!!renewingOpp}
-          title="Renovar Oportunidade"
-          message={`Deseja renovar a oportunidade de "${renewingOpp.client_name}" (${renewingOpp.type}) por mais ${renewingOpp.type === 'PF' ? 15 : 30} dias?`}
-          onConfirm={() => {
-            onRenewOpportunity(renewingOpp.id);
-            setRenewingOpp(null);
-          }}
-          onCancel={() => setRenewingOpp(null)}
-        />
-      )}
-
-      {/* Delete Confirmation Modal */}
-      <ConfirmModal
-        isOpen={!!deletingId}
-        title="Excluir Oportunidade"
-        message="Tem certeza que deseja remover esta oportunidade da sua carteira?"
-        onConfirm={() => {
-          if (deletingId) onDeleteOpportunity(deletingId);
-          setDeletingId(null);
-        }}
-        onCancel={() => setDeletingId(null)}
-      />
-    </div>
-  );
+  const dateLabel = (date: string) => date.split('-').reverse().join('/');
+  const filters = [
+    ['all','Todos'],['PF','Pessoa física'],['PJ','Pessoa jurídica'],['today','Vencem hoje'],
+    ['tomorrow','Vencem amanhã'],['twoDays','Vencem em 2 dias'],['thisWeek','Esta semana'],['expired','Vencidas'],
+  ];
+  const situation = (opp: Opportunity) => {
+    if (opp.status === 'won') return { label: 'Ganha', tone: 'won' };
+    if (opp.status === 'lost') return { label: 'Perdida', tone: 'closed' };
+    if (opp.expiration_date < todayStr) return { label: 'Vencida', tone: 'expired' };
+    if (opp.expiration_date === todayStr) return { label: 'Vence hoje', tone: 'today' };
+    return { label: 'No prazo', tone: 'active' };
+  };
+  const actions = (opp: Opportunity) => <div className="opportunity-actions">
+    <a className="ui-icon-button opportunity-whatsapp" href={`https://wa.me/55${opp.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" title="Abrir no WhatsApp" aria-label={`WhatsApp de ${opp.client_name}`}><WhatsAppIcon size={17} /></a>
+    <button className="ui-icon-button" title={`Renovar Oportunidade (+${opp.type === 'PF' ? '15' : '30'} dias)`} aria-label={`Renovar ${opp.client_name}`} onClick={() => { setFormError(''); setRenewingOpp(opp); }}><RefreshCw size={17} /></button>
+    <button className="ui-icon-button" title="Editar Oportunidade" aria-label={`Editar ${opp.client_name}`} onClick={() => handleOpenEditModal(opp)}><Edit2 size={17} /></button>
+    <button className="ui-icon-button opportunity-delete" title="Excluir Oportunidade" aria-label={`Excluir ${opp.client_name}`} onClick={() => { setFormError(''); setDeletingId(opp.id); }}><Trash2 size={17} /></button>
+  </div>;
+  const badge = (opp: Opportunity) => { const state = situation(opp); return <span className={`opportunity-status status-${state.tone}`}>{state.label}</span>; };
+  return <div className="opportunities-page">
+    <header className="commissions-heading"><div><h1>Oportunidades</h1><p className="ui-muted">Organize seus contatos e acompanhe os vencimentos.</p></div><button className="ui-button ui-button-primary" onClick={handleOpenAddModal}><Plus size={18} />Nova Oportunidade</button></header>
+    <section className="ui-panel opportunity-filters" aria-label="Filtros de oportunidades">
+      <div className="commission-search-row"><label className="commission-search"><Search size={18} /><input className="ui-input" aria-label="Pesquisar oportunidades" placeholder="Pesquisar por Nome, Empresa, CPF/CNPJ ou Telefone..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></label><button className="ui-button ui-button-secondary" disabled={!filteredOpportunities.length} onClick={handleExportExcel} title="Exportar os registros filtrados"><Download size={17} />Exportar Excel</button></div>
+      <div className="opportunity-filter-row"><div className="opportunity-filter-options" role="group" aria-label="Filtrar oportunidades">{filters.map(([id,label]) => <button className="ui-button ui-button-secondary" key={id} aria-pressed={activeFilter === id} onClick={() => setActiveFilter(id)}>{label}</button>)}</div>{(searchTerm || activeFilter !== 'all') && <button className="auth-text-button" onClick={() => { setSearchTerm(''); setActiveFilter('all'); }}>Limpar filtros</button>}</div>
+    </section>
+    <section className="ui-panel opportunity-records" aria-label="Registros de oportunidades">
+      <header className="opportunity-results-header"><span>{filteredOpportunities.length} {filteredOpportunities.length === 1 ? 'oportunidade' : 'oportunidades'}</span><div className="opportunity-view-options" role="group" aria-label="Visualização"><button aria-pressed={viewMode === 'table'} onClick={() => setViewMode('table')}><TableIcon size={16} />Tabela</button><button aria-pressed={viewMode === 'calendar'} onClick={() => setViewMode('calendar')}><CalendarIcon size={16} />Por vencimento</button></div></header>
+      {!filteredOpportunities.length ? <div className="commission-empty"><CalendarIcon size={30} /><h2>{opportunities.length ? 'Nenhuma oportunidade encontrada' : 'Sua carteira começa aqui'}</h2><p>{opportunities.length ? 'Ajuste a busca ou os filtros para consultar outros contatos.' : 'Cadastre um contato para acompanhar o prazo de renovação.'}</p><button className="ui-button ui-button-secondary" onClick={opportunities.length ? () => { setSearchTerm(''); setActiveFilter('all'); } : handleOpenAddModal}>{opportunities.length ? 'Limpar filtros' : 'Cadastrar oportunidade'}</button></div> : viewMode === 'table' ? <div className="commission-table-wrap"><table className="commission-table opportunity-table"><thead><tr><th>Cliente / empresa</th><th>Contato / documento</th><th>Vencimento</th><th>Observações</th><th>Ações</th></tr></thead><tbody>{filteredOpportunities.map(opp => <tr key={opp.id}>
+        <td data-label="Cliente"><strong>{opp.client_name}</strong><div className="opportunity-secondary">{opp.type}{opp.company_name ? ` · ${opp.company_name}` : ''}</div></td>
+        <td data-label="Contato"><div>{opp.phone}<div className="opportunity-secondary">{opp.cpf_cnpj}</div></div></td>
+        <td data-label="Vencimento"><div><div className="opportunity-date">{dateLabel(opp.expiration_date)}</div>{badge(opp)}</div></td>
+        <td data-label="Observações"><button className="commission-note" aria-label={`Observações de ${opp.client_name}`} onClick={() => setNotesOpp(opp)}><span>{opp.notes || 'Sem observações'}</span></button></td>
+        <td data-label="Ações">{actions(opp)}</td>
+      </tr>)}</tbody></table></div> : <div className="opportunity-cards">{[...filteredOpportunities].sort((a,b) => a.expiration_date.localeCompare(b.expiration_date)).map(opp => <article key={opp.id}><header><span>{dateLabel(opp.expiration_date)}</span>{badge(opp)}</header><button className="opportunity-card-title" onClick={() => handleOpenEditModal(opp)}>{opp.client_name}</button><p className="opportunity-secondary">{opp.type}{opp.company_name ? ` · ${opp.company_name}` : ''}</p><p>{opp.phone}</p><button className="commission-note" aria-label={`Observações de ${opp.client_name}`} onClick={() => setNotesOpp(opp)}><span>{opp.notes || 'Sem observações'}</span></button>{actions(opp)}</article>)}</div>}
+    </section>
+    {isModalOpen && <QuoteDialog className="commission-editor" label={editingOpp ? 'Editar Oportunidade' : 'Nova Oportunidade'} onClose={() => setIsModalOpen(false)} canClose={!isPending}>
+      <header className="commission-editor-header"><div><h2>{editingOpp ? 'Editar oportunidade' : 'Nova oportunidade'}</h2><p className="ui-muted">Dados do contato e prazo para renovação.</p></div><button className="ui-icon-button" aria-label="Fechar oportunidade" disabled={isPending} onClick={() => setIsModalOpen(false)}><X size={20} /></button></header>
+      <form className="commission-form" onSubmit={handleFormSubmit}><fieldset className="commission-form-body" disabled={isPending}>
+        <label className="quote-field">Nome do cliente *<input className="ui-input" required placeholder="ex: Transportadora Alfa" value={formData.client_name} onChange={e => setFormData({...formData,client_name:e.target.value})} /></label>
+        <div className="commission-form-grid"><label className="quote-field">Tipo de pessoa<select className="ui-input" aria-label="Tipo de pessoa" value={formData.type} onChange={e => { const type=e.target.value as ClientType; setFormData({...formData,type,expiration_date:calcExpirationDate(type,formData.registration_date)}); }}><option value="PF">Pessoa física (15 dias)</option><option value="PJ">Pessoa jurídica (30 dias)</option></select></label><label className="quote-field">CPF ou CNPJ *<input className="ui-input" required value={formData.cpf_cnpj} onChange={e => setFormData({...formData,cpf_cnpj:e.target.value})} /></label></div>
+        <div className="commission-form-grid"><label className="quote-field">Telefone / WhatsApp *<input className="ui-input" type="tel" required placeholder="11999998888" value={formData.phone} onChange={e => setFormData({...formData,phone:e.target.value})} /></label><label className="quote-field">Empresa (opcional)<input className="ui-input" value={formData.company_name} onChange={e => setFormData({...formData,company_name:e.target.value})} /></label></div>
+        <div className="commission-form-grid"><label className="quote-field">Data de cadastro<input className="ui-input" type="date" required value={formData.registration_date} onChange={e => setFormData({...formData,registration_date:e.target.value,expiration_date:calcExpirationDate(formData.type,e.target.value)})} /></label><label className="quote-field">Data de vencimento *<input className="ui-input" type="date" required value={formData.expiration_date} onChange={e => setFormData({...formData,expiration_date:e.target.value})} /></label></div>
+        <p className="auth-hint">Prazo sugerido: {formData.type === 'PF' ? '15' : '30'} dias após o cadastro. Você pode ajustar o vencimento.</p>
+        <label className="quote-field">Observações<textarea className="ui-input" rows={3} placeholder="Ex: Cliente pediu retorno semana que vem..." value={formData.notes} onChange={e => setFormData({...formData,notes:e.target.value})} /></label>
+      </fieldset><footer className="commission-form-footer">{formError && <p className="quote-error" role="alert">{formError}</p>}<div><button className="ui-button ui-button-secondary" type="button" disabled={isPending} onClick={() => setIsModalOpen(false)}>Cancelar</button><button className="ui-button ui-button-primary" disabled={isPending}>{isPending ? 'Salvando...' : 'Salvar Registro'}</button></div></footer></form>
+    </QuoteDialog>}
+    {notesOpp && <QuoteDialog label="Observações da oportunidade" onClose={() => setNotesOpp(null)}><div className="quote-preview"><header className="quote-modal-heading"><div><h2>Observações</h2><p className="ui-muted">{notesOpp.client_name}</p></div><button className="ui-icon-button" aria-label="Fechar observações" onClick={() => setNotesOpp(null)}><X size={20} /></button></header><p className="commission-notes-text">{notesOpp.notes || 'Nenhuma observação informada.'}</p><footer className="quote-modal-actions"><button className="ui-button ui-button-secondary" onClick={() => setNotesOpp(null)}>Fechar</button><button className="ui-button ui-button-primary" onClick={() => { handleOpenEditModal(notesOpp); setNotesOpp(null); }}>Editar oportunidade</button></footer></div></QuoteDialog>}
+    {(renewingOpp || deletingId) && <QuoteDialog label={renewingOpp ? 'Renovar Oportunidade' : 'Excluir Oportunidade'} canClose={!isPending} onClose={() => { setRenewingOpp(null); setDeletingId(null); }}><div className="quote-preview"><h2>{renewingOpp ? 'Renovar oportunidade?' : 'Excluir oportunidade?'}</h2><p className="ui-muted my-4">{renewingOpp ? `Renovar o prazo de ${renewingOpp.client_name} (${renewingOpp.type}) por ${renewingOpp.type === 'PF' ? 15 : 30} dias a partir do vencimento atual (${dateLabel(renewingOpp.expiration_date)})?` : `Remover ${opportunities.find(opp => opp.id === deletingId)?.client_name} da sua carteira?`}</p>{formError && <p className="quote-error" role="alert">{formError}</p>}<footer className="quote-modal-actions"><button className="ui-button ui-button-secondary" disabled={isPending} onClick={() => { setRenewingOpp(null); setDeletingId(null); }}>Cancelar</button><button className={`ui-button ${renewingOpp ? 'ui-button-primary' : 'commission-danger'}`} disabled={isPending} onClick={async () => { const saved=await run(() => renewingOpp ? onRenewOpportunity(renewingOpp.id) : onDeleteOpportunity(deletingId!)); if(saved) { setRenewingOpp(null); setDeletingId(null); } else setFormError('Não foi possível concluir. Tente novamente.'); }}>{isPending ? 'Aguarde...' : 'Confirmar'}</button></footer></div></QuoteDialog>}
+  </div>;
 };

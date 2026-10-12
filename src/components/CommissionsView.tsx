@@ -2,40 +2,27 @@
 import { getLocalDateString } from "@/lib/dateUtils";
 
 import React, { useState } from 'react';
+import { usePendingAction } from '@/lib/usePendingAction';
 import { Commission, CommissionRegistrationType } from '@/types';
-import { 
-  Search, 
-  Plus, 
-  Download, 
-  ArrowDownLeft, 
-  ArrowUpRight, 
-  CheckCircle2, 
-  Trash2, 
-  Edit2,
-  X,
-  UserPlus,
-  FileText,
-  Eye,
-  Check,
-  Coins,
-  Calendar
-} from 'lucide-react';
+import { Search, Plus, Download, Trash2, Edit2, X, UserPlus, FileText, Coins } from 'lucide-react';
 import * as XLSX from 'xlsx';
-import { ConfirmModal } from './ConfirmModal';
+import { QuoteDialog } from './QuoteControls';
 
 interface CommissionsViewProps {
+  initialPeriod?: { start: string; end: string };
   commissions: Commission[];
   sellers: string[];
-  onAddSeller: (name: string) => void;
-  onAddCommission: (comm: Omit<Commission, 'id' | 'user_id'>) => void;
-  onEditCommission: (id: string, updated: Partial<Commission>) => void;
-  onDeleteCommission: (id: string) => void;
+  onAddSeller: (name: string) => Promise<boolean>;
+  onAddCommission: (comm: Omit<Commission, 'id' | 'user_id'>) => Promise<boolean>;
+  onEditCommission: (id: string, updated: Partial<Commission>) => Promise<boolean>;
+  onDeleteCommission: (id: string) => Promise<boolean>;
   isModalOpen: boolean;
   setIsModalOpen: (open: boolean) => void;
 }
 
 export const CommissionsView: React.FC<CommissionsViewProps> = ({
   commissions,
+  initialPeriod,
   sellers,
   onAddSeller,
   onAddCommission,
@@ -44,9 +31,12 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
+  const { isPending, run } = usePendingAction();
+  const [formError, setFormError] = useState('');
+  const [operationFilter, setOperationFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(initialPeriod?.start ?? '');
+  const [endDate, setEndDate] = useState(initialPeriod?.end ?? '');
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Pagination State
@@ -83,6 +73,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
 
   // Open modal for Adding new sale
   const handleOpenAddModal = () => {
+    setFormError('');
     setEditingComm(null);
     setClientName('');
     setSaleAmount('');
@@ -98,6 +89,7 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
 
   // Open modal for Editing existing sale
   const handleOpenEditModal = (comm: Commission) => {
+    setFormError('');
     setEditingComm(comm);
     setClientName(comm.client_name);
     setSaleAmount(comm.sale_amount.toString());
@@ -121,17 +113,18 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
   };
 
   // Handle explicit confirmation of new seller button
-  const handleConfirmNewSeller = () => {
+  const handleConfirmNewSeller = async () => {
     const trimmed = newSellerInput.trim();
     if (trimmed) {
-      onAddSeller(trimmed);
+      if (!await run(() => onAddSeller(trimmed))) { setFormError('Não foi possível cadastrar o vendedor. Tente novamente.'); return; }
+      setFormError('');
       setSelectedSeller(trimmed);
       setIsAddingNewSellerInline(false);
       setNewSellerInput('');
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const numericSale = parseFloat(saleAmount) || 0;
@@ -150,32 +143,40 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
 
     const installerOpt = regTypeSelect === 'implanted_for_other' ? 'me' : 'other';
 
-    if (editingComm) {
-      onEditCommission(editingComm.id, {
-        client_name: clientName,
-        sale_amount: numericSale,
-        commission_amount: numericComm,
-        sale_date: saleDate,
-        installer_option: installerOpt,
-        registration_type: regTypeSelect,
-        other_installer_name: finalOtherInstaller,
-        notes: notes || undefined,
-      });
-    } else {
-      onAddCommission({
-        client_name: clientName,
-        sale_amount: numericSale,
-        commission_amount: numericComm,
-        sale_date: saleDate,
-        installer_option: installerOpt,
-        registration_type: regTypeSelect,
-        other_installer_name: finalOtherInstaller,
-        status: 'pending',
-        notes: notes || undefined,
-      });
-    }
+    await run(async () => {
+      setFormError('');
+      const save = async () => {
+        if (editingComm) {
+          return onEditCommission(editingComm.id, {
+            client_name: clientName,
+            sale_amount: numericSale,
+            commission_amount: numericComm,
+            sale_date: saleDate,
+            installer_option: installerOpt,
+            registration_type: regTypeSelect,
+            other_installer_name: finalOtherInstaller,
+            notes: notes || undefined,
+          });
+        } else {
+          return onAddCommission({
+            client_name: clientName,
+            sale_amount: numericSale,
+            commission_amount: numericComm,
+            sale_date: saleDate,
+            installer_option: installerOpt,
+            registration_type: regTypeSelect,
+            other_installer_name: finalOtherInstaller,
+            status: 'pending',
+            notes: notes || undefined,
+          });
+        }
 
-    setIsModalOpen(false);
+      };
+      const saved = await save();
+      if (saved) setIsModalOpen(false);
+      else setFormError('Não foi possível salvar. Seus dados foram mantidos para tentar novamente.');
+      return saved;
+    });
   };
 
   // Filter commissions
@@ -188,17 +189,18 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
     const matchesStartDate = !startDate || c.sale_date >= startDate;
     const matchesEndDate = !endDate || c.sale_date <= endDate;
 
-    return matchesSearch && matchesStartDate && matchesEndDate;
+    return matchesSearch && matchesStartDate && matchesEndDate && (operationFilter === 'all' || c.registration_type === operationFilter);
   });
 
   // Reset pagination when filters change
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, startDate, endDate]);
+  }, [searchTerm, startDate, endDate, operationFilter]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredCommissions.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const visiblePage = Math.min(currentPage, Math.max(1, totalPages));
+  const startIndex = (visiblePage - 1) * ITEMS_PER_PAGE;
   const paginatedCommissions = filteredCommissions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   // Calculate totals
@@ -302,638 +304,54 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
     XLSX.writeFile(workbook, `Relatorio_Comissoes_Show_${getLocalDateString()}.xlsx`);
   };
 
-  return (
-    <div className="space-y-5">
-      {/* Top Financial Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Comissão Prevista (Bruto) */}
-        <div className="clean-card p-5 rounded-2xl">
-          <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Comissão Prevista (Bruto)</span>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-2 font-outfit">
-            R$ {comissaoPrevistaBruta.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Próprias + Implantações + A Receber</p>
-        </div>
-
-        {/* A Receber */}
-        <div className="clean-card p-5 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">A Receber</span>
-            <ArrowDownLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-          </div>
-          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2 font-outfit">
-            R$ {totalReceber.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Outros implantaram p/ você</p>
-        </div>
-
-        {/* A Repassar */}
-        <div className="clean-card p-5 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">A Repassar</span>
-            <ArrowUpRight className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-          </div>
-          <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-2 font-outfit">
-            R$ {totalPagar.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Você implantou p/ outros</p>
-        </div>
-
-        {/* Saldo Líquido */}
-        <div className="clean-card p-5 rounded-2xl bg-sky-50/70 dark:bg-sky-950/20 border-sky-200 dark:border-sky-500/30">
-          <span className="text-xs font-bold text-sky-800 dark:text-sky-300 uppercase tracking-wide">Saldo Líquido Final</span>
-          <p className="text-2xl font-bold text-sky-700 dark:text-sky-300 mt-2 font-outfit">
-            R$ {saldoLiquido.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
-          <p className="text-[11px] text-sky-700/80 dark:text-slate-400 mt-1">Líquido retido (Bruto - Repassar)</p>
-        </div>
-      </div>
-
-      {/* Action Bar & Date Filter */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        {/* Search */}
-        <div className="relative flex-1 max-w-sm">
-          <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Pesquisar por Cliente, Vendedor ou Notas..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-8 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-sky-500 shadow-sm"
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-
-        {/* Date Filter & Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 shadow-sm"
-          />
-          <span className="text-xs text-slate-500 dark:text-slate-400">até</span>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-slate-200 shadow-sm"
-          />
-
-          <button
-            onClick={handleExportExcel}
-            className="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
-          >
-            <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Excel</span>
-          </button>
-
-          <button
-            onClick={handleOpenAddModal}
-            className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Cadastrar Venda</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Main Table */}
-      <div className="clean-card rounded-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-800 dark:text-slate-200">
-            <thead className="bg-slate-100 dark:bg-slate-900 text-[11px] uppercase font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800">
-              <tr>
-                <th className="px-5 py-3.5">Cliente</th>
-                <th className="px-5 py-3.5">Valor Venda</th>
-                <th className="px-5 py-3.5">Comissão</th>
-                <th className="px-5 py-3.5">Operação / Vendedor</th>
-                <th className="px-5 py-3.5">Data</th>
-                <th className="px-5 py-3.5">Observações</th>
-                <th className="px-5 py-3.5 text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
-              {paginatedCommissions.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-10 text-center text-slate-500 dark:text-slate-400">
-                    Nenhum registro de comissão cadastrado neste período.
-                  </td>
-                </tr>
-              ) : (
-                paginatedCommissions.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-white">{c.client_name}</td>
-                    
-                    <td className="px-5 py-3.5 font-mono text-slate-900 dark:text-slate-200 font-semibold">
-                      R$ {c.sale_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </td>
-
-                    <td className="px-5 py-3.5 font-mono font-bold text-slate-900 dark:text-white">
-                      R$ {c.commission_amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </td>
-
-                    <td className="px-5 py-3.5">
-                      {c.registration_type === 'own' && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold bg-sky-100 dark:bg-sky-500/10 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-500/20">
-                          <CheckCircle2 className="w-3 h-3 text-sky-600 dark:text-sky-400" />
-                          Venda Própria
-                        </span>
-                      )}
-
-                      {c.registration_type === 'implanted_for_other' && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-500/20">
-                          <ArrowUpRight className="w-3 h-3 text-rose-600 dark:text-rose-400" />
-                          Implantei p/ {c.other_installer_name || 'Outro'} (Repassar)
-                        </span>
-                      )}
-
-                      {c.registration_type === 'other_implanted_for_me' && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20">
-                          <ArrowDownLeft className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                          {c.other_installer_name || 'Outro'} Implantou p/ Mim (Receber)
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="px-5 py-3.5 font-mono text-[11px] text-slate-700 dark:text-slate-400 font-medium">{c.sale_date}</td>
-
-                    <td className="px-5 py-3.5 max-w-xs">
-                      {c.notes ? (
-                        <div 
-                          onClick={() => setViewingNotesComm(c)}
-                          title="Clique para visualizar ou editar observação completa"
-                          className="cursor-pointer group flex items-center justify-between gap-1 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
-                        >
-                          <span className="text-[11px] text-slate-700 dark:text-slate-300 truncate font-medium">
-                            {c.notes}
-                          </span>
-                          <Eye className="w-3 h-3 text-slate-500 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                        </div>
-                      ) : (
-                        <span 
-                          onClick={() => handleOpenEditModal(c)}
-                          className="text-[11px] text-slate-400 dark:text-slate-500 cursor-pointer hover:underline"
-                        >
-                          + Adicionar nota
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="px-5 py-3.5 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        {/* Editar Venda / Observação */}
-                        <button
-                          onClick={() => handleOpenEditModal(c)}
-                          title="Editar Venda ou Observações"
-                          className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-all"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-
-                        {/* Excluir Venda */}
-                        <button
-                          onClick={() => setDeletingId(c.id)}
-                          title="Excluir Registro"
-                          className="p-1.5 rounded-lg bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white border border-rose-200 dark:border-rose-500/20 transition-all"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Mostrando <span className="font-semibold text-slate-900 dark:text-white">{startIndex + 1}</span> a <span className="font-semibold text-slate-900 dark:text-white">{Math.min(startIndex + ITEMS_PER_PAGE, filteredCommissions.length)}</span> de <span className="font-semibold text-slate-900 dark:text-white">{filteredCommissions.length}</span> registros
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-              >
-                Anterior
-              </button>
-              
-              <div className="flex items-center gap-1 hidden sm:flex">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-colors ${
-                      currentPage === page
-                        ? 'bg-sky-600 text-white shadow-sm'
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-              </div>
-
-              <span className="text-xs font-bold text-slate-600 dark:text-slate-400 sm:hidden">
-                Pág. {currentPage} / {totalPages}
-              </span>
-
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-              >
-                Próxima
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Breakdown Report Box */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="clean-card p-4 rounded-2xl">
-          <h4 className="font-bold text-slate-900 dark:text-white text-xs mb-2.5 flex items-center gap-1.5">
-            <ArrowDownLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            Detalhamento: A Receber de Outros Vendedores
-          </h4>
-          {Object.keys(receberPorPessoa).length === 0 ? (
-            <p className="text-xs text-slate-500 dark:text-slate-400">Nenhum repasse a receber pendente.</p>
-          ) : (
-            <div className="space-y-1.5">
-              {Object.entries(receberPorPessoa).map(([name, amount]) => (
-                <div key={name} className="flex items-center justify-between text-xs py-1 border-b border-slate-100 dark:border-slate-800">
-                  <span className="text-slate-800 dark:text-slate-200 font-semibold">{name}</span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">
-                    + R$ {amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="clean-card p-4 rounded-2xl">
-          <h4 className="font-bold text-slate-900 dark:text-white text-xs mb-2.5 flex items-center gap-1.5">
-            <ArrowUpRight className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-            Detalhamento: A Repassar (Pagar) a Outros Vendedores
-          </h4>
-          {Object.keys(pagarPorPessoa).length === 0 ? (
-            <p className="text-xs text-slate-500 dark:text-slate-400">Nenhum repasse a pagar pendente.</p>
-          ) : (
-            <div className="space-y-1.5">
-              {Object.entries(pagarPorPessoa).map(([name, amount]) => (
-                <div key={name} className="flex items-center justify-between text-xs py-1 border-b border-slate-100 dark:border-slate-800">
-                  <span className="text-slate-800 dark:text-slate-200 font-semibold">{name}</span>
-                  <span className="font-bold text-rose-600 dark:text-rose-400 font-mono">
-                    - R$ {amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Modal Cadastrar / Editar Venda: Fixed Header + Scrollable Body + Fixed Footer */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden relative">
-            
-            {/* Fixed Header */}
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-white dark:bg-slate-900 z-10">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white font-outfit">
-                {editingComm ? 'Editar Venda & Observações' : 'Cadastrar Nova Venda'}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Form wrapping scrollable body and fixed footer */}
-            <form onSubmit={handleFormSubmit} className="flex flex-col flex-1 min-h-0">
-              {/* Scrollable Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-3.5">
-                <div>
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">Nome do Cliente *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="ex: Frota Rodoviária Alfa"
-                    value={clientName}
-                    onChange={(e) => setClientName(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">Valor da Venda (R$) *</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      required
-                      placeholder="15000.00"
-                      value={saleAmount}
-                      onChange={(e) => setSaleAmount(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">Comissão (R$) *</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      required
-                      placeholder="1500.00"
-                      value={commissionAmount}
-                      onChange={(e) => setCommissionAmount(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                    <Calendar className="w-3.5 h-3.5 text-sky-400" />
-                    <span>Data da Venda</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={saleDate}
-                    onChange={(e) => setSaleDate(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500"
-                  />
-                </div>
-
-                {/* 3-Way Operation Type Selector */}
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5">
-                  <label className="block text-[11px] font-bold text-sky-700 dark:text-sky-400 uppercase tracking-wider">
-                    Tipo de Operação & Regra Financeira *
-                  </label>
-                  
-                  <div className="space-y-2">
-                    {/* Option 1: Venda Própria */}
-                    <label 
-                      onClick={() => setRegTypeSelect('own')}
-                      className={`flex items-start gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all ${
-                        regTypeSelect === 'own'
-                          ? 'bg-sky-50 dark:bg-sky-500/10 border-sky-500 text-slate-900 dark:text-white font-medium shadow-sm'
-                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="regType"
-                        checked={regTypeSelect === 'own'}
-                        onChange={() => setRegTypeSelect('own')}
-                        className="mt-0.5 text-sky-600 focus:ring-0"
-                      />
-                      <div>
-                        <span className="text-xs font-bold block text-slate-900 dark:text-white">Venda Própria</span>
-                        <span className="text-[11px] text-slate-600 dark:text-slate-400 block">Cliente meu, implantação minha. 100% retido.</span>
-                      </div>
-                    </label>
-
-                    {/* Option 2: Implantei para Outro Vendedor */}
-                    <label 
-                      onClick={() => setRegTypeSelect('implanted_for_other')}
-                      className={`flex items-start gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all ${
-                        regTypeSelect === 'implanted_for_other'
-                          ? 'bg-rose-50 dark:bg-rose-500/10 border-rose-500 text-slate-900 dark:text-white font-medium shadow-sm'
-                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="regType"
-                        checked={regTypeSelect === 'implanted_for_other'}
-                        onChange={() => setRegTypeSelect('implanted_for_other')}
-                        className="mt-0.5 text-rose-600 focus:ring-0"
-                      />
-                      <div>
-                        <span className="text-xs font-bold block text-rose-700 dark:text-rose-300">Implantei para Outro Vendedor (A Repassar)</span>
-                        <span className="text-[11px] text-slate-600 dark:text-slate-400 block">Comissão entra na minha conta — Devo repassar ao vendedor.</span>
-                      </div>
-                    </label>
-
-                    {/* Option 3: Outro Vendedor Implantou para Mim */}
-                    <label 
-                      onClick={() => setRegTypeSelect('other_implanted_for_me')}
-                      className={`flex items-start gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-all ${
-                        regTypeSelect === 'other_implanted_for_me'
-                          ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500 text-slate-900 dark:text-white font-medium shadow-sm'
-                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="regType"
-                        checked={regTypeSelect === 'other_implanted_for_me'}
-                        onChange={() => setRegTypeSelect('other_implanted_for_me')}
-                        className="mt-0.5 text-emerald-600 focus:ring-0"
-                      />
-                      <div>
-                        <span className="text-xs font-bold block text-emerald-800 dark:text-emerald-300">Outro Vendedor Implantou p/ Mim (A Receber)</span>
-                        <span className="text-[11px] text-slate-600 dark:text-slate-400 block">Comissão caiu na conta dele — Tenho a receber do vendedor.</span>
-                      </div>
-                    </label>
-                  </div>
-
-                  {/* Pre-registered Salesperson Selection */}
-                  {regTypeSelect !== 'own' && (
-                    <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-                      <label className="block text-[11px] font-bold text-slate-800 dark:text-slate-200">
-                        Selecione o Vendedor Parceiro Envolvido *
-                      </label>
-                      
-                      {!isAddingNewSellerInline ? (
-                        <div className="flex items-center gap-2">
-                          <select
-                            value={selectedSeller}
-                            onChange={(e) => {
-                              if (e.target.value === 'NEW') {
-                                setIsAddingNewSellerInline(true);
-                                setSelectedSeller('NEW');
-                              } else {
-                                setSelectedSeller(e.target.value);
-                              }
-                            }}
-                            className="flex-1 px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white font-medium focus:outline-none focus:border-sky-500"
-                          >
-                            {allSellers.map((seller) => (
-                              <option key={seller} value={seller}>
-                                {seller}
-                              </option>
-                            ))}
-                            <option value="NEW">+ Cadastrar Novo Vendedor...</option>
-                          </select>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsAddingNewSellerInline(true);
-                              setSelectedSeller('NEW');
-                            }}
-                            title="Cadastrar novo vendedor"
-                            className="px-2.5 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-500/10 hover:bg-sky-600 text-sky-700 dark:text-sky-400 hover:text-white border border-sky-200 dark:border-sky-500/20 text-xs font-semibold flex items-center gap-1 shrink-0 transition-all"
-                          >
-                            <UserPlus className="w-3.5 h-3.5" />
-                            <span>+ Novo</span>
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1.5">
-                          <input
-                            type="text"
-                            autoFocus
-                            placeholder="Digite o nome do novo vendedor..."
-                            value={newSellerInput}
-                            onChange={(e) => setNewSellerInput(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                handleConfirmNewSeller();
-                              }
-                            }}
-                            className="flex-1 px-3 py-1.5 bg-white dark:bg-slate-900 border border-sky-500 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none"
-                          />
-
-                          <button
-                            type="button"
-                            onClick={handleConfirmNewSeller}
-                            disabled={!newSellerInput.trim()}
-                            className="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white font-semibold text-xs flex items-center gap-1 shrink-0 transition-all"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Cadastrar</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsAddingNewSellerInline(false);
-                              setNewSellerInput('');
-                              if (allSellers.length > 0) setSelectedSeller(allSellers[0]);
-                            }}
-                            className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-800 dark:hover:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all shrink-0"
-                          >
-                            Cancelar
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                    Observações / Histórico de Repasse
-                  </label>
-                  <textarea
-                    rows={2}
-                    placeholder="Ex: Receber junto com lote. Repasse antecipado de R$ 300 efetuado em 02/08..."
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 resize-none"
-                  ></textarea>
-                </div>
-              </div>
-
-              {/* Fixed Footer */}
-              <div className="px-6 py-3.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2.5 shrink-0 bg-slate-50 dark:bg-slate-950/40">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-sm transition-all"
-                >
-                  {editingComm ? 'Salvar Alterações' : 'Salvar Venda'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal de Leitura / Edição Rápida da Observação */}
-      {viewingNotesComm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-xl relative">
-            <button
-              onClick={() => setViewingNotesComm(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center gap-2 mb-3 text-sky-600 dark:text-sky-400">
-              <FileText className="w-5 h-5" />
-              <h3 className="text-base font-bold text-slate-900 dark:text-white font-outfit">
-                Observações de {viewingNotesComm.client_name}
-              </h3>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-slate-200 leading-relaxed font-mono whitespace-pre-wrap max-h-60 overflow-y-auto">
-              {viewingNotesComm.notes || 'Nenhuma observação informada.'}
-            </div>
-
-            <div className="mt-5 flex items-center justify-end gap-2.5">
-              <button
-                onClick={() => setViewingNotesComm(null)}
-                className="px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800"
-              >
-                Fechar
-              </button>
-              <button
-                onClick={() => {
-                  const comm = viewingNotesComm;
-                  setViewingNotesComm(null);
-                  handleOpenEditModal(comm);
-                }}
-                className="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-sm flex items-center gap-1.5"
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-                <span>Editar Venda / Nota</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation */}
-      <ConfirmModal
-        isOpen={!!deletingId}
-        title="Excluir Registro de Comissão"
-        message="Tem certeza que deseja remover esta venda do seu histórico de comissões?"
-        onConfirm={() => {
-          if (deletingId) onDeleteCommission(deletingId);
-          setDeletingId(null);
-        }}
-        onCancel={() => setDeletingId(null)}
-      />
-    </div>
-  );
+  const money = (value: number) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const dateLabel = (value: string) => value ? value.split('-').reverse().join('/') : '';
+  const hasFilters = !!(searchTerm || startDate || endDate || operationFilter !== 'all');
+  const clearFilters = () => { setSearchTerm(''); setStartDate(''); setEndDate(''); setOperationFilter('all'); };
+  const setMonth = (offset: number) => {
+    const now = new Date();
+    setStartDate(getLocalDateString(new Date(now.getFullYear(), now.getMonth() + offset, 1)));
+    setEndDate(getLocalDateString(new Date(now.getFullYear(), now.getMonth() + offset + 1, 0)));
+  };
+  const operations = [
+    { value: 'own', label: 'Venda Própria', description: 'Cliente meu, implantação minha. Comissão integral.' },
+    { value: 'implanted_for_other', label: 'Implantei para outro vendedor', description: 'A repassar: comissão destinada ao vendedor parceiro.' },
+    { value: 'other_implanted_for_me', label: 'Outro vendedor implantou para mim', description: 'A receber: comissão que o parceiro deve repassar a você.' },
+  ] as const;
+  return <div className="commissions-page">
+    <header className="commissions-heading"><div><h1>Comissões</h1><p className="ui-muted">Acompanhe suas vendas e os repasses entre vendedores.</p></div><button className="ui-button ui-button-primary" onClick={handleOpenAddModal}><Plus size={18} />Cadastrar Venda</button></header>
+    <section className="commission-metrics" aria-label="Resumo dos registros filtrados">
+      {[['Comissão prevista bruta',comissaoPrevistaBruta,'Próprias + a receber + a repassar'],['A receber',totalReceber,'De outros vendedores'],['A repassar',totalPagar,'Para outros vendedores'],['Saldo líquido previsto',saldoLiquido,'Bruta menos o valor a repassar']].map(([label,value,description],i) => <article className={`ui-panel commission-metric metric-${i}`} key={label}><span>{label}</span><strong>{money(Number(value))}</strong><p>{description}</p></article>)}
+    </section>
+    <section className="ui-panel commission-filters" aria-label="Filtros de comissões">
+        <div className="commission-search-row"><label className="commission-search"><Search size={18} /><input className="ui-input" aria-label="Pesquisar comissões" placeholder="Pesquisar por Cliente, Vendedor ou Notas..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></label><button className="ui-button ui-button-secondary" disabled={!filteredCommissions.length} onClick={handleExportExcel} title="Exportar todos os registros filtrados, incluindo outras páginas"><Download size={17} />Exportar Excel</button></div>
+        <div className="commission-filter-row"><label className="quote-field">De<input className="ui-input" type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></label><label className="quote-field">Até<input className="ui-input" type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></label><label className="quote-field">Operação<select className="ui-input" aria-label="Operação" value={operationFilter} onChange={e => setOperationFilter(e.target.value)}><option value="all">Todas as operações</option><option value="own">Venda própria</option><option value="other_implanted_for_me">A receber</option><option value="implanted_for_other">A repassar</option></select></label><div className="commission-shortcuts"><button className="ui-button ui-button-secondary" onClick={() => setMonth(0)}>Este mês</button><button className="ui-button ui-button-secondary" onClick={() => setMonth(-1)}>Mês anterior</button>{hasFilters && <button className="ui-button ui-button-secondary" onClick={clearFilters}>Limpar filtros</button>}</div></div>
+        {startDate && endDate && startDate > endDate && <p className="quote-error" role="alert">A data inicial deve ser anterior ou igual à data final.</p>}
+    </section>
+    <section className="ui-panel commission-records" aria-label="Registros de comissões">
+      {!filteredCommissions.length ? <div className="commission-empty"><Coins size={30} /><h2>{hasFilters ? 'Nenhuma venda encontrada' : 'Suas comissões começam aqui'}</h2><p>{hasFilters ? 'Ajuste os filtros para consultar outros registros.' : 'Cadastre sua primeira venda para acompanhar os valores.'}</p><button className="ui-button ui-button-secondary" onClick={hasFilters ? clearFilters : handleOpenAddModal}>{hasFilters ? 'Ver todos os registros' : 'Cadastrar Venda'}</button></div> : <>
+      <div className="commission-table-wrap"><table className="commission-table"><thead><tr><th>Cliente / operação</th><th>Data</th><th className="money">Valor da venda</th><th className="money">Comissão</th><th>Observações</th><th>Ações</th></tr></thead><tbody>{paginatedCommissions.map(c => <tr key={c.id}>
+        <td data-label="Cliente"><strong>{c.client_name}</strong><div className={`commission-operation operation-${c.registration_type}`}>{c.registration_type === 'own' ? 'Venda própria' : c.registration_type === 'implanted_for_other' ? 'A repassar' : 'A receber'}{c.other_installer_name && c.registration_type !== 'own' ? ` · ${c.other_installer_name}` : ''}</div></td>
+        <td data-label="Data">{dateLabel(c.sale_date)}</td><td data-label="Venda" className="money">{money(c.sale_amount)}</td><td data-label="Comissão" className="money commission-value">{money(c.commission_amount)}</td>
+        <td data-label="Observações"><button className="commission-note" onClick={() => c.notes ? setViewingNotesComm(c) : handleOpenEditModal(c)} aria-label={`Observações de ${c.client_name}`}><FileText size={15} /><span>{c.notes || 'Adicionar nota'}</span></button></td>
+        <td data-label="Ações"><div className="commission-actions"><button className="ui-icon-button" title="Editar Venda ou Observações" aria-label={`Editar venda de ${c.client_name}`} onClick={() => handleOpenEditModal(c)}><Edit2 size={16} /></button><button className="ui-icon-button" title="Excluir Registro" aria-label={`Excluir venda de ${c.client_name}`} onClick={() => { setFormError(''); setDeletingId(c.id); }}><Trash2 size={16} /></button></div></td>
+      </tr>)}</tbody></table></div>
+      <footer className="commission-pagination"><span>Mostrando {startIndex + 1}–{Math.min(startIndex + ITEMS_PER_PAGE,filteredCommissions.length)} de {filteredCommissions.length}</span><div><button className="ui-button ui-button-secondary" disabled={visiblePage === 1} onClick={() => setCurrentPage(visiblePage - 1)}>Anterior</button><span>{visiblePage} / {totalPages}</span><button className="ui-button ui-button-secondary" disabled={visiblePage === totalPages} onClick={() => setCurrentPage(visiblePage + 1)}>Próxima</button></div></footer></>}
+    </section>
+    <details className="ui-panel commission-breakdown"><summary>Repasses por vendedor <span className="ui-muted">A receber {money(totalReceber)} · A repassar {money(totalPagar)}</span></summary><div className="commission-breakdown-grid">{([['A receber',receberPorPessoa],['A repassar',pagarPorPessoa]] as [string, Record<string, number>][]).map(([title,entries]) => <section key={String(title)}><h2>{String(title)}</h2>{Object.entries(entries).length ? Object.entries(entries).map(([name,value]) => <p key={name}><span>{name}</span><strong>{money(value)}</strong></p>) : <p className="ui-muted">Nenhum valor nos registros filtrados.</p>}</section>)}</div></details>
+    <p className="commission-footnote">Valores previstos a partir dos lançamentos; não representam confirmação de pagamento.</p>
+    {isModalOpen && <QuoteDialog label={editingComm ? 'Editar venda' : 'Cadastrar venda'} className="commission-editor" canClose={!isPending} onClose={() => setIsModalOpen(false)}>
+      <header className="commission-editor-header"><div><h2>{editingComm ? 'Editar venda' : 'Cadastrar venda'}</h2><p className="ui-muted">Informe a operação e os dados da venda.</p></div><button className="ui-icon-button" disabled={isPending} aria-label="Fechar cadastro de venda" onClick={() => setIsModalOpen(false)}><X size={20} /></button></header>
+      <form onSubmit={handleFormSubmit} className="commission-form"><fieldset disabled={isPending} className="commission-form-body">
+        <fieldset className="commission-operation-options"><legend>Tipo de operação</legend>{operations.map(option => <label key={option.value} className={regTypeSelect === option.value ? 'selected' : ''}><input type="radio" name="regType" checked={regTypeSelect === option.value} onChange={() => setRegTypeSelect(option.value)} /><span><strong>{option.label}</strong><small>{option.description}</small></span></label>)}</fieldset>
+        {regTypeSelect !== 'own' && <div className="commission-partner"><label className="quote-field">Vendedor parceiro{!isAddingNewSellerInline ? <select className="ui-input" aria-label="Vendedor parceiro" value={selectedSeller} required onChange={e => { setSelectedSeller(e.target.value); if(e.target.value === 'NEW') setIsAddingNewSellerInline(true); }}><option value="" disabled>Selecione um vendedor</option>{allSellers.map(seller => <option key={seller}>{seller}</option>)}<option value="NEW">+ Cadastrar Novo Vendedor...</option></select> : <input className="ui-input" aria-label="Nome do novo vendedor" placeholder="Digite o nome do novo vendedor..." value={newSellerInput} required onChange={e => setNewSellerInput(e.target.value)} onKeyDown={e => { if(e.key === 'Enter') { e.preventDefault(); handleConfirmNewSeller(); } }} />}</label><div className="commission-inline-actions">{!isAddingNewSellerInline ? <button type="button" className="ui-button ui-button-secondary" onClick={() => setIsAddingNewSellerInline(true)}><UserPlus size={16} />Novo vendedor</button> : <><button type="button" className="ui-button ui-button-secondary" disabled={!newSellerInput.trim()} onClick={handleConfirmNewSeller}>Cadastrar</button><button type="button" className="ui-button ui-button-secondary" onClick={() => { setIsAddingNewSellerInline(false); setSelectedSeller(allSellers[0] || ''); setNewSellerInput(''); }}>Cancelar novo vendedor</button></>}</div></div>}
+        <label className="quote-field">Nome do cliente *<input className="ui-input" required placeholder="ex: Frota Rodoviária Alfa" value={clientName} onChange={e => setClientName(e.target.value)} /></label>
+        <div className="commission-form-grid"><label className="quote-field">Valor da venda (R$) *<input className="ui-input" type="number" step="0.01" required placeholder="15000.00" value={saleAmount} onChange={e => setSaleAmount(e.target.value)} /></label><label className="quote-field">Comissão (R$) *<input className="ui-input" type="number" step="0.01" required placeholder="1500.00" value={commissionAmount} onChange={e => setCommissionAmount(e.target.value)} /></label></div>
+        <label className="quote-field">Data da venda<input className="ui-input" type="date" value={saleDate} onChange={e => setSaleDate(e.target.value)} /></label>
+        <label className="quote-field">Observações / histórico de repasse<textarea className="ui-input" rows={3} placeholder="Informações sobre a venda ou o repasse" value={notes} onChange={e => setNotes(e.target.value)} /></label>
+      </fieldset><footer className="commission-form-footer">{formError && <p className="quote-error" role="alert">{formError}</p>}<div><button type="button" className="ui-button ui-button-secondary" disabled={isPending} onClick={() => setIsModalOpen(false)}>Cancelar</button><button className="ui-button ui-button-primary" type="submit" disabled={isPending}>{isPending ? 'Salvando...' : editingComm ? 'Salvar Alterações' : 'Salvar Venda'}</button></div></footer></form>
+    </QuoteDialog>}
+    {viewingNotesComm && <QuoteDialog label="Observações da venda" onClose={() => setViewingNotesComm(null)}><div className="quote-preview"><header className="quote-modal-heading"><div><h2>Observações</h2><p className="ui-muted">{viewingNotesComm.client_name}</p></div><button className="ui-icon-button" aria-label="Fechar observações" onClick={() => setViewingNotesComm(null)}><X size={20} /></button></header><p className="commission-notes-text">{viewingNotesComm.notes || 'Nenhuma observação informada.'}</p><footer className="quote-modal-actions"><button className="ui-button ui-button-secondary" onClick={() => setViewingNotesComm(null)}>Fechar</button><button className="ui-button ui-button-primary" onClick={() => { handleOpenEditModal(viewingNotesComm); setViewingNotesComm(null); }}>Editar Venda / Nota</button></footer></div></QuoteDialog>}
+    {deletingId && <QuoteDialog label="Excluir Registro de Comissão" canClose={!isPending} onClose={() => setDeletingId(null)}><div className="quote-preview"><h2>Excluir registro de comissão?</h2><p className="ui-muted my-4">A venda de {commissions.find(c => c.id === deletingId)?.client_name} será removida do histórico e dos totais.</p>{formError && <p className="quote-error" role="alert">{formError}</p>}<footer className="quote-modal-actions"><button className="ui-button ui-button-secondary" disabled={isPending} onClick={() => setDeletingId(null)}>Cancelar</button><button className="ui-button commission-danger" disabled={isPending} onClick={async () => { if(await run(() => onDeleteCommission(deletingId))) setDeletingId(null); else setFormError('Não foi possível excluir. Tente novamente.'); }}>{isPending ? 'Aguarde...' : 'Confirmar'}</button></footer></div></QuoteDialog>}
+  </div>;
 };

@@ -1,287 +1,91 @@
 'use client';
-import { getLocalDateString } from "@/lib/dateUtils";
 
 import React from 'react';
+import { ArrowRight, ArrowUpRight, Plus, CalendarCheck } from 'lucide-react';
+import { WhatsAppIcon } from './WhatsAppIcon';
 import { Opportunity, Commission } from '@/types';
 import { useAuth } from '@/context/AuthContext';
-import { 
-  AlertTriangle, 
-  Hourglass, 
-  TrendingUp, 
-  Coins, 
-  ArrowUpRight, 
-  Plus, 
-  ShoppingBag,
-  CalendarCheck
-} from 'lucide-react';
+import { getLocalDateString } from '@/lib/dateUtils';
+import { getMonthlyCommissionSummary } from '@/lib/dashboardSummary';
 
 interface DashboardViewProps {
   opportunities: Opportunity[];
   commissions: Commission[];
   setActiveTab: (tab: string) => void;
   onNewOpportunity: () => void;
+  onNewCommission: () => void;
+  onOpenOpportunities: (filter: 'all' | 'today' | 'expired') => void;
+  onOpenCommissions: () => void;
 }
-
-export const DashboardView: React.FC<DashboardViewProps> = ({
-  opportunities,
-  commissions,
-  setActiveTab,
-  onNewOpportunity,
-}) => {
+const money = (value: number) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+export const DashboardView: React.FC<DashboardViewProps> = ({ opportunities, commissions, setActiveTab,
+  onNewOpportunity, onNewCommission, onOpenOpportunities, onOpenCommissions }) => {
   const { user } = useAuth();
-
-  // Dynamic user first name
-  const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Vendedor';
-  const rawFirstName = fullName.trim().split(' ')[0];
-  const firstName = rawFirstName.charAt(0).toUpperCase() + rawFirstName.slice(1);
-
-  // Time-based greeting (Bom dia / Boa tarde / Boa noite)
-  const currentHour = new Date().getHours();
-  let greetingText = 'Bom dia';
-  if (currentHour >= 12 && currentHour < 18) {
-    greetingText = 'Boa tarde';
-  } else if (currentHour >= 18 || currentHour < 5) {
-    greetingText = 'Boa noite';
-  }
-  // Calculations
-  const todayStr = getLocalDateString();
-  const tomorrowObj = new Date();
-  tomorrowObj.setDate(tomorrowObj.getDate() + 1);
-  const tomorrowStr = getLocalDateString(tomorrowObj);
-
-  const dueToday = opportunities.filter((o) => o.expiration_date === todayStr);
-  const dueTomorrow = opportunities.filter((o) => o.expiration_date === tomorrowStr);
-  
-  const currentMonthSales = commissions.length;
-  
-  // Total Bruto previsto das operações do mês (Próprias + Implantações + A Receber)
-  const totalCommissionExpected = commissions.reduce((acc, c) => acc + c.commission_amount, 0);
-
-  const chartDays = (() => {
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0=Dom, 1=Seg, ...
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7)); // volta para segunda
-    monday.setHours(0, 0, 0, 0);
-
-    const labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-    return labels.map((day, i) => {
-      const d = new Date(monday);
-      d.setDate(monday.getDate() + i);
-      const dateStr = getLocalDateString(d);
-      const count = opportunities.filter((o) => o.expiration_date === dateStr).length;
-      return { day, count };
-    });
-  })();
-
-  return (
-    <div className="space-y-5">
-      {/* Greeting Banner */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm transition-colors">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
-              {greetingText}, {firstName} 👋
-            </h2>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-xl">
-              Confira seus lembretes de renovação de clientes e acompanhe o fechamento das suas comissões deste mês.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={onNewOpportunity}
-              className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs flex items-center gap-1.5 transition-all"
-            >
-              <Plus className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-              <span>Nova Oportunidade</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('catalog')}
-              className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs flex items-center gap-1.5 transition-all shadow-sm"
-            >
-              <ShoppingBag className="w-4 h-4" />
-              <span>Gerar Orçamento</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Vencem Hoje */}
-        <div 
-          onClick={() => setActiveTab('opportunities')}
-          className="clean-card clean-card-hover p-5 rounded-2xl cursor-pointer transition-all"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Vencem Hoje</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
-              <AlertTriangle className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-3 font-outfit">
-            {dueToday.length}
-          </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-medium flex items-center justify-between">
-            <span>Oportunidades para ação</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
-          </p>
-        </div>
-
-        {/* Card 2: Vencem Amanhã */}
-        <div 
-          onClick={() => setActiveTab('opportunities')}
-          className="clean-card clean-card-hover p-5 rounded-2xl cursor-pointer transition-all"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Vencem Amanhã</span>
-            <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-600 dark:text-sky-400">
-              <Hourglass className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-3 font-outfit">
-            {dueTomorrow.length}
-          </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-medium flex items-center justify-between">
-            <span>Próximos vencimentos</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
-          </p>
-        </div>
-
-        {/* Card 3: Vendas Registradas */}
-        <div 
-          onClick={() => setActiveTab('commissions')}
-          className="clean-card clean-card-hover p-5 rounded-2xl cursor-pointer transition-all"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Vendas do Mês</span>
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-3 font-outfit">
-            {currentMonthSales}
-          </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-medium flex items-center justify-between">
-            <span>Volume registrado</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
-          </p>
-        </div>
-
-        {/* Card 4: Comissão Prevista */}
-        <div 
-          onClick={() => setActiveTab('commissions')}
-          className="clean-card clean-card-hover p-5 rounded-2xl cursor-pointer transition-all"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Comissão Prevista</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-              <Coins className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-3 font-outfit">
-            R$ {totalCommissionExpected.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-medium flex items-center justify-between">
-            <span>Movimentação bruta prevista</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
-          </p>
-        </div>
-      </div>
-
-      {/* Main Content Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Left Column: Quick Opportunities List */}
-        <div className="lg:col-span-2 clean-card p-5 rounded-2xl">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-bold text-base text-slate-900 dark:text-white font-outfit flex items-center gap-2">
-                <CalendarCheck className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-                Lembretes de Hoje
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Clientes que precisam de contato para renovação</p>
-            </div>
-            <button 
-              onClick={() => setActiveTab('opportunities')}
-              className="text-xs text-sky-600 dark:text-sky-400 hover:underline font-semibold"
-            >
-              Ver todas ({opportunities.length}) &rarr;
-            </button>
-          </div>
-
-          {dueToday.length === 0 ? (
-            <div className="py-8 text-center bg-slate-50 dark:bg-slate-950/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
-              <p className="text-xs font-medium text-slate-700 dark:text-slate-400">Nenhuma oportunidade vence hoje 🎉</p>
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Sua carteira está atualizada!</p>
-            </div>
-          ) : (
-            <div className="space-y-2.5">
-              {dueToday.map((opp) => (
-                <div 
-                  key={opp.id} 
-                  className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 transition-all hover:border-slate-300 dark:hover:border-slate-700"
-                >
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-slate-900 dark:text-slate-100 truncate text-xs">{opp.client_name}</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono font-bold">
-                        {opp.type}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">{opp.notes || 'Sem observações'}</p>
-                  </div>
-
-                  <a
-                    href={`https://wa.me/55${opp.phone.replace(/\D/g, '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-600 hover:text-white border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold flex items-center gap-1 transition-all shrink-0"
-                  >
-                    <span>WhatsApp</span>
-                  </a>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Right Column: Simple Chart */}
-        <div className="clean-card p-5 rounded-2xl flex flex-col justify-between">
-          <div>
-            <h3 className="font-bold text-base text-slate-900 dark:text-white font-outfit">Oportunidades por dia</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Distribuição semanal da sua carteira</p>
-          </div>
-
-          <div className="mt-6 flex items-end justify-between gap-2 h-40 px-2">
-            {chartDays.map((item, idx) => {
-              const maxCount = Math.max(...chartDays.map(d => d.count), 1);
-              const maxHeight = 110;
-              const height = item.count > 0 ? (item.count / maxCount) * maxHeight : 6;
-              return (
-                <div key={idx} className="flex flex-col items-center flex-1 gap-2">
-                  <span className="text-xs font-bold text-sky-600 dark:text-sky-400">{item.count > 0 ? item.count : ''}</span>
-                  <div
-                    style={{ height: `${height}px` }}
-                    className={`w-full rounded-t-md transition-all duration-300 ${
-                      item.count >= maxCount * 0.6
-                        ? 'bg-sky-600'
-                        : item.count > 0
-                        ? 'bg-sky-500/60 dark:bg-sky-600/50'
-                        : 'bg-slate-200 dark:bg-slate-800'
-                    }`}
-                  ></div>
-                  <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">{item.day}</span>
-                </div>
-              );
-            })}
-          </div>
-
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 text-center mt-4">
-            Resumo semanal de vencimentos
-          </p>
-        </div>
-      </div>
+  const name = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Vendedor';
+  const firstName = name.trim().split(' ')[0];
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 5 || hour >= 18 ? 'Boa noite' : hour < 12 ? 'Bom dia' : 'Boa tarde';
+  const today = getLocalDateString(now);
+  const month = today.slice(0, 7);
+  const monthly = commissions.filter(c => c.sale_date.slice(0, 7) === month);
+  const { salesCount, expectedCommission } = getMonthlyCommissionSummary(commissions, now);
+  const own = monthly.filter(c => c.registration_type === 'own').reduce((s, c) => s + c.commission_amount, 0);
+  const receive = monthly.filter(c => c.registration_type === 'other_implanted_for_me').reduce((s, c) => s + c.commission_amount, 0);
+  const transfer = monthly.filter(c => c.registration_type === 'implanted_for_other').reduce((s, c) => s + c.commission_amount, 0);
+  const pending = opportunities.filter(o => o.status !== 'won' && o.status !== 'lost');
+  const due = pending.filter(o => o.expiration_date === today);
+  const overdue = pending.filter(o => o.expiration_date < today);
+  const priority = [...overdue, ...due].sort((a, b) => a.expiration_date.localeCompare(b.expiration_date)).slice(0, 5);
+  const monthLabel = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  const stats = [
+    { label: 'Vendas no mês', value: String(salesCount), action: onOpenCommissions },
+    { label: 'Comissão prevista', value: money(expectedCommission), action: onOpenCommissions },
+    { label: 'Vencem hoje', value: String(due.length), action: () => onOpenOpportunities('today') },
+    { label: 'Vencidas', value: String(overdue.length), action: () => onOpenOpportunities('expired'), warning: overdue.length > 0 },
+  ];
+  return <div className="dashboard-view">
+    <header className="dashboard-header">
+      <div><h1>{greeting}, {firstName}</h1><p className="ui-muted mt-2">Confira seu mês e organize os próximos contatos.</p></div>
+      <time className="ui-muted text-sm" dateTime={today}>{now.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}</time>
+    </header>
+    <div className="dashboard-actions">
+      <button className="ui-button ui-button-primary" onClick={() => setActiveTab('catalog')}><Plus size={18} />Montar orçamento</button>
+      <button className="ui-button ui-button-secondary" onClick={onNewCommission}><Plus size={18} />Cadastrar venda</button>
+      <button className="ui-button ui-button-secondary" onClick={onNewOpportunity}><Plus size={18} />Nova oportunidade</button>
     </div>
-  );
+    <section aria-labelledby="overview-title">
+      <div className="dashboard-section-heading"><h2 id="overview-title">Visão geral</h2><span className="ui-muted text-sm capitalize">{monthLabel}</span></div>
+      <div className="dashboard-stats">{stats.map(stat => <button key={stat.label} className="dashboard-stat" onClick={stat.action}
+        aria-label={`${stat.label}: ${stat.value}. Ver detalhes`}>
+        <span className="flex items-center justify-between gap-2"><span className="font-medium">{stat.label}</span><ArrowUpRight size={16} className="ui-muted" /></span>
+        <strong className={stat.warning ? 'stat-warning' : ''}>{stat.value}</strong>
+      </button>)}</div>
+    </section>
+    <div className="dashboard-details">
+      <section className="ui-panel" aria-labelledby="contacts-title">
+        <div className="panel-heading"><div><h2 id="contacts-title">Contatos prioritários</h2><p className="ui-muted text-sm mt-1">Pendências e vencimentos de hoje</p></div>
+          <button className="ui-text-button shrink-0" onClick={() => onOpenOpportunities('all')}>Ver todas <ArrowRight size={16} /></button></div>
+        {priority.length === 0 ? <div className="dashboard-empty"><CalendarCheck size={28} strokeWidth={1.5} /><p className="font-medium">Nenhuma pendência para hoje</p><p className="ui-muted text-sm">Os demais clientes estão em Oportunidades.</p></div>
+        : <ul className="contact-list">{priority.map(opp => {
+          const late = opp.expiration_date < today;
+          const phone = opp.phone.replace(/\D/g, '');
+          const whatsapp = phone.startsWith('55') && phone.length >= 12 ? phone : `55${phone}`;
+          return <li key={opp.id}>
+            <div className="min-w-0"><p className="font-semibold break-words">{opp.client_name}</p><p className="ui-muted text-sm mt-1">{opp.type === 'PJ' ? 'Pessoa jurídica' : 'Pessoa física'}</p></div>
+            <span className={`status-badge ${late ? 'status-warning' : 'status-info'}`}>{late ? `Venceu em ${new Date(opp.expiration_date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}` : 'Vence hoje'}</span>
+            {phone ? <a className="ui-button ui-button-secondary contact-action" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp de ${opp.client_name}`}><WhatsAppIcon size={17} /><span>WhatsApp</span></a> : <span className="ui-muted text-xs">Sem telefone</span>}
+          </li>;
+        })}</ul>}
+        {overdue.length + due.length > 5 && <p className="ui-muted text-xs px-5 py-3">Mostrando 5 de {overdue.length + due.length} contatos prioritários.</p>}
+      </section>
+      <section className="ui-panel commission-overview" aria-labelledby="commission-title">
+        <div className="panel-heading"><h2 id="commission-title">Comissões do mês</h2></div>
+        <div className="commission-overview-body"><dl className="commission-breakdown">
+          <div><dt>Próprias</dt><dd>{money(own)}</dd></div><div><dt>A receber</dt><dd>{money(receive)}</dd></div><div><dt>A repassar</dt><dd>{money(transfer)}</dd></div>
+        </dl><div className="commission-net"><p className="font-medium">Saldo líquido previsto</p><strong>{money(expectedCommission - transfer)}</strong><p className="ui-muted text-sm">Comissão prevista menos repasses</p></div>
+        <button className="ui-text-button mt-5" onClick={onOpenCommissions}>Abrir comissões <ArrowRight size={16} /></button></div>
+      </section>
+    </div>
+  </div>;
 };

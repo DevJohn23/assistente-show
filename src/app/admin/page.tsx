@@ -11,13 +11,13 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
-      router.push('/');
+      router.replace('/');
     }
   }, [user, isAdmin, loading, router]);
 
   if (loading || !user || !isAdmin) {
     return (
-      <div className="min-h-screen bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+      <div role="status" aria-label="Verificando acesso" className="min-h-screen flex items-center justify-center" style={{background:'var(--ui-bg)'}}>
         <div className="w-8 h-8 rounded-full border-2 border-sky-500 border-t-transparent animate-spin" />
       </div>
     );

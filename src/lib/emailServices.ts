@@ -3,8 +3,6 @@ import { Resend } from 'resend';
 import * as XLSX from 'xlsx';
 import { Commission } from '@/types';
 
-const resendApiKey = process.env.RESEND_API_KEY || '';
-const resend = new Resend(resendApiKey);
 
 /**
  * Generates Excel buffer for the last 7 days of commissions
@@ -48,6 +46,9 @@ export async function sendWeeklyReportEmail(
   recipientName: string,
   commissions: Commission[]
 ) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) throw new Error('Serviço de e-mail não configurado.');
+  const resend = new Resend(apiKey);
   const excelBuffer = generateWeeklyExcelBuffer(commissions);
   const dateStr = getLocalDateString();
   const filename = `Relatorio_Semanal_Show_${dateStr}.xlsx`;

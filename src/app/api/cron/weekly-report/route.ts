@@ -4,34 +4,25 @@ import { createClient } from '@supabase/supabase-js';
 import { sendWeeklyReportEmail } from '@/lib/emailServices';
 import { Commission } from '@/types';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://nwuheljjsviakffyeqmx.supabase.co';
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_3BT0YX4E-N_w2fJincToLw_pASIEC2b';
-
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   try {
-    // Optional Vercel Cron auth check
-    const authHeader = request.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET || 'assistente_show_cron_secret_2026';
-
-    if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${cronSecret}`) {
-      const urlSecret = request.nextUrl.searchParams.get('secret');
-      if (urlSecret !== cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-        return NextResponse.json({ error: 'Unauthorized Cron Invocation' }, { status: 401 });
-      }
+    // Authenticate in every environment; query-string secrets are not accepted.
+    const cronSecret = process.env.CRON_SECRET;
+    if (!cronSecret || request.headers.get('authorization') !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: 'Unauthorized Cron Invocation' }, { status: 401 });
     }
-
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    
-    if (!serviceRoleKey) {
-      console.warn('SUPABASE_SERVICE_ROLE_KEY is missing. Falling back to anon key.');
+    if (!supabaseUrl || !serviceRoleKey || !process.env.RESEND_API_KEY) {
+      return NextResponse.json({ error: 'Relatório automático não configurado.' }, { status: 503 });
     }
-
-    // Use Service Role to get access to auth.users if available, otherwise fallback to anon
-    const supabase = createClient(supabaseUrl, serviceRoleKey || supabaseKey);
+    const supabase = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
 
     // Fetch all commissions
     const { data: commissionsData, error: commError } = await supabase
@@ -54,8 +45,7 @@ export async function GET(request: NextRequest) {
     let sentCount = 0;
     const errors: any[] = [];
 
-    // If we have a service role, fetch real users. Otherwise, fallback for testing.
-    if (serviceRoleKey) {
+    {
       const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
       if (authError) {
         throw new Error(`Failed to list users: ${authError.message}`);
@@ -79,13 +69,6 @@ export async function GET(request: NextRequest) {
           }
         }
       }
-    } else {
-      // Fallback: Group by user_id but we don't have their email. We send a single summary to fallback email.
-      const fallbackEmail = request.nextUrl.searchParams.get('email') || 'devjohn23@gmail.com';
-      if (recentCommissions.length > 0) {
-        await sendWeeklyReportEmail(fallbackEmail, 'Administrador (Fallback)', recentCommissions);
-        sentCount = 1;
-      }
     }
 
     return NextResponse.json({
@@ -97,7 +80,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Error executing weekly report cron:', error);
     return NextResponse.json(
-      { error: error.message || 'Falha ao executar relatório semanal' },
+      { error: 'Falha ao executar relatório semanal' },
       { status: 500 }
     );
   }
