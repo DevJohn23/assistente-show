@@ -4,6 +4,102 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## Estado atual consolidado — 12/10/2026
+
+**Reestruturação visual concluída e publicada em produção. Recuperação real de senha confirmada pelo usuário após o deploy.** Esta seção representa o estado atual; os registros cronológicos abaixo preservam as condições e pendências existentes em cada etapa, já superadas quando indicado aqui.
+
+- Aplicação: Assistente Omnilink, projeto Vercel `assistente-show-qymy`, equipe `marcos-marinhos-projects`.
+- Produção: https://assistente-show-qymy.vercel.app
+- Código publicado: `6081c80e386e62225520dac2322e642fa23c8d8c`, branch `main`, repositório `DevJohn23/assistente-show`.
+- Deployment: `dpl_8j6YyK9Mnb7gNZ4bhoavQB2zqDXv`, status READY. Build remoto aprovado em 26 segundos.
+- Direção acordada: interface moderna e profissional, prática e sem redundâncias; prioridade para computador, Produtos/Orçamento e Comissões, com adaptação ao celular.
+- PRD mantido como referência inicial, não como especificação integral obrigatória. Orçamento Inteligente permanece desabilitado por decisão do usuário.
+
+### Base visual, navegação e dashboard
+
+- Padronização de tipografia, espaçamento, cores, bordas, superfícies, botões, campos, tabelas, cartões, ícones e estados de interação.
+- Temas claro, escuro e automático; preferência persistida. Menu lateral expandido/recolhido com controle visível e preferência salva; navegação adaptada ao celular.
+- Menu do avatar/nome com Minha conta, tema e saída. Administração exibida para administrador e rota administrativa com verificação de acesso.
+- Modais centralizados com fundo desfocado, gerenciamento de foco, Escape, bloqueio de rolagem e prevenção de fechamento durante operações pendentes quando necessário.
+- Estados de carregamento, vazio, erro e nova tentativa alinhados ao padrão; falhas de leitura não são apresentadas como dados fictícios ou sucesso.
+- Dashboard simplificado: ações de montar orçamento, cadastrar venda e nova oportunidade; indicadores e contatos prioritários. Removidos bloco de próximos vencimentos, gráfico semanal e redundâncias de links/textos.
+- Indicadores abrem listas filtradas; resumo mensal considera mês e ano. WhatsApp dos contatos prioritários recebeu o mesmo ícone e realce verde das demais telas.
+
+### Produtos e orçamento — versão final aprovada
+
+- Busca sem acentos, filtros de categorias e kits preservados. Busca e Simular financiamento dividem a primeira linha no desktop; filtros e Kits salvos ficam abaixo. Título visual redundante removido, mantendo identificação para leitores de tela.
+- Cartões com imagem horizontal no topo, altura padronizada (140px desktop/130px celular), proporção preservada e fallback para imagem indisponível. Zoom leve de 4% no hover, respeitando preferência por movimento reduzido.
+- Botão Adicionar com destaque azul discreto; mensalidade em verde. Após adicionar, botão muda para ✓ Adicionado com transição e não altera novamente a quantidade ao clicar.
+- Quantidades concentradas na composição do orçamento; controles por clique, teclado e pressão prolongada. Remover um item ou limpar o orçamento restaura o botão Adicionar.
+- Painel de orçamento recolhível no desktop, alinhado ao topo e aproveitando melhor a altura disponível. Cabeçalho/rodapé compactos e corpo rolável; removidos subtítulo e contagem redundante de unidades.
+- Prévia da mensagem removida por decisão do usuário. Rodapé mantém totais e cópia direta, confirmada somente após sucesso da área de transferência, com erro e possibilidade de tentar novamente.
+- Em telas intermediárias, orçamento abre em modal centralizado; no celular até 640px, em tela inteira. Busca em largura total, simulação na linha seguinte, categorias/kits com quebra de linha, cartões em coluna única e acesso compacto ao orçamento.
+- Detalhes do produto, simulador e diálogos de kits seguem o padrão visual. Adição pelos detalhes continua permitindo aumentar unidades.
+- Preço manual, restauração do preço original, acréscimo, desconto, mensalidade, entrada de R$ 550, Pix, boleto, cartão e financiamento preservados. Incrementos de 1 ponto percentual e R$ 1; digitação de centavos/decimais permitida.
+- Fatores e regras de financiamento preservados. Simulação e mensagem usam o saldo após entrada; saldo negativo após entrada impede copiar a proposta. Simulador aceita valores no formato brasileiro.
+- Kits podem ser criados, renomeados, carregados e excluídos. Rascunho local (itens, cliente e condições persistidas) separado por ID de usuário; troca de conta remonta o catálogo. Legado sem proprietário descartado sem afetar kits no banco; indisponibilidade de storage não interrompe o orçamento em memória.
+
+### Comissões e oportunidades
+
+- Comissões: resumo financeiro compacto, tabela com valores alinhados/datas brasileiras, filtros em bloco separado e remoção da legenda redundante de período/Excel.
+- Cadastro e edição de venda em modal centralizado, substituindo a proposta inicial de painel lateral. Operação e parceiro contextual, notas, confirmação de exclusão e feedback de falha preservando preenchimento.
+- Busca, período, operação, atalhos de mês, paginação e exportação de todos os registros filtrados preservados. Resumo por vendedor expansível; adaptação aos temas e celular.
+- Regras de venda própria, implante para outro vendedor e recebimento por implantação de outro preservadas. Corrigido erro prematuro em tentativa duplicada de salvar comissão.
+- Oportunidades: filtros separados dos registros, tabela/cartões, datas brasileiras, estados claros, notas, renovação, edição e exclusão em diálogos consistentes. Visualização em cartões denominada Por vencimento.
+- Cadastro PF com 15 dias/PJ com 30 dias e renovação a partir do vencimento anterior preservados. Filtros, busca e Excel mantidos; correções de data vazia e envio duplicado.
+- WhatsApp com ícone próprio e contorno verde no hover/foco; excluir com realce vermelho. Padrão compartilhado com dashboard e rede técnica.
+
+### Rede técnica e administração
+
+- Rede técnica: busca por endereço/CEP ou nome, categoria aplicada antes da seleção dos cinco mais próximos, lista à esquerda/mapa à direita no desktop e adaptação ao celular.
+- Sugestões durante digitação via Photon, com espera de 600ms, cache, cancelamento e teclado; buscas explícitas por endereço e CEP preservadas. Aproximação por cidade identificada quando aplicável.
+- Pinos de mapa com categoria/numeração; seleção entre mapa e lista sincronizada. Distâncias em linha reta e indicação Mais próximo, sem implicar avaliação de qualidade.
+- Cartões com superfície de maior contraste, contato WhatsApp e rota direta; detalhes, carregamento, falhas, repetição e resultado vazio tratados. Inicialização e redimensionamento do mapa revisados.
+- Administração: produtos/técnicos com busca, tabelas e modais no padrão; preservação de categorias/localização existentes e endereço confirmado para novo técnico.
+- Formulários bloqueiam envios duplicados, mantêm dados após falha e confirmam sucesso somente com registro retornado. Upload com tratamento de erro; exclusão exige confirmação.
+
+### Perfil, login e recuperação de senha
+
+- Login/cadastro redesenhados, exibição/ocultação de senha, confirmação e validação de nova senha. Senhas novas exigem ao menos oito caracteres; login de conta existente não ganhou essa restrição.
+- Minha conta em modal com Dados pessoais e Senha; nome atualizado no Auth. Troca pela conta confirma a senha atual antes da alteração.
+- Recuperação por e-mail com rota `/recuperar-senha`; tratamento de link expirado/inválido, sessão de recuperação, recarregamento e callback recebido na raiz ou na mesma aba.
+- Primeiro teste real abriu link de localhost no celular e não alcançou o servidor do computador; isso foi identificado como endereço local do dispositivo.
+- **Após o deploy, o usuário confirmou que a recuperação de senha funcionou.** Pendência de validação funcional real encerrada. Não foram coletados ou documentados senhas, tokens ou links de recuperação. A configuração completa do painel de Auth não foi inspecionada; a confirmação é do fluxo real executado pelo usuário.
+
+### Confiabilidade, segurança e publicação
+
+- Escritas confirmadas pela resposta do banco, formulários preservados em falha, exclusões sem sucesso falso e bloqueio de submissões repetidas.
+- Políticas do Supabase inspecionadas: RLS ativa nas tabelas verificadas; registros comerciais vinculados ao usuário e alterações administrativas restritas. Gestão de imagens de produtos restrita a administradores pela correção anterior documentada.
+- Cron semanal exige `Authorization: Bearer` e `CRON_SECRET` em qualquer ambiente; removidos segredo fixo no código, autenticação por URL, fallback para chave pública e destinatário alternativo.
+- Sem autenticação válida: 401. Com autenticação, mas sem configuração de URL/chave de serviço/Resend: 503 antes de acessar dados ou enviar e-mail. Cliente Resend criado somente no envio; erros internos não expostos na resposta geral do endpoint.
+- Reconexão da conta do plugin Vercel resolveu indisponibilidade das ferramentas e falta de acesso aos projetos/deployments.
+- Variáveis necessárias confirmadas por metadados, sem descriptografar valores. Criado `CRON_SECRET` aleatório de 256 bits, sensível e exclusivo de produção; entrou na configuração do novo deployment. `.env.example` atualizado sem segredos.
+- Publicação via commit/push da `main`, com exclusões locais prévias dos três KMLs e PDF fora do commit. Nenhuma migração adicional ou disparo manual de relatório foi feito no deploy.
+
+### Validações e continuidade
+
+- TypeScript, build de produção, testes Node e `git diff --check` aprovados nas revisões.
+- Sete suítes de navegador aprovadas na revisão geral: navegação/dashboard, catálogo, comissões, oportunidades, conta, rede técnica e administração. Após as últimas correções, repetidas as quatro suítes afetadas: catálogo, regressões gerais, comissões e conta.
+- Cobertura inclui cálculos/pagamentos, filtros, Excel, modais, teclado, temas, celular, falhas/repetição, duplicidade, isolamento dos rascunhos e autenticação simulada. Testes automatizados interceptam serviços externos; não comprovam todos os fluxos reais de produção.
+- Verificação no domínio publicado: login e ação de recuperação disponíveis, rota sem token rejeitada, cron sem autorização retornando 401 e nenhum erro de execução do navegador nos fluxos públicos testados. Consulta inicial de logs error/fatal do deployment sem ocorrências.
+- Recuperação real por e-mail validada pelo usuário. Demais operações autenticadas e envio semanal completo não foram exercitados com dados reais nessa checagem; acompanhar uso normal e relatório agendado.
+- Advisor indicou proteção contra senhas vazadas desativada: recomendação de endurecimento ainda não aplicada, sem relação com a reestruturação visual.
+- Recursos adicionais e Orçamento Inteligente continuam fora do escopo atual. Documentos detalhados em `docs/implementacao-visual-etapa-1.md` a `docs/implementacao-visual-etapa-7.md` e `docs/revisao-final-pre-deploy.md` registram as etapas históricas.
+
+---
+
+## Publicação em produção — 12/10/2026
+
+- Deploy autorizado pelo usuário, adiando confirmação de recuperação real de senha para depois da publicação.
+- Commit `6081c80e386e62225520dac2322e642fa23c8d8c` enviado à `main`; deployment `dpl_8j6YyK9Mnb7gNZ4bhoavQB2zqDXv` concluído como READY em produção.
+- Domínio: https://assistente-show-qymy.vercel.app. Build remoto concluído em 26 segundos.
+- Smoke test no domínio: login e ação de recuperação presentes; recuperação sem token mostra link inválido; cron sem autenticação retorna 401; nenhum erro de execução no navegador nesses fluxos públicos.
+- Consulta inicial de logs error/fatal do deployment não retornou ocorrências; isso não substitui monitoramento contínuo ou teste autenticado real.
+- Recuperação de senha posteriormente confirmada pelo usuário no fluxo real após o deploy. Redirecionamentos/Site URL não foram inspecionados diretamente no painel. Não foi enviado e-mail pela automação desta revisão.
+- Exclusões locais anteriores de PDF/KML não incluídas no commit de publicação.
+
+---
+
 ## Configuração da Vercel confirmada — 12/10/2026
 
 - Reconexão resolveu o acesso ao projeto `assistente-show-qymy` e aos deployments.
@@ -351,4 +447,4 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
-*Última atualização registrada: 10 de Outubro de 2026.*
+*Última atualização registrada: 12 de Outubro de 2026 — consolidação da reestruturação publicada e confirmação da recuperação de senha.*

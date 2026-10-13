@@ -6,7 +6,7 @@ import { authErrorMessage, requestPasswordReset } from '@/lib/accountAuth';
 import { PasswordField } from './AccountView';
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
-  return <main className="auth-page"><div className="auth-brand"><span className="brand-signature">omnilink<span className="brand-dot">.</span></span><span>Assistente comercial · Show Tecnologia</span></div><section className="ui-panel auth-card">{children}</section><p className="auth-footer">Mais organização para sua rotina comercial.</p></main>;
+  return <main className="auth-page"><div className="auth-brand"><span className="brand-signature">omnilink<span className="brand-dot">.</span></span><span>Assistente comercial · Show Tecnologia</span></div><section className="ui-panel auth-card">{children}</section></main>;
 }
 
 export const LoginView = ({ onLoginSuccess }: { onLoginSuccess?: () => void }) => {
