@@ -6,7 +6,7 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ## Organograma — primeira versão e revisão para produção — 13/10/2026
 
-**Primeira versão implementada e publicação autorizada pelo usuário após revisão.** O estado abaixo complementa a reestruturação anterior; não substitui os registros históricos.
+**Primeira versão revisada e publicada em produção.** O estado abaixo complementa a reestruturação anterior; não substitui os registros históricos.
 
 ### Consulta e experiência
 
@@ -34,7 +34,11 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 - Suíte de regressões dos fluxos existentes aprovada, incluindo navegação, dashboard, orçamento, comissões, oportunidades, temas e saída. Testes automatizados usam transporte simulado e não gravam dados reais.
 - Sessão administrativa real confirmou leitura dos 20 colaboradores/18 fotos, acesso à gestão e envio de fotos ao Storage. Banco confirmou 18 objetos presentes, bucket privado, zero caminhos de foto locais e 19 subordinados.
 - Permissões e validações de banco verificadas em transações revertidas durante a implementação. Nem todas as combinações de contas reais e campos foram exercitadas; não se afirma ausência absoluta de defeitos.
-- Compilação final e resultado da publicação registrados na conclusão desta entrada. Documentação técnica em `docs/organograma.md`.
+- TypeScript, `git diff --check` e build local final aprovados. A suíte de organograma foi repetida na versão compilada após a mudança das fotos, também aprovada. Conferência do pacote da rota confirmou ausência de arquivos privados.
+- Código funcional publicado: `29ce3f35953e5f54f2c26fb97840b081711fe9be`, branch `main`, repositório `DevJohn23/assistente-show`.
+- Deployment de lançamento: `dpl_5aQXRo16gbsB8afAevRrKczKS7sh`, projeto `assistente-show-qymy`, equipe `marcos-marinhos-projects`, status READY. Build remoto concluído em 60 segundos.
+- Produção: https://assistente-show-qymy.vercel.app/organograma. A checagem pública confirmou login nas rotas de consulta e gestão, rejeição 401 nas fotos sem token/com token inválido, cron preservando 401 sem autorização e ausência de erros de execução do navegador. A consulta inicial aos logs error/fatal não retornou ocorrências. A sessão real autenticada foi exercitada localmente contra o mesmo Supabase; não havia sessão autenticada disponível no domínio de produção para repetir esse fluxo.
+- Este registro de conclusão é uma atualização documental posterior ao commit funcional; não altera o comportamento da aplicação. Documentação técnica em `docs/organograma.md`.
 
 ---
 
