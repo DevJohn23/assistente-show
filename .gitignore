@@ -28,3 +28,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Supabase CLI cache
+/supabase/.temp/
+
+# Private organization import sources and generated personal data
+/assets/organization/
+/supabase/seed_organization.sql
+/Relação de Colaboradores - Time Comercial.xlsx
+/fotos colaboradores.pdf
+/scripts/import-organization.py

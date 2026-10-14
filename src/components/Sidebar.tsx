@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Home, FileText, ChartNoAxesColumn, CalendarClock, MapPin, Settings,
-  ChevronsLeft, ChevronsRight, ChevronDown, LogOut, Menu, X } from 'lucide-react';
+  ChevronsLeft, ChevronsRight, ChevronDown, LogOut, Menu, X, Network } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { AccountView } from './AccountView';
@@ -19,6 +19,7 @@ const navigation = [
   { id: 'commissions', label: 'Comissões', icon: ChartNoAxesColumn },
   { id: 'opportunities', label: 'Oportunidades', icon: CalendarClock },
   { id: 'tecnicos', label: 'Rede técnica', icon: MapPin },
+  { id: 'organograma', label: 'Organograma', icon: Network },
 ];
 
 function AccountMenu({ compact = false }: { compact?: boolean }) {
@@ -107,7 +108,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, oppor
       <nav aria-label="Navegação principal" className="sidebar-navigation">
         {navigation.map(({ id, label, icon: Icon }) => <button key={id} aria-label={label} aria-current={activeTab === id ? 'page' : undefined}
           title={compact ? label : undefined} className={`sidebar-link ${activeTab === id ? 'is-active' : ''} ${compact ? 'justify-center' : ''}`}
-          onClick={() => { setActiveTab(id); dialog.current?.close(); }}>
+          onClick={() => { if (id === 'organograma') router.push('/organograma'); else setActiveTab(id); dialog.current?.close(); }}>
           <Icon size={20} strokeWidth={1.7} />{!compact && <span>{label}</span>}
           {!compact && id === 'opportunities' && opportunitiesCountToday > 0 && <span className="sidebar-count">{opportunitiesCountToday}</span>}
         </button>)}

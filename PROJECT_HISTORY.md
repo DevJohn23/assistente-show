@@ -4,6 +4,40 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## Organograma — primeira versão e revisão para produção — 13/10/2026
+
+**Primeira versão implementada e publicação autorizada pelo usuário após revisão.** O estado abaixo complementa a reestruturação anterior; não substitui os registros históricos.
+
+### Consulta e experiência
+
+- Módulo autenticado `/organograma`, integrado ao menu lateral e com identidade visual própria. Removido o texto “PESSOAS & EQUIPES” do topo a pedido do usuário.
+- React Flow 12.12.0 e ELK.js 0.12.0 com layout automático, cartões de pessoas, conexões de liderança, zoom, deslocamento, minimapa, tela cheia e equipes recolhíveis.
+- Busca sem acentos; selecionar resultado revela a ramificação e anima o enquadramento. Modo foco mostra pessoa, liderança e equipe direta; Voltar restaura enquadramento e filtros.
+- Visualizações Hierarquia, Áreas e Lista, filtro de departamento, perfil com contatos, liderança, subordinados, atendimentos e atribuições; exportação CSV com proteção contra fórmulas.
+- Equipes extensas organizadas em colunas compactas, sem transformar colegas em líderes uns dos outros. No celular, lista inicial e perfil com foco de teclado contido; temas claro/escuro e movimento reduzido respeitados.
+- E-mail abre `mailto:` e telefone abre `tel:`. WhatsApp/Ligar separados e a expansão com diretor geral e novos setores foram aprovados conceitualmente, mas adiados para depois desta primeira publicação. A imagem de expansão é ilustrativa, não representa novos cadastros reais.
+
+### Gestão, dados e segurança
+
+- `/organograma/gerenciar` restrito aos administradores de `admin_users`, com a mesma autorização aplicada pelo banco; nenhum privilégio é concedido apenas por ocultar botões.
+- Cadastro/edição de colaboradores, fotos e departamentos, ativação/inativação e histórico automático de alterações. Cadastro de colaborador não cria conta de acesso nem envia mensagens.
+- Proteções contra ciclos de liderança, gestor inativo, inativação de gestor com liderados ativos, exclusão de departamento referenciado e sobrescrita de edição concorrente. Formulários preservam dados após falha e bloqueiam envios duplicados.
+- Importação real de 20 colaboradores e 18 fotos. Os 19 consultores respondem à liderança comercial indicada na planilha, conforme confirmação explícita. Dois cadastros usam iniciais por ausência de foto; um não tem e-mail; campos não fornecidos ficaram vazios. Um domínio de e-mail divergente foi preservado para conferência humana.
+- Migração `20261014011613_organization_chart.sql` aplicada ao Supabase existente: departamentos, colaboradores, histórico, função de autorização, validações, auditoria e políticas RLS. Bucket `organization-photos` privado, com limite de 5 MB e JPG/PNG/WebP.
+- Revisão identificou que o repositório GitHub é público. Fotos, documentos de origem, manifesto e seed com contatos ficaram fora do Git. As 18 fotos foram transferidas ao Storage pela sessão administrativa autenticada; auditoria confirmou que nenhum campo além do vínculo de foto e data de atualização foi alterado.
+- Fotos servidas por rota autenticada, com verificação de usuário, leitura do cadastro sob RLS e download do bucket privado usando a mesma identidade. Resposta sem cache compartilhado; nenhuma chave privilegiada no navegador. Build independente dos arquivos pessoais locais.
+- A ferramenta local temporária de transferência foi removida. Exclusões preexistentes de PDF/KML permanecem fora desta publicação.
+
+### Verificação e limites
+
+- Testes de lógica/hierarquia/layout e regressões Node aprovados; suíte de organograma no navegador aprovada para busca, foco/retorno, gestão, erros, duplicidade, acesso restrito, teclado, celular e tema escuro.
+- Suíte de regressões dos fluxos existentes aprovada, incluindo navegação, dashboard, orçamento, comissões, oportunidades, temas e saída. Testes automatizados usam transporte simulado e não gravam dados reais.
+- Sessão administrativa real confirmou leitura dos 20 colaboradores/18 fotos, acesso à gestão e envio de fotos ao Storage. Banco confirmou 18 objetos presentes, bucket privado, zero caminhos de foto locais e 19 subordinados.
+- Permissões e validações de banco verificadas em transações revertidas durante a implementação. Nem todas as combinações de contas reais e campos foram exercitadas; não se afirma ausência absoluta de defeitos.
+- Compilação final e resultado da publicação registrados na conclusão desta entrada. Documentação técnica em `docs/organograma.md`.
+
+---
+
 ## Estado atual consolidado — 12/10/2026
 
 **Reestruturação visual concluída e publicada em produção. Recuperação real de senha confirmada pelo usuário após o deploy.** Esta seção representa o estado atual; os registros cronológicos abaixo preservam as condições e pendências existentes em cada etapa, já superadas quando indicado aqui.

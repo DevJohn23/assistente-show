@@ -45,6 +45,14 @@ export default function Home() {
   });
 
   useEffect(() => {
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    if (tab && ['dashboard', 'opportunities', 'commissions', 'catalog', 'tecnicos'].includes(tab)) {
+      setActiveTab(tab);
+      window.history.replaceState(null, '', '/');
+    }
+  }, []);
+
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('assistente_show_active_tab', activeTab);
     }
