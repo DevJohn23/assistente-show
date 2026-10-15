@@ -126,3 +126,15 @@ for (const fn of ['fetchOpportunities','fetchCommissions','fetchSellers','fetchQ
     await assert.rejects(serviceFor(200, null, true)[fn]('user-test'));
   });
 }
+
+
+test('catalog keeps featured products first after photo edits and reordered responses', () => {
+  const { orderCatalogProducts } = load('src/lib/catalogOrder.ts');
+  const original = [1, 2, 3, 10, 11].map(n => ({ id: `prod-${n}`, name: `Produto ${n}`, image_url: 'before.png' }));
+  const updated = [{ ...original[4] }, { ...original[2] }, { ...original[1] }, { ...original[3] }, { ...original[0], image_url: 'after.png', name: 'Nome editado', default_price: 123 }];
+  const inputOrder = updated.map(p => p.id);
+  assert.deepEqual(orderCatalogProducts(updated).map(p => p.id), original.map(p => p.id));
+  assert.deepEqual(updated.map(p => p.id), inputOrder);
+  assert.equal(orderCatalogProducts(updated)[0].image_url, 'after.png');
+  assert.deepEqual(orderCatalogProducts([{ id: 'prod-10' }, { id: 'prod-3' }]).map(p => p.id), ['prod-3', 'prod-10']);
+});

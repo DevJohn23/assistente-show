@@ -1,4 +1,5 @@
 'use client';
+import { orderCatalogProducts } from '@/lib/catalogOrder';
 import { getLocalDateString } from "@/lib/dateUtils";
 
 import React, { useState, useEffect } from 'react';
@@ -121,7 +122,7 @@ export default function Home() {
         setCommissions(commsData);
         setSellers(sellersData);
         setTemplates(tplsData);
-        setProducts(productsData.data ?? []);
+        setProducts(orderCatalogProducts(productsData.data ?? []));
         setDataOwner(userId!);
       } catch {
         if (!cancelled) setLoadError(true);

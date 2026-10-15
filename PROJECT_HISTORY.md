@@ -5,6 +5,15 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 ---
 
 
+
+## 14/10/2026 — Ordem estável no catálogo após editar produtos
+
+- Causa: a consulta de produtos não definia uma ordem e a interface preservava a sequência recebida do banco. Atualizar uma foto podia deslocar o card.
+- O carregamento agora aplica ordenação determinística por identidade: `prod-1` (Omniturbo) primeiro, `prod-2` (Omnidual) segundo e demais IDs em ordem natural numérica, preservando a sequência do catálogo importado. Novos IDs gerados pelo cadastro entram após os produtos importados. Foto, nome e preço não influenciam a posição.
+- Correção apenas na apresentação; nenhum produto, imagem, preço ou permissão foi alterado no banco. Não foi introduzida tela de reordenação manual.
+- Regressão automatizada cobre resposta embaralhada, edição de imagem e IDs como `prod-3`/`prod-10`, preservando o array original. Build de produção, testes Node e suíte de navegador do catálogo aprovados, incluindo ordem após edição, filtros, cálculos, kits, celular e isolamento de rascunhos. Transporte simulado, sem escritas na produção.
+
+
 ## 14/10/2026 — Atualização de fotos e refinamento dos cards do organograma
 
 - Corrigida uma corrida entre upload e gravação do colaborador: a interface podia solicitar a foto antes de confirmar o novo vínculo e reter uma resposta vazia/antiga. Agora aplica a prévia após confirmação, não guarda falhas e repete leituras temporariamente indisponíveis.
