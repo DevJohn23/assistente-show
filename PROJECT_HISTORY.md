@@ -4,7 +4,15 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 14/10/2026 — Consolidação das últimas publicações e validação do usuário
 
+- Fotos e cards do organograma: commit `1aa9755`, publicado. O usuário confirmou o carregamento rápido das imagens após a otimização.
+- Ordem estável do catálogo: commit `b5ad5b7`, publicado. Omniturbo e Omnidual permanecem nas duas primeiras posições após edições.
+- Animação de expansão/recolhimento: commit `9da74ba`, publicado no deployment `dpl_8W3vbsL2PWg9GD85BEAMHiMmDHwT`, com estado `READY` e domínio de produção associado. O usuário aprovou o resultado visual após experimentar a animação.
+- Produção: https://assistente-show-qymy.vercel.app. Detalhes de implementação e verificações estão nas entradas abaixo e em `docs/organograma.md`.
+- Organização hierárquica esclarecida: “Responde a” define as conexões; departamento identifica a área; “Atende” é informação textual sobre pessoas, equipes ou públicos apoiados e não cria subordinação.
+- O usuário cadastrou direção geral e lideranças de departamentos pela gestão. A disposição com uma liderança comum e liderados diretos lado a lado foi considerada adequada; não foi implementado um ajuste adicional para alinhar raízes independentes. Cadastros ficam no banco e não exigem commit/deploy.
+- Esta consolidação altera apenas a documentação. As exclusões locais preexistentes de PDF/KML não fazem parte das publicações.
 
 ## 14/10/2026 — Animação discreta ao expandir/recolher equipes
 
