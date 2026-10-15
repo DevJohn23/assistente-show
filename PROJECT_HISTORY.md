@@ -4,6 +4,18 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+
+## 14/10/2026 — Atualização de fotos e refinamento dos cards do organograma
+
+- Corrigida uma corrida entre upload e gravação do colaborador: a interface podia solicitar a foto antes de confirmar o novo vínculo e reter uma resposta vazia/antiga. Agora aplica a prévia após confirmação, não guarda falhas e repete leituras temporariamente indisponíveis.
+- Falhas ao salvar preservam a seleção e reutilizam o upload em nova tentativa. Substituições usam caminhos novos; remoção e cadastro continuam na gestão administrativa.
+- Rota autenticada entrega WebP de até 384 × 384 px; originais privados permanecem intactos. Cache privado de cinco minutos, separado por Authorization e versão do arquivo; erros não são armazenados. Nenhum dado pessoal novo foi incluído no Git.
+- As 18 imagens iniciais passaram de 6.909.018 para 312.952 bytes nas versões de exibição (95% menos bytes, sem promessa de tempo de carregamento).
+- Avatares dos cards aumentados de 44 para 56 px. Removida a indicação redundante “Ver perfil”; clique/teclado continuam abrindo o perfil e a expansão de equipes permanece.
+- Verificação: TypeScript, build de produção, testes Node e suíte de navegador aprovados. Regressões específicas cobrem upload com gravação rejeitada/repetição, troca, remoção, recarga e recuperação de falha temporária. Testes usam dados fictícios e transporte isolado, sem gravações na produção.
+- Investigação apenas de leitura confirmou a presença do arquivo do cadastro relatado. O defeito encontrado é compatível com o atraso observado; não há evidência suficiente para atribuir com certeza cada requisição passada a essa causa.
+
+
 ## Organograma — primeira versão e revisão para produção — 13/10/2026
 
 **Primeira versão revisada e publicada em produção.** O estado abaixo complementa a reestruturação anterior; não substitui os registros históricos.

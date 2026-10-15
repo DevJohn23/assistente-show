@@ -14,15 +14,16 @@ type PersonNode = Node<{ employee: Employee; department?: Department; count: num
   compact: boolean; context: boolean; onExpand: (id: string) => void }, 'person'>;
 const PersonCard = memo(function PersonCard({ data, selected }: NodeProps<PersonNode>) {
   const { employee, department, count, expanded, onExpand } = data;
-  return <article className={`org-person ${selected ? 'is-selected' : ''} ${data.context ? 'is-context' : ''}`} style={{ '--department-color': department?.color || '#2563eb' } as React.CSSProperties}>
+  const footerLabel = data.context ? 'Liderança · contexto' : employee.is_example ? 'Dados fictícios' : employee.unit;
+  return <article className={`org-person ${!count && !footerLabel ? 'no-footer' : ''} ${selected ? 'is-selected' : ''} ${data.context ? 'is-context' : ''}`} style={{ '--department-color': department?.color || '#2563eb' } as React.CSSProperties}>
     <Handle type="target" position={data.compact ? Position.Left : Position.Top} />
-    <div className="org-person-main"><EmployeeAvatar employee={employee} /><div className="org-person-copy">
+    <div className="org-person-main"><EmployeeAvatar employee={employee} size={56} /><div className="org-person-copy">
       <strong title={employee.name}>{employee.name}</strong><span title={employee.job_title}>{employee.job_title}</span>
       <small className="org-department-tag">{department?.name || 'Sem departamento'}</small>
     </div></div>
-    <div className="org-person-footer">{count > 0 ? <button className="nodrag nopan" onClick={event => { event.stopPropagation(); onExpand(employee.id); }} aria-label={`${expanded ? 'Recolher' : 'Expandir'} equipe de ${employee.name}`} aria-expanded={expanded}>
+    {(count > 0 || footerLabel) && <div className="org-person-footer">{count > 0 ? <button className="nodrag nopan" onClick={event => { event.stopPropagation(); onExpand(employee.id); }} aria-label={`${expanded ? 'Recolher' : 'Expandir'} equipe de ${employee.name}`} aria-expanded={expanded}>
       <Users size={13} />{count} {count === 1 ? 'liderado direto' : 'liderados diretos'}{expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-    </button> : <span>{data.context ? 'Liderança · contexto' : employee.is_example ? 'Dados fictícios' : employee.unit || 'Ver perfil'}<ArrowUpRight size={13} /></span>}</div>
+    </button> : <span>{footerLabel}</span>}</div>}
     <Handle type="source" position={Position.Bottom} />
   </article>;
 });

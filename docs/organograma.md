@@ -41,7 +41,7 @@ Unidade, ramal, atribuições e atendimento ficaram vazios quando não fornecido
 
 Todas as fotos ficam no bucket privado `organization-photos`, limitado a JPG/PNG/WebP e 5 MB. Antes da publicação, as 18 imagens iniciais foram transferidas pela sessão administrativa autenticada. A auditoria confirmou que somente `photo_path` e `updated_at` mudaram; nenhum outro campo foi alterado.
 
-A rota `/api/organograma/fotos/[id]` valida o token com Supabase Auth, consulta o cadastro com RLS e baixa a imagem no Storage usando a mesma identidade. Respostas usam `private, no-store` e `nosniff`. O navegador mantém URLs de blob somente durante a vida do módulo. Não existem chaves privilegiadas no frontend.
+A rota `/api/organograma/fotos/[id]` valida o token com Supabase Auth, consulta o cadastro com RLS e baixa a imagem no Storage usando a mesma identidade. A resposta gera miniaturas WebP de até 384 × 384 px, com orientação corrigida e proporção preservada; o original permanece no Storage. A URL inclui a versão e o caminho imutável da foto. Respostas versionadas usam `private, max-age=300`, `Vary: Authorization` e `nosniff`; erros e clientes sem versão usam `private, no-store`. Uma versão divergente do cadastro retorna 409. Não há cache público compartilhado. URLs de blob são liberadas ao sair do provedor/sessão. Falhas não ficam em cache e o avatar tenta novamente até duas vezes. Após confirmar a gravação do cadastro, a interface aplica a foto selecionada imediatamente. Se a gravação falhar, preserva a prévia e reutiliza o upload na próxima tentativa. Não existem chaves privilegiadas no frontend.
 
 O repositório GitHub é público. Planilha, PDF, imagens extraídas, manifesto, seed com contatos e script específico de importação ficam ignorados no Git. O build depende apenas do código; não precisa dessas fontes privadas. A ferramenta local temporária usada para transferir as fotos foi removida antes da publicação.
 
@@ -63,3 +63,10 @@ Migração aplicada ao projeto Supabase `assistente-show` (`nwuheljjsviakffyeqmx
 Consulta autenticada real com 20 colaboradores e 18 fotos, acesso à gestão, atualização dos vínculos de foto e envio ao Storage verificados antes da publicação. Os testes automatizados do navegador isolam o transporte; as regras do banco foram verificadas separadamente no Supabase real. Nem todas as combinações de cadastro e perfis reais foram exercitadas.
 
 Publicação de produção autorizada em 13/10/2026. Resultado e revisão publicada registrados em `PROJECT_HISTORY.md`. E-mail continua usando `mailto:` e telefone usa `tel:`; ações separadas de WhatsApp/Ligar e novos setores ficam para a próxima etapa.
+
+## Ajustes de 14/10/2026
+
+- Avatares do mapa aumentados de 44 para 56 px. O card inteiro continua abrindo o perfil por clique ou teclado; removido o texto redundante “Ver perfil”. Controles de expandir equipe permanecem.
+- Corrigida a corrida entre upload e gravação do cadastro, que podia carregar uma foto antiga/ausente e guardar o resultado na memória.
+- Testes cobrem cache, troca de sessão, versão/autorização da rota, miniatura, upload com falha/repetição, substituição, remoção e nova tentativa após indisponibilidade temporária.
+- Medição local das 18 imagens iniciais: 6.909.018 bytes originais para 312.952 bytes nas miniaturas (aproximadamente 95% de redução). Isso mede volume transferido, não tempo garantido de carregamento.

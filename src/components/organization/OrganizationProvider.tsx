@@ -4,10 +4,12 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { fetchOrganization } from '@/lib/organizationService';
 import { Employee, OrganizationData } from '@/types/organization';
+import { OrganizationPhotoCache, organizationPhotoKey, organizationPhotoVersion } from '@/lib/organizationPhotoCache';
 
 interface OrganizationContextValue extends OrganizationData {
   loading: boolean; error: boolean; reload: () => Promise<boolean>;
   getPhoto: (employee: Employee) => Promise<string>;
+  applyEmployee: (employee: Employee, photo?: Blob) => void;
 }
 const Context = createContext<OrganizationContextValue | null>(null);
 export function OrganizationProvider({ children }: { children: React.ReactNode }) {
@@ -16,8 +18,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const revision = useRef(0);
-  const cache = useRef(new Map<string, Promise<string>>());
-  const urls = useRef(new Set<string>());
+  const cache = useRef(new OrganizationPhotoCache());
   const mounted = useRef(true);
   const reload = useCallback(async () => {
     const version = ++revision.current;
@@ -37,39 +38,49 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
     if (user) void reload();
     return () => {
       mounted.current = false; revision.current++;
-      urls.current.forEach(URL.revokeObjectURL); urls.current.clear(); cache.current.clear();
+      cache.current.dispose();
     };
   }, [user?.id, reload]);
   const getPhoto = useCallback((employee: Employee) => {
     if (!employee.photo_path) return Promise.resolve('');
-    const key = `${employee.id}:${employee.photo_path}`;
-    const old = cache.current.get(key); if (old) return old;
-    const pending = (async () => {
+    return cache.current.load(organizationPhotoKey(employee), async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return '';
-      const response = await fetch(`/api/organograma/fotos/${encodeURIComponent(employee.id)}`, { headers: { Authorization: `Bearer ${session.access_token}` }, cache: 'no-store' });
-      if (!response.ok) return '';
-      const blob = await response.blob();
-      if (!mounted.current) return '';
-      const url = URL.createObjectURL(blob); urls.current.add(url); return url;
-    })().catch(() => '');
-    cache.current.set(key, pending); return pending;
+      if (!session) return null;
+      const version = encodeURIComponent(organizationPhotoVersion(employee.photo_path));
+      const response = await fetch(`/api/organograma/fotos/${encodeURIComponent(employee.id)}?v=${version}`, { headers: { Authorization: `Bearer ${session.access_token}` }, cache: 'default' });
+      return response.ok ? response.blob() : null;
+    });
   }, []);
-  return <Context.Provider value={{ ...data, canManage: data.canManage && !error, loading, error, reload, getPhoto }}>{children}</Context.Provider>;
+  const applyEmployee = useCallback((employee: Employee, photo?: Blob) => {
+    if (photo && employee.photo_path) cache.current.prime(organizationPhotoKey(employee), photo);
+    setData(previous => ({ ...previous, employees: previous.employees.some(e => e.id === employee.id)
+      ? previous.employees.map(e => e.id === employee.id ? employee : e)
+      : [...previous.employees, employee] }));
+  }, []);
+  return <Context.Provider value={{ ...data, canManage: data.canManage && !error, loading, error, reload, getPhoto, applyEmployee }}>{children}</Context.Provider>;
 }
 export function useOrganization() {
   const value = useContext(Context); if (!value) throw new Error('OrganizationProvider required'); return value;
 }
 export function EmployeeAvatar({ employee, size = 44 }: { employee: Employee; size?: number }) {
   const { getPhoto } = useOrganization();
-  const [url, setUrl] = useState('');
+  const key = organizationPhotoKey(employee);
+  const [image, setImage] = useState({ key: '', url: '' });
+  const url = image.key === key ? image.url : '';
   useEffect(() => {
-    let active = true; setUrl('');
-    void getPhoto(employee).then(value => { if (active) setUrl(value); });
-    return () => { active = false; };
-  }, [employee.id, employee.photo_path, getPhoto]);
+    let active = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const load = async (attempt: number) => {
+      const value = await getPhoto(employee);
+      if (!active) return;
+      setImage({ key, url: value });
+      if (!value && employee.photo_path && attempt < 2) timer = setTimeout(() => void load(attempt + 1), 500 * (attempt + 1));
+    };
+    void load(0);
+    return () => { active = false; clearTimeout(timer); };
+  }, [employee.id, employee.photo_path, key, getPhoto]);
   const initials = employee.name.split(/\s+/).filter(Boolean).map(n => n[0]).slice(0, 2).join('');
   return <span className="org-avatar" style={{ width: size, height: size, fontSize: Math.max(12, size * .29) }}>
-    {url ? <img src={url} alt="" width={size} height={size} onError={() => setUrl('')} /> : <span aria-hidden="true">{initials}</span>}
+    {url ? <img src={url} alt="" width={size} height={size} decoding="async" onError={() => setImage({ key, url: '' })} /> : <span aria-hidden="true">{initials}</span>}
   </span>;
 }

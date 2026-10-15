@@ -194,3 +194,6 @@
   .org-fullscreen { padding: 14px; }.org-fullscreen .org-header-actions { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .org-main *, .org-dialog * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+.org-person { cursor: pointer; }
+.org-person.no-footer .org-person-main { height: 100%; padding: 16px 13px; }

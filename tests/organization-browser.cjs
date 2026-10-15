@@ -6,6 +6,8 @@ const assert = require('node:assert/strict');
 const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:3100';
 const userId = '00000000-0000-4000-8000-000000000099';
 let admin = true, failWrites = false, writes = 0;
+let uploads = 0, earlyPhotoReads = 0, retryPhotoReads = 0, transientPhotoFailure = false;
+const testPhoto = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=', 'base64');
 const fixture = process.env.ORG_FIXTURE ? JSON.parse(fs.readFileSync(process.env.ORG_FIXTURE)) : Array.from({ length: 20 }, (_, i) => ({ id: i ? `person-${i}` : 'manager', name: i ? `Colaborador ${i}` : 'Gestor Teste', job_title: i ? 'Consultor de vendas' : 'Gestão de Vendas', department_id: 'comercial', manager_id: i ? 'manager' : null, phone: '', email: '', unit: '', responsibilities: '', serves: [], photo_path: '', is_example: false, status: 'active', sort_order: i }));
 let people = fixture.map(p => ({ extension: '', ...p, created_at: '2026-10-13T12:00:00Z', updated_at: '2026-10-13T12:00:00Z' }));
 let departments = [{ id: 'comercial', name: 'Comercial', color: '#2563eb' }];
@@ -26,6 +28,14 @@ const manager = people[0], target = people[3];
    const request = route.request(), url = new URL(request.url());
    if (url.pathname.startsWith('/api/organograma/fotos/')) {
      const id = decodeURIComponent(url.pathname.split('/').pop());
+     if (!process.env.ORG_FIXTURE) {
+       const employee = people.find(p => p.id === id);
+       if (!employee?.photo_path) { earlyPhotoReads++; return route.fulfill({ status: 404 }); }
+       assert.equal(url.searchParams.get('v'), 'avatar-384-v1:' + employee.photo_path);
+       retryPhotoReads++;
+       if (transientPhotoFailure) { transientPhotoFailure = false; return route.fulfill({ status: 503 }); }
+       return route.fulfill({ contentType: 'image/png', body: testPhoto });
+     }
      const manifest = JSON.parse(fs.readFileSync('assets/organization/manifest.json'));
      return manifest[id] ? route.fulfill({ contentType: 'image/png', body: fs.readFileSync('assets/organization/' + manifest[id]) }) : route.fulfill({ status: 404 });
    }
@@ -33,6 +43,7 @@ const manager = people[0], target = people[3];
    if (!url.hostname.endsWith('.supabase.co')) return route.abort();
    const json = (status, body) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
    if (request.method() === 'OPTIONS') return route.fulfill({ status: 204 });
+   if (url.pathname.startsWith('/storage/v1/object/') && request.method() === 'POST') { uploads++; return json(200, { Key: url.pathname.split('/object/')[1] }); }
    const table = url.pathname.split('/').pop();
    if (table === 'can_manage_organization') return json(200, admin);
    if (request.method() === 'GET') {
@@ -109,6 +120,35 @@ const manager = people[0], target = people[3];
  await dialog.getByRole('button', { name: 'Salvar colaborador' }).click(); await dialog.waitFor({ state: 'hidden' });
  assert.equal(people.length, 21);
  await page.reload(); await page.getByRole('button', { name: 'Editar Pessoa Teste', exact: true }).waitFor();
+ if (!process.env.ORG_FIXTURE) {
+   const editPhoto = async () => { await page.getByRole('button', { name: 'Editar Pessoa Teste', exact: true }).click(); return page.getByRole('dialog'); };
+   dialog = await editPhoto();
+   await dialog.getByLabel('Foto do colaborador').setInputFiles({ name: 'avatar.png', mimeType: 'image/png', buffer: testPhoto });
+   failWrites = true;
+   await dialog.getByRole('button', { name: 'Salvar colaborador' }).click();
+   await dialog.getByRole('alert').filter({ hasText: 'permissão' }).waitFor();
+   assert.equal(uploads, 1); assert.equal(earlyPhotoReads, 0);
+   await dialog.getByAltText('Prévia da nova foto').waitFor();
+   failWrites = false;
+   await dialog.getByRole('button', { name: 'Salvar colaborador' }).click(); await dialog.waitFor({ state: 'hidden' });
+   assert.equal(uploads, 1); assert.equal(earlyPhotoReads, 0);
+   let row = page.locator('tr').filter({ has: page.getByRole('button', { name: 'Editar Pessoa Teste', exact: true }) });
+   await row.locator('img').waitFor();
+   const oldPath = people.find(p => p.name === 'Pessoa Teste').photo_path;
+   dialog = await editPhoto();
+   await dialog.getByLabel('Foto do colaborador').setInputFiles({ name: 'replacement.png', mimeType: 'image/png', buffer: testPhoto });
+   await dialog.getByRole('button', { name: 'Salvar colaborador' }).click(); await dialog.waitFor({ state: 'hidden' });
+   assert.notEqual(people.find(p => p.name === 'Pessoa Teste').photo_path, oldPath);
+   assert.equal(uploads, 2);
+   transientPhotoFailure = true; const readsBefore = retryPhotoReads;
+   await page.reload();
+   await page.waitForFunction(() => [...document.querySelectorAll('tr')].some(r => r.textContent.includes('Pessoa Teste') && r.querySelector('img')?.naturalWidth > 0));
+   assert.ok(retryPhotoReads >= readsBefore + 2);
+   dialog = await editPhoto(); await dialog.getByRole('button', { name: 'Remover foto', exact: true }).click();
+   await dialog.getByRole('button', { name: 'Salvar colaborador' }).click(); await dialog.waitFor({ state: 'hidden' });
+   assert.equal(people.find(p => p.name === 'Pessoa Teste').photo_path, '');
+   assert.equal(earlyPhotoReads, 0);
+ }
  await page.getByRole('button', { name: 'Departamentos', exact: true }).click();
  await page.getByRole('button', { name: 'Novo departamento' }).click(); dialog = page.getByRole('dialog');
  await dialog.getByLabel('Nome do departamento').fill('Operações'); await dialog.getByRole('button', { name: 'Salvar departamento' }).click(); await dialog.waitFor({ state: 'hidden' });

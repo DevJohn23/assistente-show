@@ -9,7 +9,7 @@ import { deleteDepartment, fetchOrganizationHistory, saveDepartment, saveEmploye
 
 const blankEmployee = (departmentId: string): EmployeeInput => ({ name: '', job_title: '', department_id: departmentId, unit: '', email: '', phone: '', extension: '', responsibilities: '', serves: [], manager_id: null, photo_path: '', status: 'active', is_example: false, sort_order: 1000 });
 
-function EmployeeEditor({ employee, onClose, onSaved }: { employee?: Employee; onClose: () => void; onSaved: () => void }) {
+function EmployeeEditor({ employee, onClose, onSaved }: { employee?: Employee; onClose: () => void; onSaved: (saved: Employee, photo?: Blob) => void }) {
   const { employees, departments } = useOrganization();
   const [form, setForm] = useState<EmployeeInput>(() => employee ? {
     name: employee.name, job_title: employee.job_title, department_id: employee.department_id, unit: employee.unit,
@@ -25,6 +25,7 @@ function EmployeeEditor({ employee, onClose, onSaved }: { employee?: Employee; o
   const [dirty, setDirty] = useState(false);
   const [discard, setDiscard] = useState(false);
   const saving = useRef(false);
+  const uploaded = useRef<{ file: File; path: string } | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
   const forbidden = employee ? descendantsOf(employee.id, employees) : new Set<string>();
@@ -49,11 +50,11 @@ function EmployeeEditor({ employee, onClose, onSaved }: { employee?: Employee; o
     saving.current = true; setBusy(true); setError('');
     try {
       if (photo) {
-        input.photo_path = await uploadOrganizationPhoto(photo);
-        setForm(prev => ({ ...prev, photo_path: input.photo_path })); setPhoto(null);
+        if (uploaded.current?.file !== photo) uploaded.current = { file: photo, path: await uploadOrganizationPhoto(photo) };
+        input.photo_path = uploaded.current.path;
       }
-      await saveEmployee(input, employee);
-      onSaved();
+      const saved = await saveEmployee(input, employee);
+      onSaved(saved, photo || undefined);
     } catch (e) { setError((e as Error).message === 'PHOTO_INVALID' ? 'Escolha uma imagem JPG, PNG ou WebP de até 5 MB.' : organizationError(e)); }
     finally { saving.current = false; setBusy(false); }
   };
@@ -67,7 +68,7 @@ function EmployeeEditor({ employee, onClose, onSaved }: { employee?: Employee; o
             const file = e.target.files?.[0]; if (!file) return;
             if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5242880) { setError('Escolha uma imagem JPG, PNG ou WebP de até 5 MB.'); e.target.value = ''; return; }
             setPhoto(file); setDirty(true); setError('');
-          }} /></label><small>JPG, PNG ou WebP · até 5 MB</small>{(photo || form.photo_path) && <button type="button" className="org-text-link" onClick={() => { setPhoto(null); patch({ photo_path: '' }); }}>Remover foto</button>}</div></div>
+          }} /></label><small>JPG, PNG ou WebP · até 5 MB</small>{(photo || form.photo_path) && <button type="button" className="org-text-link" disabled={busy} onClick={() => { setPhoto(null); patch({ photo_path: '' }); }}>Remover foto</button>}</div></div>
         <fieldset disabled={busy}><legend>Identificação</legend><div className="org-form-grid">
           <label className="org-field org-span-2">Nome completo<input aria-label="Nome completo" autoFocus className="org-input" required maxLength={150} value={form.name} onChange={e => patch({ name: e.target.value })} /></label>
           <label className="org-field">Cargo<input aria-label="Cargo" className="org-input" required maxLength={150} list="org-job-titles" value={form.job_title} onChange={e => patch({ job_title: e.target.value })} /><datalist id="org-job-titles">{Array.from(new Set(employees.map(e => e.job_title))).map(t => <option key={t} value={t} />)}</datalist></label>
@@ -127,7 +128,7 @@ function HistoryView() {
 }
 
 export default function OrganizationAdmin() {
-  const { employees, departments, canManage, loading, error, reload } = useOrganization();
+  const { employees, departments, canManage, loading, error, reload, applyEmployee } = useOrganization();
   const [tab, setTab] = useState<'employees' | 'departments' | 'history'>('employees');
   const [query, setQuery] = useState(''); const [status, setStatus] = useState('active'); const [department, setDepartment] = useState('');
   const [editor, setEditor] = useState<Employee | 'new' | null>(null); const [deptEditor, setDeptEditor] = useState<Department | 'new' | null>(null);
@@ -161,7 +162,7 @@ export default function OrganizationAdmin() {
       return <div key={d.id}><span className="org-area-dot" style={{ background: d.color }} /><span><strong>{d.name}</strong><small>{count} colaboradores cadastrados</small></span><button className="org-button" onClick={() => setDeptEditor(d)} aria-label={`Editar departamento ${d.name}`}><Pencil size={14} />Editar</button><button className="org-text-link org-danger" disabled={!!count || busy} title={count ? 'Reatribua os colaboradores antes de excluir' : undefined} onClick={() => setRemoving(d.id)}>Excluir</button>{removing === d.id && <div className="org-delete-confirm"><span>Excluir {d.name}?</span><button className="org-button" disabled={busy} onClick={() => setRemoving(null)}>Cancelar</button><button className="org-button org-danger" disabled={busy} onClick={async () => { if (busy) return; setBusy(true); setActionError(''); try { await deleteDepartment(d.id); setRemoving(null); await saved(); } catch (err) { setActionError(organizationError(err)); } finally { setBusy(false); } }}>Confirmar exclusão</button></div>}</div>;
     })}</div></section>}
     {tab === 'history' && <HistoryView />}
-    {editor && <EmployeeEditor employee={editor === 'new' ? undefined : editor} onClose={() => setEditor(null)} onSaved={() => void saved()} />}
+    {editor && <EmployeeEditor employee={editor === 'new' ? undefined : editor} onClose={() => setEditor(null)} onSaved={(employee, photo) => { applyEmployee(employee, photo); void saved(); }} />}
     {deptEditor && <DepartmentEditor department={deptEditor === 'new' ? undefined : deptEditor} onClose={() => setDeptEditor(null)} onSaved={() => void saved()} />}
   </div>;
 }
