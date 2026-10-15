@@ -6,6 +6,14 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 
 
+## 14/10/2026 — Animação discreta ao expandir/recolher equipes
+
+- Transição de 300 ms nas posições dos cards, com entrada/saída gradual e linhas acompanhando o movimento pelo React Flow. Sem bibliotecas adicionais.
+- Cliques durante a transição cancelam a execução anterior e reutilizam as posições/opacidades atuais. Cards em saída não recebem cliques ou foco. Movimento reduzido mantém a atualização imediata.
+- Centralização existente da câmera ocorre após a reorganização. A estrutura hierárquica e os dados cadastrados permanecem iguais.
+- Build/TypeScript, testes Node e suíte de navegador aprovados, incluindo estado intermediário com opacidade, interrupção durante expansão, movimento reduzido, navegação, gestão, fotos, celular e tema escuro. Testes isolados sem gravações reais.
+
+
 ## 14/10/2026 — Ordem estável no catálogo após editar produtos
 
 - Causa: a consulta de produtos não definia uma ordem e a interface preservava a sequência recebida do banco. Atualizar uma foto podia deslocar o card.

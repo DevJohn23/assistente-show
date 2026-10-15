@@ -101,3 +101,29 @@ test('photo endpoint authenticates, versions images and keeps errors out of cach
     if (oldKey === undefined) delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY; else process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = oldKey;
   }
 });
+
+const { organizationTransition } = load('src/lib/organizationTransition.ts');
+test('organization animation interpolates cards, fades exits and settles exactly', () => {
+  const node = (id, x) => ({ id, position: { x, y: 0 }, data: {} });
+  const before = [node('manager', 0), node('removed', 100)];
+  const after = [node('manager', 200), node('added', 300)];
+  const sample = organizationTransition(before, after, [], []);
+  const middle = sample(.5);
+  assert.ok(middle.nodes[0].position.x > 0 && middle.nodes[0].position.x < 200);
+  assert.ok(middle.nodes.find(n => n.id === 'added').style.opacity > 0);
+  const removed = middle.nodes.find(n => n.id === 'removed');
+  assert.equal(removed.style.pointerEvents, 'none'); assert.equal(removed.focusable, false);
+  assert.deepEqual(sample(1).nodes, after);
+  assert.equal(before[0].position.x, 0);
+  const reversed = organizationTransition(middle.nodes, before, [], []);
+  assert.equal(reversed(0).nodes[0].position.x, middle.nodes[0].position.x);
+  assert.deepEqual(reversed(1).nodes, before);
+});
+test('organization animation retains exiting edges and interpolates compact routing', () => {
+  const old = [{ id: 'edge', source: 'a', target: 'b', data: { busY: 10 } }, { id: 'gone', source: 'a', target: 'c' }];
+  const next = [{ id: 'edge', source: 'a', target: 'b', data: { busY: 110 } }];
+  const frame = organizationTransition([], [], old, next);
+  assert.ok(frame(.5).edges[0].data.busY > 10 && frame(.5).edges[0].data.busY < 110);
+  assert.equal(frame(.5).edges.length, 2);
+  assert.deepEqual(frame(1).edges, next);
+});

@@ -70,3 +70,7 @@ Publicação de produção autorizada em 13/10/2026. Resultado e revisão public
 - Corrigida a corrida entre upload e gravação do cadastro, que podia carregar uma foto antiga/ausente e guardar o resultado na memória.
 - Testes cobrem cache, troca de sessão, versão/autorização da rota, miniatura, upload com falha/repetição, substituição, remoção e nova tentativa após indisponibilidade temporária.
 - Medição local das 18 imagens iniciais: 6.909.018 bytes originais para 312.952 bytes nas miniaturas (aproximadamente 95% de redução). Isso mede volume transferido, não tempo garantido de carregamento.
+
+## Animação de equipes
+
+Expandir/recolher usa uma transição de 300 ms nas posições controladas do React Flow, com desaceleração suave e opacidade na entrada/saída. As linhas acompanham as posições dos cards; cards em saída ficam sem interação ou foco e são removidos ao terminar. Uma nova expansão cancela a animação anterior e parte do estado visual atual. A câmera centraliza o gestor após a transição. Movimento reduzido desativa a animação. Não há dependência adicional.

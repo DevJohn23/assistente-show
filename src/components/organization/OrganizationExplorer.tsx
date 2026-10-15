@@ -8,6 +8,7 @@ import '@xyflow/react/dist/style.css';
 import { useOrganization, EmployeeAvatar } from './OrganizationProvider';
 import { ancestorsOf, matchesEmployee, visibleEmployees } from '@/lib/organization';
 import { CARD_HEIGHT, CARD_WIDTH, layoutOrganization } from '@/lib/organizationLayout';
+import { organizationTransition, ORGANIZATION_TRANSITION_MS } from '@/lib/organizationTransition';
 import { Department, Employee } from '@/types/organization';
 
 type PersonNode = Node<{ employee: Employee; department?: Department; count: number; expanded: boolean;
@@ -96,6 +97,8 @@ function Explorer() {
   const [focusId, setFocusId] = useState<string | null>(null);
   const [nodes, setNodes] = useState<PersonNode[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const renderedGraph = useRef<{ nodes: PersonNode[]; edges: Edge[] }>({ nodes: [], edges: [] });
+  const animateExpansion = useRef(false);
   const [layoutError, setLayoutError] = useState(false);
   const [layoutBusy, setLayoutBusy] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -136,26 +139,47 @@ function Explorer() {
     setAnnouncement(`Selecionado: ${active.find(e => e.id === id)?.name || ''}`);
   };
   const expand = useCallback((id: string) => {
+    animateExpansion.current = true;
     pendingCamera.current = { id };
     setExpanded(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
     setFocusId(null);
   }, []);
   useEffect(() => {
     let cancelled = false;
+    let animationFrame = 0;
+    const animate = animateExpansion.current && !reducedMotion && view === 'hierarchy';
+    animateExpansion.current = false;
     setLayoutBusy(true); setLayoutError(false);
     void layoutOrganization(visible).then(positions => {
       if (cancelled) return;
       const ancestry = selected ? new Set([selected, ...ancestorsOf(selected, active)]) : new Set<string>();
-      setNodes(visible.map(e => ({ id: e.id, type: 'person', position: positions.get(e.id) || { x: 0, y: 0 },
+      const nextNodes: PersonNode[] = visible.map(e => ({ id: e.id, type: 'person', position: positions.get(e.id) || { x: 0, y: 0 },
         selected: e.id === selected, width: CARD_WIDTH, height: CARD_HEIGHT,
         ariaLabel: `${e.name}, ${e.job_title}`, data: { employee: e, department: departments.find(d => d.id === e.department_id),
           count: active.filter(p => p.manager_id === e.id).length, expanded: expanded.has(e.id), compact: positions.get(e.id)?.compact || false,
-          context: !!department && e.department_id !== department, onExpand: expand } })));
-      setEdges(visible.filter(e => e.manager_id && positions.has(e.manager_id)).map(e => ({ id: `edge-${e.id}`, source: e.manager_id!, target: e.id, type: 'organization',
-        data: { busY: positions.get(e.id)?.busY }, style: { stroke: ancestry.has(e.id) ? '#2563eb' : '#a6b5c8', strokeWidth: ancestry.has(e.id) ? 2 : 1.3 } })));
-    }).catch(() => { if (!cancelled) setLayoutError(true); }).finally(() => { if (!cancelled) setLayoutBusy(false); });
-    return () => { cancelled = true; };
-  }, [visible, departments, active, selected, expanded, department, expand]);
+          context: !!department && e.department_id !== department, onExpand: expand } }));
+      const nextEdges: Edge[] = visible.filter(e => e.manager_id && positions.has(e.manager_id)).map(e => ({ id: `edge-${e.id}`, source: e.manager_id!, target: e.id, type: 'organization',
+        data: { busY: positions.get(e.id)?.busY }, style: { stroke: ancestry.has(e.id) ? '#2563eb' : '#a6b5c8', strokeWidth: ancestry.has(e.id) ? 2 : 1.3 } }));
+      const apply = (graph: { nodes: PersonNode[]; edges: Edge[] }) => {
+        renderedGraph.current = graph; setNodes(graph.nodes); setEdges(graph.edges);
+      };
+      if (!animate || !renderedGraph.current.nodes.length) {
+        apply({ nodes: nextNodes, edges: nextEdges }); setLayoutBusy(false); return;
+      }
+      const frame = organizationTransition(renderedGraph.current.nodes, nextNodes, renderedGraph.current.edges, nextEdges);
+      const start = performance.now();
+      apply(frame(0));
+      const tick = (now: number) => {
+        if (cancelled) return;
+        const progress = Math.min(1, (now - start) / ORGANIZATION_TRANSITION_MS);
+        apply(frame(progress));
+        if (progress < 1) animationFrame = requestAnimationFrame(tick);
+        else setLayoutBusy(false);
+      };
+      animationFrame = requestAnimationFrame(tick);
+    }).catch(() => { if (!cancelled) { setLayoutError(true); setLayoutBusy(false); } });
+    return () => { cancelled = true; cancelAnimationFrame(animationFrame); };
+  }, [visible, departments, active, selected, expanded, department, expand, reducedMotion, view]);
   useEffect(() => {
     if (layoutBusy || !nodes.length || view !== 'hierarchy') return;
     const raf = requestAnimationFrame(() => requestAnimationFrame(() => {
