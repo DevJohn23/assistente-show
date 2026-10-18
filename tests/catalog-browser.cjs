@@ -129,11 +129,11 @@ let failWrites = false, failReads = false, writes = 0;
  await panel.locator('.quote-panel-body').evaluate(element=>element.scrollTop=0);
  await page.screenshot({path:'/tmp/omnilink-catalog-desktop.png',fullPage:true,animations:'disabled'});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth),true);
- // Restore a modified unit value via Escape, then explicitly restore the catalog price.
+ // Cancel an uncommitted edit via Escape, then manually enter another price.
  const price=panel.getByRole('spinbutton',{name:'Valor unitário de Equipamento Teste',exact:true});
  await price.fill('123');await price.press('Escape');
  assert.match(await total().innerText(),/2\.029,50/);
- await panel.getByRole('button',{name:'Restaurar preço do catálogo',exact:true}).click();
+ await price.fill('1000'); await price.press('Enter');
  assert.match(await total().innerText(),/2\.227,50/);
  console.log('PASS collapsed panel preference and quote persistence; Escape cancels price editing');
  // Details must add another unit, never remove the product already in the quote.

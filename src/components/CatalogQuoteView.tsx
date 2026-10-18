@@ -531,10 +531,9 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
       <label className="quote-field">Cliente<input className="ui-input" placeholder="Digite o nome..." value={clientName} onChange={event => setClientName(event.target.value)} /></label>
       {cart.length === 0 ? <div className="quote-empty"><ShoppingBag size={28} strokeWidth={1.5} /><p>Seu orçamento começa aqui</p><span className="ui-muted text-sm">Adicione produtos pelo catálogo.</span></div>
       : <ul className="quote-items">{cart.map(item => <li key={item.product.id}>
-        <div className="quote-item-heading"><strong>{item.product.name}</strong><button className="ui-icon-button" aria-label={`Remover ${item.product.name}`} onClick={() => toggleCartItem(item.product)}><Trash2 size={15} /></button></div>
+        <div className="quote-item-heading"><strong>{item.product.name}</strong><button className="ui-icon-button quote-remove" aria-label={`Remover ${item.product.name}`} onClick={() => toggleCartItem(item.product)}><Trash2 size={15} /></button></div>
         <div className="quote-item-controls"><UnitPriceInput name={item.product.name} value={item.customPrice ?? item.product.default_price}
           onCommit={value => updateItemCustomPrice(item.product.id, value)} /><QuantityControl name={item.product.name} quantity={item.quantity} onChange={delta => updateQuantity(item.product.id, delta)} /></div>
-        {item.customPrice !== undefined && <button className="ui-text-button quote-reset-price" onClick={() => updateItemCustomPrice(item.product.id, undefined)}>Restaurar preço do catálogo</button>}
       </li>)}</ul>}
       <section className="quote-conditions" aria-labelledby="quote-conditions-title"><h3 id="quote-conditions-title">Condições comerciais</h3>
         <div className="quote-adjustments">

@@ -4,6 +4,15 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 18/10/2026 — Contraste e organização dos produtos no orçamento
+
+- Versão visual aprovada pelo usuário: cada produto da composição recebe fundo suave individual, cantos arredondados e espaçamento de 10 px, sem bordas nem divisórias entre os cards. O fundo do agrupamento permanece transparente.
+- Decisão de UX: o contraste individual cria sensação de camada e facilita associar nome, preço e quantidade ao mesmo produto. Preferir essa diferenciação de superfícies à acumulação de contornos em painéis já delimitados; avaliar sempre no layout real e nos temas claro/escuro.
+- Lixeiras e ação “Limpar” em vermelho, com fundo suave no hover e indicação de foco por teclado. Tons adaptados ao tema; confirmação de limpeza preservada.
+- Removida a opção “Restaurar preço do catálogo”; edição manual do valor unitário permanece. Teste existente ajustado para digitar o valor, sem depender da ação removida.
+- Refinamento validado visualmente pelo usuário em ambiente local antes da autorização de commit e publicação. Nenhuma alteração de preços, produtos ou permissões no banco.
+- Verificação final: suíte de navegador do catálogo aprovada, incluindo edição de preços, cálculos, formas de pagamento, kits, celular, temas, controles de quantidade e isolamento dos rascunhos; nenhum erro de execução no navegador. Testes com transporte simulado, sem gravações em produção.
+
 ## 14/10/2026 — Consolidação das últimas publicações e validação do usuário
 
 - Fotos e cards do organograma: commit `1aa9755`, publicado. O usuário confirmou o carregamento rápido das imagens após a otimização.

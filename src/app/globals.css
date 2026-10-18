@@ -264,20 +264,23 @@ button, input, select, textarea { font: inherit; }
 .quote-panel-header h2, .quote-dialog h2 { font-size: 20px; font-weight: 600; letter-spacing: -.4px; }
 .quote-panel-body { overflow-y: auto; overscroll-behavior: contain; padding: 0 18px 20px; flex: 1; min-height: 0; scrollbar-gutter: stable; }
 .quote-tools { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0 14px; }
-.quote-clear { color: var(--ui-muted); }
-.quote-clear:hover { color: #c53030; }
+.quote-panel-body { --quote-danger: #b91c1c; }
+.dark .quote-panel-body { --quote-danger: #f87171; }
+.quote-clear, .quote-item-heading .quote-remove { color: var(--quote-danger); background: transparent; }
+.quote-clear { padding: 0 6px; border-radius: 6px; }
+.quote-clear:hover:not(:disabled), .quote-item-heading .quote-remove:hover { color: var(--quote-danger); background: color-mix(in srgb, var(--quote-danger) 9%, transparent); text-decoration: none; }
+.quote-clear:focus-visible, .quote-remove:focus-visible { outline: 2px solid var(--quote-danger); outline-offset: 2px; }
 .ui-text-button:disabled { opacity: .45; cursor: not-allowed; text-decoration: none; }
 .quote-field { display: flex; flex-direction: column; gap: 7px; font-size: 13px; color: var(--ui-muted); }
 .quote-field input { width: 100%; min-width: 0; font-size: 14px; }
-.quote-items { margin-top: 20px; }
-.quote-items > li { padding: 15px 0; border-top: 1px solid var(--ui-border); }
+.quote-items { margin-top: 20px; padding: 0; border: 0; background: transparent; display: flex; flex-direction: column; gap: 10px; }
+.quote-items > li { padding: 15px 12px; border: 0; border-radius: 9px; background: color-mix(in srgb, var(--ui-blue) 5%, var(--ui-surface)); }
 .quote-item-heading { display: flex; align-items: flex-start; gap: 10px; justify-content: space-between; font-size: 14px; }
 .quote-item-heading strong { overflow-wrap: anywhere; }
 .quote-item-heading .ui-icon-button { width: 30px; height: 30px; flex-shrink: 0; border: 0; }
 .quote-item-controls { display: flex; align-items: flex-end; gap: 16px; margin-top: 8px; }
 .quote-price-label { display: flex; flex: 1; flex-direction: column; gap: 6px; color: var(--ui-muted); font-size: 12px; min-width: 0; }
 .quote-price-label input { width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
-.quote-reset-price { font-size: 12px; margin-top: 5px; }
 .quote-conditions { border-top: 1px solid var(--ui-border); margin-top: 12px; padding-top: 20px; }
 .quote-conditions h3, .quote-options legend { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
 .quote-adjustments { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
