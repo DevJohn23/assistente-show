@@ -138,10 +138,9 @@ export default function Home() {
   // If Auth is loading, show clean loading screen
   if (authLoading || (user && !loadError && (isDataLoading || dataOwner !== user.id))) {
     return (
-      <div className="app-loading" role="status" aria-live="polite">
+      <div className="app-loading" role="status" aria-live="polite" aria-label="Carregando">
         <p className="brand-signature" style={{ color: 'var(--ui-text)' }}>omnilink<span className="brand-dot">.</span></p>
         <div className="loading-bar" aria-hidden="true" />
-        <p className="text-sm">Carregando seus dados…</p>
       </div>
     );
   }

@@ -5,6 +5,13 @@ import { AuthProvider } from '@/context/AuthContext';
 
 export const metadata: Metadata = {
   title: 'Assistente Omnilink — Show Tecnologia',
+  icons: {
+    icon: [
+      { url: '/favicon-32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon.svg', type: 'image/svg+xml', sizes: 'any' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
   description: 'Aplicação web para aumento de produtividade da equipe comercial da Show Tecnologia',
 };
 

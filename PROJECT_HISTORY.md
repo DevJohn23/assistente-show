@@ -4,6 +4,12 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 18/10/2026 — Favicon e simplificação do carregamento
+
+- Adicionado favicon com “o” branco sobre fundo azul e cantos arredondados, aprovado pelo usuário. SVG escalável, alternativa PNG 32 × 32 e ícone Apple 180 × 180 configurados nos metadados globais.
+- Removido o texto visível “Carregando seus dados”; marca e barra animada permanecem. Região de status mantém o rótulo acessível “Carregando”.
+- Verificação: TypeScript e revisão de diff aprovados; HTML local contém os três links de ícones e não contém o texto removido. Dimensões dos arquivos PNG verificadas. Sem alterações nos dados ou fluxos de negócio.
+
 ## 18/10/2026 — Contraste e organização dos produtos no orçamento
 
 - Versão visual aprovada pelo usuário: cada produto da composição recebe fundo suave individual, cantos arredondados e espaçamento de 10 px, sem bordas nem divisórias entre os cards. O fundo do agrupamento permanece transparente.
