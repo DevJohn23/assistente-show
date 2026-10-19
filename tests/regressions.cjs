@@ -138,3 +138,21 @@ test('catalog keeps featured products first after photo edits and reordered resp
   assert.equal(orderCatalogProducts(updated)[0].image_url, 'after.png');
   assert.deepEqual(orderCatalogProducts([{ id: 'prod-10' }, { id: 'prod-3' }]).map(p => p.id), ['prod-3', 'prod-10']);
 });
+
+test('quotation models preserve totals and restrict cabin components to complete kits', () => {
+  const {quoteMessage, quotePreferences, cabinKit}=load('src/lib/quotePresentation.ts');
+  assert.deepEqual(quotePreferences(null),{model:'basic',pdfEnabled:false});
+  assert.deepEqual(quotePreferences({model:'unknown',pdfEnabled:'true'}),{model:'basic',pdfEnabled:false});
+  assert.equal(cabinKit('prod-1').length,8);
+  assert.equal(cabinKit('prod-2').length,7);
+  assert.deepEqual(cabinKit('other'),[]);
+  const q={client:'  ',lines:[{id:'prod-1',name:'Omniturbo',quantity:2,unitPrice:100,total:200},{id:'prod-2',name:'Omnidual',quantity:1,unitPrice:100,total:100},{id:'other',name:'Omniturbo sem teclado',quantity:1,unitPrice:100,total:100}],subtotal:400,discountPercent:10,discount:40,total:360,entry:100,balance:260,monthly:20,payments:[],financing:[]};
+  const detailed=quoteMessage(q,'detailed');
+  assert.equal((detailed.match(/Antena satélite/g)||[]).length,1);
+  assert.equal((detailed.match(/O KIT CABINE CONTEMPLA/g)||[]).length,2);
+  assert.match(detailed,/360,00/);assert.match(detailed,/Saldo após entrada: R\$ 260,00/);
+  assert.doesNotMatch(quoteMessage(q,'basic'),/KIT CABINE/);
+  const formal=quoteMessage(q,'formal');
+  assert.doesNotMatch(formal,/\p{Extended_Pictographic}/u);
+  assert.doesNotMatch(formal,/Cliente:|Formas de Pagamento|Financiamento/);
+});

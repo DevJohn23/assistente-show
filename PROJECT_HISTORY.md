@@ -4,6 +4,24 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 18/10/2026 — Refinamento da proposta comercial
+
+- Financiamento: título “Opções de financiamento”, removida observação de TAC/IOF, colunas com separador central e cabeçalhos Prazo/Parcela mensal; mais respiro entre linhas e seções. PDF de exemplo segue em uma página, com valores preservados e renderização conferida.
+- Emissão no canto superior direito, alinhada com o cabeçalho; validade opcional agrupada logo abaixo.
+- Checkbox “Incluir responsável comercial”, desmarcado por padrão. Nome e contato só aparecem na revisão quando habilitado e são omitidos do PDF quando desabilitado; autoria do arquivo também deixa de incluir o nome.
+- Rótulo “Mensagem: Básico” removido do rodapé do orçamento. Ajuste final mantém o exemplo completo em uma página também com responsável habilitado, com nome e contato lado a lado.
+- Remoção da seção libera espaço naturalmente, sem manter um bloco vazio. Alternar o checkbox invalida a prévia anterior.
+
+## 18/10/2026 — Modelos de orçamento e proposta comercial
+
+- Minha conta → Preferências: modelos Básico, Detalhado e Sóbrio, com exemplo de mensagem e habilitação opcional de PDF. Preferências salvas por usuário na autenticação; padrão preserva o modelo básico e PDF desabilitado.
+- Detalhado inclui componentes exclusivamente dos kits completos Omniturbo (`prod-1`) e Omnidual (`prod-2`). Antena satélite somente no Omniturbo. Outros equipamentos e acessórios não recebem listas de componentes.
+- Botão Gerar proposta PDF abaixo de Copiar mensagem, com revisão de cliente, emissão, validade, responsável, contato e observações. Reaproveita produtos, preços e condições do orçamento; edição da revisão invalida a prévia anterior.
+- Proposta A4 gerada no navegador, sem agente IA. Logo oficial sem slogan, seção Cliente omitida se vazia, mensalidade separada e paginação para propostas longas. Nenhum dado de cliente enviado a serviço externo de geração.
+- Total de equipamentos não é mais confundido com saldo após entrada na mensagem; ambos são explicitados quando há entrada. Cálculos financeiros existentes preservados.
+- Verificação: build de produção e TypeScript aprovados; testes de regressão dos modelos aprovados; fluxo de preferências e geração/download real testado no navegador com transporte simulado; suítes existentes de catálogo e conta também aprovadas, sem erros de execução. PDFs de uma e várias páginas inspecionados visualmente, incluindo cliente em branco.
+- Documentação de uso, regras, arquitetura e verificação em `docs/propostas-comerciais.md`. Publicação autorizada pelo usuário após revisão; fluxo de release pela branch `main` para o projeto Vercel `assistente-show-qymy`.
+
 ## 18/10/2026 — Favicon e simplificação do carregamento
 
 - Adicionado favicon com “o” branco sobre fundo azul e cantos arredondados, aprovado pelo usuário. SVG escalável, alternativa PNG 32 × 32 e ícone Apple 180 × 180 configurados nos metadados globais.

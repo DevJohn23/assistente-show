@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
+import { useAuth } from '@/context/AuthContext';
+import { quoteMessage, quotePreferences, QuoteSnapshot } from '@/lib/quotePresentation';
+const ProposalDialog = dynamic(() => import('./proposal/ProposalDialog'), { ssr: false, loading: () => <p role="status">Abrindo proposta…</p> });
 import { readQuoteValue, writeQuoteValue, clearLegacyQuote } from '@/lib/quoteStorage';
 import { usePendingAction } from '@/lib/usePendingAction';
 import { Product, CartItem, QuoteTemplate } from '@/types';
 import {
   Search, ShoppingBag, Check, Plus, Minus, Trash2, Copy, Calculator,
-  BookmarkPlus, X, CheckCircle, Layers, Edit3, PanelRightClose, PanelRightOpen,
+  BookmarkPlus, FileText, X, CheckCircle, Layers, Edit3, PanelRightClose, PanelRightOpen,
 } from 'lucide-react';
 import { QuoteDialog, QuantityControl, ProductImage, UnitPriceInput } from './QuoteControls';
 
@@ -32,6 +36,9 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   onDeleteTemplate,
 }) => {
   const { isPending, run } = usePendingAction();
+  const { user } = useAuth();
+  const preferences = quotePreferences(user?.user_metadata?.quote_preferences);
+  const [showProposal, setShowProposal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   
   const [category, setCategory] = useState('all');
@@ -414,71 +421,23 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     setClientName('');
   };
 
-  // Copy WhatsApp proposal message with exact requested template & Benefits
-  const generateMessageText = () => {
-    const greeting = clientName.trim()
-      ? `Olá *${clientName.trim()}*, seu orçamento está pronto!\n\n`
-      : '';
-
-    let msg = greeting;
-
-    msg += `📦 *Equipamentos Selecionados:*\n`;
-    cart.forEach((i) => {
-      const basePrice = i.customPrice !== undefined ? i.customPrice : i.product.default_price;
-      const itemUnitPrice = basePrice * (1 + (markupPercent || 0) / 100);
-      const itemTotal = itemUnitPrice * i.quantity;
-      msg += `• ${i.quantity}x ${i.product.name} — R$ ${formatCurrency(itemTotal)}\n`;
-    });
-
-    if (discountPercent > 0) {
-      msg += `\n🏷️ *Desconto Especial (${discountPercent}%):* -R$ ${formatCurrency(discountAmount)}\n`;
-    }
-
-    const entryDeduction = requireEntryFee ? 550 : 0;
-    const priceAfterEntry = finalEquipmentPrice - entryDeduction;
-
-    if (requireEntryFee) {
-      msg += `\n💵 *Entrada Mínima:* R$ 550,00\n`;
-    }
-
-    msg += `\n💰 *Total Equipamentos (À Vista):* R$ ${formatCurrency(priceAfterEntry)}\n`;
-
-    if (includeMonthlyFee && totalMonthlyFee > 0) {
-      msg += `\n📡 *Mensalidade:* R$ ${formatCurrency(totalMonthlyFee)}/mês\n`;
-    }
-
-    msg += `\n💳 *Formas de Pagamento:*\n`;
-
-    if (payPix) {
-      msg += `• *PIX à vista:* R$ ${formatCurrency(priceAfterEntry)}\n`;
-    }
-
-    if (payBoleto && boletoInstallments > 0) {
-      const boletoVal = priceAfterEntry / boletoInstallments;
-      msg += `• *Boleto Sem Juros:* ${boletoInstallments}x de R$ ${formatCurrency(boletoVal)}\n`;
-    }
-
-    if (payCard && cardInstallments > 0) {
-      const cardVal = priceAfterEntry / cardInstallments;
-      msg += `• *Cartão Sem Juros:* ${cardInstallments}x de R$ ${formatCurrency(cardVal)}\n`;
-    }
-
-    if (payFinancing && financingInstallments.length > 0) {
-      msg += `\n*Financiamento:*\n`;
-      financingInstallments.forEach(n => {
-        const fResult = calcularSimulacaoFinanciamento(priceAfterEntry, 0, 0, n, TAXA_JUROS_MENSAL);
-        msg += `• ${n}x de R$ ${formatCurrency(fResult.valorParcela)}/mês\n`;
-      });
-    }
-
-    msg += `\n✨ *Benefícios Incluídos:*\n`;
-    msg += `• Garantia de 12 meses\n`;
-    msg += `• Entrega e instalação gratuita\n`;
-    msg += `• Treinamento completo para uso dos equipamentos e sistema\n`;
-
-
-    return msg;
+  // Both outputs consume the exact same totals and selected payment conditions.
+  const quoteSnapshot: QuoteSnapshot = {
+    client: clientName.trim(),
+    lines: cart.map(item => {
+      const unitPrice = (item.customPrice ?? item.product.default_price) * (1 + (markupPercent || 0) / 100);
+      return { id: item.product.id, name: item.product.name, quantity: item.quantity, unitPrice, total: unitPrice * item.quantity };
+    }),
+    subtotal: subtotalWithMarkup, discountPercent, discount: discountAmount, total: finalEquipmentPrice,
+    entry: entryDeduction, balance: balanceAfterEntry, monthly: includeMonthlyFee ? totalMonthlyFee : 0,
+    payments: [
+      ...(payPix ? [{ label: 'PIX à vista', amount: balanceAfterEntry }] : []),
+      ...(payBoleto && boletoInstallments > 0 ? [{ label: 'Boleto Sem Juros', installments: boletoInstallments, amount: balanceAfterEntry / boletoInstallments }] : []),
+      ...(payCard && cardInstallments > 0 ? [{ label: 'Cartão Sem Juros', installments: cardInstallments, amount: balanceAfterEntry / cardInstallments }] : []),
+    ],
+    financing: payFinancing ? financingResults.map(({ n, result }) => ({ label: 'Financiamento', installments: n, amount: result.valorParcela })) : [],
   };
+  const generateMessageText = () => quoteMessage(quoteSnapshot, preferences.model);
 
   const handleCopyMessage = async () => {
     if (cart.length === 0 || invalidEntry || isCopying) return;
@@ -572,12 +531,14 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
       {copyError && <p className="quote-error" role="alert">Não foi possível copiar. Verifique a permissão de cópia do navegador e tente novamente.</p>}
       <button className="ui-button ui-button-primary w-full" disabled={!cart.length || invalidEntry || isCopying} onClick={handleCopyMessage}>
         {copiedNotification ? <CheckCircle size={17} /> : <Copy size={17} />}{copiedNotification ? 'Mensagem copiada' : isCopying ? 'Copiando…' : 'Copiar mensagem'}</button>
+      {preferences.pdfEnabled && <button className="ui-button ui-button-secondary w-full mt-2" disabled={!cart.length || invalidEntry} onClick={() => setShowProposal(true)}><FileText size={17} />Gerar proposta PDF</button>}
       <span className="sr-only" role="status">{copiedNotification ? 'Mensagem copiada para a área de transferência.' : ''}</span>
     </footer>
   </>;
 
   return <div className={`catalog-view ${!compactLayout && !panelCollapsed ? 'catalog-panel-expanded' : ''}`}>
     <h1 className="sr-only">Orçamentos</h1>
+    {showProposal && preferences.pdfEnabled && <ProposalDialog quote={quoteSnapshot} seller={user?.user_metadata?.full_name || ''} contact={user?.email || ''} onClose={() => setShowProposal(false)} />}
     {(panelCollapsed || compactLayout) && <button className="quote-collapsed-bar" onClick={() => compactLayout ? setIsCartSheetOpen(true) : togglePanel()} aria-label="Abrir orçamento">
       <span className="flex items-center gap-2"><PanelRightOpen size={18} /><strong>Abrir orçamento</strong><span className="ui-muted">{quantityTotal} {quantityTotal === 1 ? 'item' : 'itens'}</span></span><strong>R$ {formatCurrency(finalEquipmentPrice)}</strong></button>}
     <div className={`catalog-workspace ${panelCollapsed || compactLayout ? 'catalog-workspace-wide' : ''}`}>

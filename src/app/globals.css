@@ -717,3 +717,24 @@ button, input, select, textarea { font: inherit; }
 /* Dashboard contact action matches the WhatsApp interaction in Opportunities. */
 .contact-action.ui-button-secondary:hover,.contact-action.ui-button-secondary:focus-visible { color:#15803d; border-color:#15803d; background:#f0fdf4; outline-color:#15803d; }
 .dark .contact-action.ui-button-secondary:hover,.dark .contact-action.ui-button-secondary:focus-visible { color:#4ade80; border-color:#4ade80; background:#18382d; outline-color:#4ade80; }
+
+/* Quote output preferences and formal proposal review. */
+.quote-model-choice { display: flex; align-items: flex-start; gap: 10px; padding: 13px; border-radius: 8px; background: var(--ui-bg); cursor: pointer; }
+.quote-model-choice input { margin-top: 4px; accent-color: var(--ui-blue); flex-shrink: 0; }
+.quote-model-choice span { display: grid; gap: 4px; }
+.quote-model-choice small { color: var(--ui-muted); line-height: 1.5; }
+.quote-model-preview { padding: 10px 0; }
+.quote-model-preview summary { cursor: pointer; color: var(--ui-blue); }
+.quote-model-preview pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: 12px; max-height: 260px; overflow-y: auto; padding: 12px; margin-top: 10px; background: var(--ui-bg); border-radius: 8px; }
+.proposal-dialog { width: min(850px, calc(100vw - 24px)); max-width: 850px; }
+.proposal-summary { display: flex; gap: 10px 20px; flex-wrap: wrap; background: var(--ui-selected); padding: 12px; border-radius: 8px; margin: 16px 0 10px; font-size: 13px; }
+.proposal-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.proposal-fields input, .proposal-fields textarea { min-width: 0; width: 100%; }
+.proposal-fields textarea { height: 100px; min-height: 100px; }
+.proposal-notes { grid-column: 1 / -1; }
+.proposal-preview { margin-top: 16px; }
+.proposal-download { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.proposal-preview iframe { border: 1px solid var(--ui-border); border-radius: 6px; width: 100%; height: 65vh; background: #fff; }
+@media (max-width: 600px) { .proposal-fields { grid-template-columns: 1fr; } .proposal-download { align-items: stretch; flex-direction: column; } .account-sections { flex-wrap: wrap; } }
+
+.proposal-fields .quote-model-choice input[type="checkbox"] { width: auto; }
