@@ -11,7 +11,9 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 - Migração `20261022031831_weekly_report_deliveries` aplicada em produção. RLS e privilégios verificados: anon/authenticated sem leitura, service_role com acesso. Aviso informativo de ausência de políticas é intencional para esta tabela privada do servidor.
 - Teste operacional protegido em `POST /api/cron/weekly-report/test`: destinatário fixo na conta remetente, dados fictícios e validação de acesso ao registro de entregas. Não dispara para os usuários.
 - Verificação antes de publicar: testes de regressão/organograma/relatórios aprovados, incluindo limites semanais, paginação, isolamento de dados, rejeição SMTP, conteúdo vazio e autenticação do teste; build Next.js de produção, lint e TypeScript aprovados. Navegador automatizado local indisponível; nenhum componente visual foi alterado.
-- Publicação autorizada pelo usuário. O teste real de envio e a verificação final de produção serão registrados após o deploy.
+- Publicado o commit `417d569` em produção (deploy `dpl_DMy3UfCW25jNN7sxP9E594qMPsTr`, READY). Chave CRON_SECRET sincronizada e armazenada como sensitive após detectar divergência local/produção; nenhum segredo versionado.
+- Teste real autenticado retornou HTTP 200, `accepted: 1`, `database: ok`, com dados fictícios e destinatário fixo no remetente. Gmail confirmou aceitação SMTP; confirmação visual na caixa de entrada depende do destinatário. Nenhum relatório real enviado aos demais usuários.
+- Agendamento mantido aos domingos, 23h UTC (20h Brasília; plano Hobby pode executar dentro da hora). Verificação HTTP de produção: início/organograma/admin 200 e rotas de cron/teste sem credenciais 401.
 
 ## 21/10/2026 — Integração Gmail para relatórios (local)
 

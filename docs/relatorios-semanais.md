@@ -2,7 +2,7 @@
 
 ## Estado da correção
 
-Migração aplicada e permissões verificadas em produção. Atualização em processo de publicação; envio real ainda será validado.
+Migração aplicada, permissões verificadas e atualização publicada em produção. Teste real autenticado com dados fictícios retornou HTTP 200: Gmail aceitou uma mensagem para a conta remetente. Não houve disparo para todos durante a validação.
 
 O site pode continuar em `vercel.app`. O remetente do Resend precisa de domínio próprio com acesso ao DNS; instalar o plugin no Codex não substitui essa verificação. O domínio de teste `resend.dev` só permite enviar para o proprietário da conta Resend. O provedor Gmail já configurado permite operar sem domínio próprio.
 
@@ -43,7 +43,7 @@ O envio também aceita `WEEKLY_REPORT_PROVIDER=gmail`, `GMAIL_USER` e `GMAIL_APP
 
 SMTP Gmail usa TLS na porta 465, limites de tempo e mensagens individuais. Aceitação SMTP não confirma entrega na caixa de entrada. Gmail não oferece idempotência pela API Resend; o bloqueio persistente por usuário/semana permanece responsável por evitar duplicações. Envios incertos exigem conferência, sem retentativa automática. Cotas do Gmail e tempo total do cron devem ser conferidos antes de ativar para todos.
 
-Estado: endereço, seleção Gmail e senha de aplicativo cadastrados na Vercel/Production; senha armazenada como sensitive, conforme autorização expressa do usuário. Código local, sem deploy, sem migração aplicada e sem teste de envio real.
+Estado: endereço, seleção Gmail e senha de aplicativo cadastrados na Vercel/Production; senha armazenada como sensitive, conforme autorização expressa do usuário. Integração publicada e migração aplicada; teste de envio real aceito pelo Gmail.
 
 
 ## Verificação e operação
@@ -52,3 +52,5 @@ Estado: endereço, seleção Gmail e senha de aplicativo cadastrados na Vercel/P
 - O agendamento permanece `0 23 * * 0`. Em planos sem precisão de minuto, pode executar entre 20h e 21h de Brasília.
 - Migração remota registrada como `20261022031831`; arquivo local alinhado ao identificador retornado pelo Supabase.
 - Verificação: RLS habilitada, anon/authenticated sem SELECT, service_role com INSERT. Aviso informativo de RLS sem policies é intencional nesta tabela exclusiva do servidor. Aviso pré-existente sobre proteção de senhas vazadas no Auth é independente deste recurso.
+
+Validação final: build local/remoto e testes aprovados. Rotas públicas responderam 200; cron e teste recusaram chamadas sem credencial com 401. A chave operacional foi sincronizada sem exposição no repositório. Aceitação SMTP não comprova leitura nem chegada à caixa principal.
