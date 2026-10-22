@@ -4,6 +4,33 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 22/10/2026 — Ativação dos relatórios semanais e carteira de oportunidades
+
+- Comissões: registros da semana encerrada (domingo a sábado). Oportunidades: carteira inteira em acompanhamento, independentemente do cadastro, ordenada por vencimento; ganhas/perdidas excluídas.
+- E-mail destaca vencimentos de segunda a domingo seguintes, com dias restantes a partir do domingo de referência. Vencidas e vencimentos no próprio domingo aparecem em grupos separados.
+- Migração `20261022031831_weekly_report_deliveries` aplicada em produção. RLS e privilégios verificados: anon/authenticated sem leitura, service_role com acesso. Aviso informativo de ausência de políticas é intencional para esta tabela privada do servidor.
+- Teste operacional protegido em `POST /api/cron/weekly-report/test`: destinatário fixo na conta remetente, dados fictícios e validação de acesso ao registro de entregas. Não dispara para os usuários.
+- Verificação antes de publicar: testes de regressão/organograma/relatórios aprovados, incluindo limites semanais, paginação, isolamento de dados, rejeição SMTP, conteúdo vazio e autenticação do teste; build Next.js de produção, lint e TypeScript aprovados. Navegador automatizado local indisponível; nenhum componente visual foi alterado.
+- Publicação autorizada pelo usuário. O teste real de envio e a verificação final de produção serão registrados após o deploy.
+
+## 21/10/2026 — Integração Gmail para relatórios (local)
+
+- Adicionado provedor Gmail via SMTP/TLS e nome de remetente “Assistente Omnilink — Relatórios”, sem alterar o nome da conta Google.
+- Credenciais exclusivamente em variáveis de servidor; endereço e seleção do provedor cadastrados na Vercel. Senha compartilhada no chat não gravada no projeto; substituição por nova senha de aplicativo recomendada.
+- Falhas e destinatários rejeitados não são contabilizados como sucesso. Controle persistente de duplicações preservado.
+- Testes específicos de relatórios/Gmail (6 casos), TypeScript e verificação de diff aprovados. Validação SMTP real pendente.
+- Credencial cadastrada na Vercel/Production como sensitive após autorização expressa do usuário para utilizar a senha fornecida. Nenhuma senha gravada no repositório.
+- Ativação pendente de migração, publicação e validação real. Nenhum e-mail real enviado.
+
+## 20/10/2026 — Correção local dos relatórios semanais (ativação pendente)
+
+- Incluídas oportunidades e comissões em abas separadas do Excel; usuários sem movimentação também recebem relatório. Paginação e filtros por usuário/período no banco.
+- Período fechado de domingo a sábado em São Paulo; cron existente de domingo à noite preservado.
+- Remetente configurável via `WEEKLY_REPORT_FROM`, sem fallback para domínio de teste. Erros retornados pelo Resend agora são tratados como falha; aceitação do provedor é distinguida de entrega.
+- Migração de controle de envio por usuário/semana com RLS, acesso exclusivo do servidor e prevenção de duplicações concorrentes. Envios incertos ficam para conferência, sem reenvio automático.
+- Verificação local: `npm test`, testes específicos de relatórios, TypeScript (`tsc --noEmit`) e `git diff --check` aprovados. Transportes simulados; migração ainda não validada em banco real.
+- Documentação de ativação, limites e recuperação em `docs/relatorios-semanais.md`. Sem deploy, migração em produção ou envio real nesta etapa; domínio próprio verificado ainda necessário.
+
 ## 18/10/2026 — Refinamento da proposta comercial
 
 - Financiamento: título “Opções de financiamento”, removida observação de TAC/IOF, colunas com separador central e cabeçalhos Prazo/Parcela mensal; mais respiro entre linhas e seções. PDF de exemplo segue em uma página, com valores preservados e renderização conferida.

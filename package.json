@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --test tests/regressions.cjs tests/organization.cjs",
+    "test": "node --test tests/regressions.cjs tests/organization.cjs tests/weekly-reports.cjs",
     "test:organization:browser": "node tests/organization-browser.cjs"
   },
   "dependencies": {
@@ -22,6 +22,7 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.435.0",
     "next": "^14.2.7",
+    "nodemailer": "^10.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.16.1",
+    "@types/nodemailer": "^8.0.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",

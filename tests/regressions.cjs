@@ -48,8 +48,8 @@ test('cron fails closed in development and production, ignores URL credentials a
   const original = { ...process.env };
   let clients = 0, emails = 0;
   const { GET } = load('src/app/api/cron/weekly-report/route.ts', {
-    '@/lib/dateUtils': { getLocalDateString: () => '2026-10-01' },
-    '@/lib/emailServices': { sendWeeklyReportEmail: async () => { emails++; } },
+    '@/lib/weeklyReportPeriod': { weeklyReportPeriod: () => ({ start: '2026-10-04', end: '2026-10-11' }) },
+    '@/lib/emailServices': { reportEmailConfigured: () => Boolean(process.env.WEEKLY_REPORT_FROM), sendWeeklyReportEmail: async () => { emails++; } },
     '@supabase/supabase-js': { createClient: () => { clients++; return {
       from: () => ({ select: async () => ({ data: [], error: null }) }),
       auth: { admin: { listUsers: async () => ({ data: { users: [] }, error: null }) } },
@@ -73,6 +73,9 @@ test('cron fails closed in development and production, ignores URL credentials a
     assert.equal(clients, 0);
     assert.equal(emails, 0);
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-only';
+    delete process.env.WEEKLY_REPORT_FROM;
+    assert.equal((await GET(request('Bearer test-secret-only'))).status, 503);
+    process.env.WEEKLY_REPORT_FROM = 'reports@example.com';
     const result = await GET(request('Bearer test-secret-only'));
     assert.equal(result.status, 200);
     assert.equal((await result.json()).success, true);
