@@ -29,7 +29,8 @@ export function QuotePreferences() {
         <input type="radio" name="quote-model" value={model} checked={draft.model === model} onChange={() => { setDraft({ ...draft, model }); setMessage(''); }} />
         <span><strong>{quoteModelLabels[model]}</strong><small>{model === 'basic' ? 'Mensagem atual, objetiva e com emojis.' : model === 'detailed' ? 'Inclui os componentes dos kits Omniturbo e Omnidual.' : 'Linguagem direta, sem emojis.'}</small></span>
       </label>)}
-      <details className="quote-model-preview"><summary>Ver exemplo da mensagem</summary><pre>{quoteMessage(example, draft.model)}</pre></details>
+      <label className="quote-model-choice"><input type="checkbox" checked={draft.showItemPrices} onChange={event => { setDraft({ ...draft, showItemPrices: event.target.checked }); setMessage(''); }} /><span><strong>Mostrar preços individuais na mensagem</strong><small>Inclui o valor de cada produto nos três modelos. O total do orçamento sempre aparece.</small></span></label>
+      <details className="quote-model-preview"><summary>Ver exemplo da mensagem</summary><pre>{quoteMessage(example, draft.model, draft.showItemPrices)}</pre></details>
       <label className="quote-model-choice"><input type="checkbox" checked={draft.pdfEnabled} onChange={event => { setDraft({ ...draft, pdfEnabled: event.target.checked }); setMessage(''); }} /><span><strong>Habilitar proposta em PDF</strong><small>Exibe “Gerar proposta PDF” abaixo de “Copiar mensagem”.</small></span></label>
     </fieldset>
     {error && <p role="alert" className="auth-error">{error}</p>}{message && <p role="status" className="auth-success">{message}</p>}

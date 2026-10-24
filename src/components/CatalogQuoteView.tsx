@@ -437,7 +437,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     ],
     financing: payFinancing ? financingResults.map(({ n, result }) => ({ label: 'Financiamento', installments: n, amount: result.valorParcela })) : [],
   };
-  const generateMessageText = () => quoteMessage(quoteSnapshot, preferences.model);
+  const generateMessageText = () => quoteMessage(quoteSnapshot, preferences.model, preferences.showItemPrices);
 
   const handleCopyMessage = async () => {
     if (cart.length === 0 || invalidEntry || isCopying) return;
@@ -778,7 +778,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
         <div className="quote-preview financing-dialog">
           <header className="quote-modal-heading"><div><h2>Simulador de financiamento</h2><p className="ui-muted">Calcule parcelas para qualquer valor.</p></div><button className="ui-icon-button" aria-label="Fechar simulador de financiamento" onClick={() => setShowFinancingCalcModal(false)}><X size={20} /></button></header>
           <label className="quote-field">Valor do equipamento (R$)<input className="ui-input" type="text" inputMode="decimal" aria-label="Valor do equipamento para simulação" placeholder="Ex: 2.500,00" value={calcValue} onChange={e => setCalcValue(e.target.value)} autoFocus /></label>
-          <label className="quote-field">Parcelas (1x a 36x)<div className="financing-installments"><button className="ui-icon-button" aria-label="Diminuir parcelas" disabled={calcCurrentN <= 1} onClick={() => setCalcCurrentN(n => Math.max(1, n - 1))}><Minus size={18} /></button><input className="ui-input" type="number" aria-label="Parcelas da simulação" min={1} max={36} step={1} value={calcCurrentN} onChange={e => setCalcCurrentN(Math.min(36, Math.max(1, parseInt(e.target.value) || 1)))} /><button className="ui-icon-button" aria-label="Aumentar parcelas" disabled={calcCurrentN >= 36} onClick={() => setCalcCurrentN(n => Math.min(36, n + 1))}><Plus size={18} /></button></div></label>
+          <div className="quote-field"><label htmlFor="financing-installments">Parcelas (1x a 36x)</label><input id="financing-installments" className="ui-input financing-installments-input" type="number" aria-label="Parcelas da simulação" min={1} max={36} step={1} value={calcCurrentN} onChange={e => setCalcCurrentN(Math.min(36, Math.max(1, parseInt(e.target.value) || 1)))} /></div>
           <div className="financing-result" aria-live="polite">{calcNumericValue > 0 ? <><span>{calcCurrentN}x de</span><strong>R$ {formatCurrency(calcularSimulacaoFinanciamento(calcNumericValue, 0, 0, calcCurrentN, TAXA_JUROS_MENSAL).valorParcela)}<small>/mês</small></strong><p>Taxa 2,61% a.m. · TAC 3% · IOF incluso</p></> : <p>Insira um valor para ver a simulação</p>}</div>
           <footer className="quote-modal-actions"><button className="ui-button ui-button-secondary" onClick={() => setShowFinancingCalcModal(false)}>Fechar</button></footer>
         </div>

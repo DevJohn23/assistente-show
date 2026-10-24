@@ -144,17 +144,31 @@ test('catalog keeps featured products first after photo edits and reordered resp
 
 test('quotation models preserve totals and restrict cabin components to complete kits', () => {
   const {quoteMessage, quotePreferences, cabinKit}=load('src/lib/quotePresentation.ts');
-  assert.deepEqual(quotePreferences(null),{model:'basic',pdfEnabled:false});
-  assert.deepEqual(quotePreferences({model:'unknown',pdfEnabled:'true'}),{model:'basic',pdfEnabled:false});
+  assert.deepEqual(quotePreferences(null),{model:'basic',pdfEnabled:false,showItemPrices:false});
+  assert.deepEqual(quotePreferences({model:'unknown',pdfEnabled:'true'}),{model:'basic',pdfEnabled:false,showItemPrices:false});
   assert.equal(cabinKit('prod-1').length,8);
   assert.equal(cabinKit('prod-2').length,7);
   assert.deepEqual(cabinKit('other'),[]);
   const q={client:'  ',lines:[{id:'prod-1',name:'Omniturbo',quantity:2,unitPrice:100,total:200},{id:'prod-2',name:'Omnidual',quantity:1,unitPrice:100,total:100},{id:'other',name:'Omniturbo sem teclado',quantity:1,unitPrice:100,total:100}],subtotal:400,discountPercent:10,discount:40,total:360,entry:100,balance:260,monthly:20,payments:[],financing:[]};
+  assert.equal(quotePreferences({model:'detailed',pdfEnabled:true}).showItemPrices,false);
+  assert.equal(quotePreferences({showItemPrices:'true'}).showItemPrices,false);
+  assert.equal(quotePreferences({showItemPrices:true}).showItemPrices,true);
+  for (const model of ['basic','detailed','formal']) {
+    const hidden=quoteMessage(q,model);
+    const visible=quoteMessage(q,model,true);
+    assert.match(hidden,/• 2x Omniturbo\n/);
+    assert.doesNotMatch(hidden,/• .* — R\$/);
+    assert.match(visible,/• 2x Omniturbo — R\$ 200,00/);
+    assert.equal(visible.replace(/ — R\$ [\d.,]+/g,''),hidden);
+    assert.match(hidden,/360,00/);
+  }
   const detailed=quoteMessage(q,'detailed');
+  assert.match(detailed,/✅ \*O kit Omniturbo contempla:\*/);
+  assert.match(detailed,/✅ \*O kit Omnidual contempla:\*/);
   assert.equal((detailed.match(/Antena satélite/g)||[]).length,1);
-  assert.equal((detailed.match(/O KIT CABINE CONTEMPLA/g)||[]).length,2);
+  assert.equal((detailed.match(/O kit Omni(?:turbo|dual) contempla/g)||[]).length,2);
   assert.match(detailed,/360,00/);assert.match(detailed,/Saldo após entrada: R\$ 260,00/);
-  assert.doesNotMatch(quoteMessage(q,'basic'),/KIT CABINE/);
+  assert.doesNotMatch(quoteMessage(q,'basic'),/O kit .* contempla/);
   const formal=quoteMessage(q,'formal');
   assert.doesNotMatch(formal,/\p{Extended_Pictographic}/u);
   assert.doesNotMatch(formal,/Cliente:|Formas de Pagamento|Financiamento/);

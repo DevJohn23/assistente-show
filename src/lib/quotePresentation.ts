@@ -1,8 +1,8 @@
 export type QuoteModel = 'basic' | 'detailed' | 'formal';
-export interface QuotePreferences { model: QuoteModel; pdfEnabled: boolean }
+export interface QuotePreferences { model: QuoteModel; pdfEnabled: boolean; showItemPrices: boolean }
 export function quotePreferences(value: unknown): QuotePreferences {
   const v = value as Partial<QuotePreferences> | null;
-  return { model: v?.model === 'detailed' || v?.model === 'formal' ? v.model : 'basic', pdfEnabled: v?.pdfEnabled === true };
+  return { model: v?.model === 'detailed' || v?.model === 'formal' ? v.model : 'basic', pdfEnabled: v?.pdfEnabled === true, showItemPrices: v?.showItemPrices === true };
 }
 export interface QuoteLine { id: string; name: string; quantity: number; unitPrice: number; total: number }
 export interface QuotePayment { label: string; installments?: number; amount: number }
@@ -18,20 +18,20 @@ export function cabinKit(id: string): string[] {
   if (id !== 'prod-1' && id !== 'prod-2') return [];
   return ['Módulo com dois chips', ...(id === 'prod-1' ? ['Antena satélite'] : []), 'Teclado', 'Botão de pânico', 'Sensor de painel', 'Sensor na porta carona e motorista', 'Bloqueador', 'Sirene'];
 }
-export function quoteMessage(q: QuoteSnapshot, model: QuoteModel = 'basic') {
+export function quoteMessage(q: QuoteSnapshot, model: QuoteModel = 'basic', showItemPrices = false) {
   const formal = model === 'formal';
   const title = (emoji: string, text: string) => `${formal ? '' : emoji + ' '}*${text}*`;
   let text = formal ? '*ORÇAMENTO COMERCIAL*\n' + (q.client.trim() ? `Cliente: ${q.client.trim()}\n` : '') + '\n'
     : q.client.trim() ? `Olá *${q.client.trim()}*, seu orçamento está pronto!\n\n` : '';
   text += title('📦', 'Equipamentos Selecionados:') + '\n';
-  q.lines.forEach(line => { text += `• ${line.quantity}x ${line.name} — R$ ${money(line.total)}\n`; });
+  q.lines.forEach(line => { text += `• ${line.quantity}x ${line.name}${showItemPrices ? ` — R$ ${money(line.total)}` : ''}\n`; });
   if (model === 'detailed') {
     const seen = new Set<string>();
     for (const line of q.lines) {
       const kit = cabinKit(line.id);
       if (!kit.length || seen.has(line.id)) continue;
       seen.add(line.id);
-      text += `\n✅ *O KIT CABINE CONTEMPLA — ${line.name}:*\n${kit.map(part => '• ' + part).join('\n')}\n`;
+      text += `\n✅ *O kit ${line.id === 'prod-1' ? 'Omniturbo' : 'Omnidual'} contempla:*\n${kit.map(part => '• ' + part).join('\n')}\n`;
     }
   }
   if (q.discountPercent > 0) text += '\n' + title('🏷️', `Desconto Especial (${q.discountPercent}%):`) + ` -R$ ${money(q.discount)}\n`;

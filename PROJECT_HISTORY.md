@@ -4,6 +4,15 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 24/10/2026 — Preços opcionais e correção do simulador
+
+- Preferência “Mostrar preços individuais na mensagem” salva no perfil e desativada por padrão, inclusive em perfis existentes.
+- Aplicada aos modelos Básico, Detalhado e Sóbrio, com prévia nas preferências. Totais, descontos, pagamento e PDF preservados.
+- Títulos dos componentes simplificados para “O kit Omniturbo contempla:” e “O kit Omnidual contempla:”.
+- Testes de regressão ampliados para verificar o padrão sem valores individuais, a ativação nos três modelos e a preservação dos totais.
+- Simulador: removidos os botões externos de aumentar/diminuir parcelas. O rótulo passou a apontar explicitamente para o campo numérico, evitando que cliques no espaço do rótulo acionem o botão de diminuir. Mantidos os controles nativos e o intervalo de 1 a 36 parcelas.
+- `npm test`, TypeScript e `git diff --check` aprovados antes da publicação.
+
 ## 22/10/2026 — Ativação dos relatórios semanais e carteira de oportunidades
 
 - Comissões: registros da semana encerrada (domingo a sábado). Oportunidades: carteira inteira em acompanhamento, independentemente do cadastro, ordenada por vencimento; ganhas/perdidas excluídas.
