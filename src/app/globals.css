@@ -349,7 +349,11 @@ button, input, select, textarea { font: inherit; }
 .product-detail-prices strong { font-size: 22px; font-weight: 600; }
 .product-detail-prices small, .financing-result small { font-size: 14px; font-weight: 400; margin-left: 4px; }
 .quote-modal-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
-.financing-dialog > .quote-field { margin-bottom: 20px; }
+.financing-fields { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-bottom: 20px; }
+.financing-fields > .quote-field { min-width: 0; }
+@media (min-width: 641px) {
+  .financing-fields { grid-template-columns: minmax(0, 1.6fr) minmax(140px, 1fr); align-items: end; }
+}
 .financing-installments-input { text-align: center; }
 .financing-result { padding: 24px; text-align: center; background: var(--ui-selected); border-radius: 10px; color: var(--ui-blue); }
 .financing-result strong { display: block; font-size: 30px; font-weight: 600; margin: 8px 0; font-variant-numeric: tabular-nums; }

@@ -44,7 +44,7 @@ export const LoginView = ({ onLoginSuccess }: { onLoginSuccess?: () => void }) =
       } catch(err) { setError(authErrorMessage(err, mode === 'forgot' ? 'Não foi possível solicitar o link. Tente novamente em alguns minutos.' : 'Não foi possível continuar. Confira sua conexão e os dados informados.')); return false; }
     });
   };
-  return <AuthLayout><header className="auth-heading"><h1>{mode === 'login' ? 'Bem-vindo de volta' : mode === 'register' ? 'Crie sua conta' : 'Recuperar senha'}</h1><p>{mode === 'login' ? 'Acesse seus orçamentos, vendas e comissões.' : mode === 'register' ? 'Preencha seus dados para começar.' : 'Informe o e-mail usado para acessar o assistente.'}</p></header>
+  return <AuthLayout><header className="auth-heading"><h1>{mode === 'login' ? 'Bem-vindo ao Assistente Omnilink' : mode === 'register' ? 'Crie sua conta' : 'Recuperar senha'}</h1><p>{mode === 'login' ? 'Acesse seus orçamentos, vendas e comissões.' : mode === 'register' ? 'Preencha seus dados para começar.' : 'Informe o e-mail usado para acessar o assistente.'}</p></header>
     <form onSubmit={submit}><fieldset disabled={isPending} className="auth-fields">
       {mode === 'register' && <label className="quote-field">Nome completo<input className="ui-input" required maxLength={100} autoComplete="name" value={fullName} onChange={e => setFullName(e.target.value)} /></label>}
       <label className="quote-field">E-mail<input className="ui-input" required type="email" autoComplete="email" placeholder="seu@email.com.br" value={email} onChange={e => { setEmail(e.target.value); setResetRequested(false); setSuccess(''); }} /></label>

@@ -4,6 +4,12 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 24/10/2026 — Ajuste visual do simulador e boas-vindas
+
+- Campos de valor e parcelas lado a lado no desktop, com maior largura para o valor. Em telas de até 640px, campos empilhados para preservar leitura e toque.
+- Mantidas a associação correta dos rótulos, os controles nativos e a lógica de cálculo.
+- Tela pública de entrada: saudação alterada para “Bem-vindo ao Assistente Omnilink”, adequada também ao primeiro acesso. Saudação por horário da dashboard preservada.
+
 ## 24/10/2026 — Preços opcionais e correção do simulador
 
 - Preferência “Mostrar preços individuais na mensagem” salva no perfil e desativada por padrão, inclusive em perfis existentes.

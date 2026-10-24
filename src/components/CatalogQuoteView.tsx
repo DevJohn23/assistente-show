@@ -777,8 +777,10 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
       {showFinancingCalcModal && <QuoteDialog label="Simulador de financiamento" onClose={() => setShowFinancingCalcModal(false)}>
         <div className="quote-preview financing-dialog">
           <header className="quote-modal-heading"><div><h2>Simulador de financiamento</h2><p className="ui-muted">Calcule parcelas para qualquer valor.</p></div><button className="ui-icon-button" aria-label="Fechar simulador de financiamento" onClick={() => setShowFinancingCalcModal(false)}><X size={20} /></button></header>
-          <label className="quote-field">Valor do equipamento (R$)<input className="ui-input" type="text" inputMode="decimal" aria-label="Valor do equipamento para simulação" placeholder="Ex: 2.500,00" value={calcValue} onChange={e => setCalcValue(e.target.value)} autoFocus /></label>
-          <div className="quote-field"><label htmlFor="financing-installments">Parcelas (1x a 36x)</label><input id="financing-installments" className="ui-input financing-installments-input" type="number" aria-label="Parcelas da simulação" min={1} max={36} step={1} value={calcCurrentN} onChange={e => setCalcCurrentN(Math.min(36, Math.max(1, parseInt(e.target.value) || 1)))} /></div>
+          <div className="financing-fields">
+            <label className="quote-field">Valor do equipamento (R$)<input className="ui-input" type="text" inputMode="decimal" aria-label="Valor do equipamento para simulação" placeholder="Ex: 2.500,00" value={calcValue} onChange={e => setCalcValue(e.target.value)} autoFocus /></label>
+            <div className="quote-field"><label htmlFor="financing-installments">Parcelas (1x a 36x)</label><input id="financing-installments" className="ui-input financing-installments-input" type="number" aria-label="Parcelas da simulação" min={1} max={36} step={1} value={calcCurrentN} onChange={e => setCalcCurrentN(Math.min(36, Math.max(1, parseInt(e.target.value) || 1)))} /></div>
+          </div>
           <div className="financing-result" aria-live="polite">{calcNumericValue > 0 ? <><span>{calcCurrentN}x de</span><strong>R$ {formatCurrency(calcularSimulacaoFinanciamento(calcNumericValue, 0, 0, calcCurrentN, TAXA_JUROS_MENSAL).valorParcela)}<small>/mês</small></strong><p>Taxa 2,61% a.m. · TAC 3% · IOF incluso</p></> : <p>Insira um valor para ver a simulação</p>}</div>
           <footer className="quote-modal-actions"><button className="ui-button ui-button-secondary" onClick={() => setShowFinancingCalcModal(false)}>Fechar</button></footer>
         </div>
