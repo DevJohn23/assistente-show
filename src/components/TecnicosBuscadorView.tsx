@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { MapPin, Search, Mail, Loader2, Navigation, X } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { loadTechnicalNetwork } from '@/lib/technicalNetwork';
 import { WhatsAppIcon } from './WhatsAppIcon';
 import { Tecnico } from '@/types';
 
@@ -71,8 +71,7 @@ export const TecnicosBuscadorView: React.FC = () => {
     setLoading(true); setLoadError(false);
     (async () => {
       try {
-        const {data, error} = await supabase.from('tecnicos').select('*');
-        if (error) throw error;
+        const data = await loadTechnicalNetwork(true);
         if (active) setTecnicos((data || []).filter(t => Number.isFinite(t.lat) && Number.isFinite(t.lng)));
       } catch { if (active) setLoadError(true); }
       finally { if (active) setLoading(false); }

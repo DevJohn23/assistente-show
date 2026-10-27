@@ -4,6 +4,17 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 26/10/2026 — Importação administrativa da rede técnica
+
+- Refinamento visual: botão de importação no cabeçalho ao lado de “Novo Técnico”; janela com abas Importar arquivo/Histórico, seletor de arquivo amplo, instruções recolhidas e espaçamento responsivo.
+- Adicionado “Importar KML” em Administrador → Técnicos, com leitura de pontos/contatos/categorias, avisos, comparação campo a campo, prévia e confirmação explícita.
+- Ausentes mantidos por padrão; opção de inativação com aviso sobre exportação do mapa inteiro. Consulta filtra ativos e pagina resultados, evitando truncamento em redes maiores.
+- Histórico com arquivo, administrador e horário; restauração do estado anterior também exige prévia e cria uma nova operação reversível.
+- Migração `20261027010541_technical_network_import` aplicada no Supabase: coluna de atividade, histórico com RLS e RPC atômica `security invoker`. Autorização no banco; alterações concorrentes invalidam a prévia. Nenhum técnico real alterado: 144 ativos, zero importações registradas ao concluir os testes com rollback.
+- Validado SQL como administrador e usuário não administrador: inclusão, alteração, inativação, restauração, lista vazia e rejeição de prévia desatualizada. Anônimo sem permissão de execução. Advisories sem novos alertas desta implementação; avisos anteriores de proteção contra senhas vazadas e tabela privada de relatórios permanecem.
+- Leitor testado em Chromium com o KML real de 124 pontos e casos inválidos (XML, duplicatas, limites, coordenadas, entidades e NetworkLink). Interface testada com chamadas remotas simuladas: desktop/celular, confirmação, falha/repetição e restauração. Regressões e TypeScript aprovados.
+- Orientações em `docs/importacao-rede-tecnica.md`. Publicação autorizada após aprovação visual. Teste com o KML oficial será realizado pelo administrador; não foi feita sincronização Google nem importação de arquivo antigo para produção.
+
 ## 24/10/2026 — Ajuste visual do simulador e boas-vindas
 
 - Campos de valor e parcelas lado a lado no desktop, com maior largura para o valor. Em telas de até 640px, campos empilhados para preservar leitura e toque.

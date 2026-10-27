@@ -741,3 +741,34 @@ button, input, select, textarea { font: inherit; }
 @media (max-width: 600px) { .proposal-fields { grid-template-columns: 1fr; } .proposal-download { align-items: stretch; flex-direction: column; } .account-sections { flex-wrap: wrap; } }
 
 .proposal-fields .quote-model-choice input[type="checkbox"] { width: auto; }
+
+/* Technical network import */
+.technical-admin-heading, .technical-admin-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.technical-import-dialog { width: min(680px, calc(100vw - 32px)); padding: 0; }
+.technical-import-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; padding: 26px 28px 20px; }
+.technical-import-header p { margin-top: 6px; }
+.technical-import-dialog p, .technical-import-dialog li { font-size: 13px; line-height: 1.65; }
+.technical-import-tabs { display: flex; gap: 24px; padding: 0 28px; border-bottom: 1px solid var(--ui-border); }
+.technical-import-tabs button { display: flex; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 2px solid transparent; color: var(--ui-muted); font-size: 14px; }
+.technical-import-tabs button[aria-pressed="true"] { color: var(--ui-blue); border-bottom-color: var(--ui-blue); }
+.technical-import-body { display: grid; gap: 18px; padding: 24px 28px; min-width: 0; }
+.technical-import-file { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 28px 20px; background: var(--ui-bg); border: 1px dashed var(--ui-border); border-radius: 10px; cursor: pointer; text-align: center; overflow-wrap: anywhere; min-width: 0; }
+.technical-import-file:hover, .technical-import-file:focus-within { border-color: var(--ui-blue); background: var(--ui-selected); }
+.technical-import-file input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.technical-import-file-icon { color: var(--ui-blue); margin-bottom: 4px; }
+.technical-import-file .ui-muted { font-size: 12px; }
+.technical-import-file-summary { overflow-wrap: anywhere; }
+.technical-import-help summary { cursor: pointer; font-size: 13px; color: var(--ui-muted); }
+.technical-import-help p, .technical-import-help ul { margin-top: 10px; }
+.technical-import-option { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.6; }
+.technical-import-option input { margin-top: 4px; flex-shrink: 0; accent-color: var(--ui-blue); }
+.technical-import-option small { display: block; color: var(--ui-muted); margin-top: 3px; }
+.technical-import-preview { display: grid; gap: 12px; padding: 18px; background: var(--ui-selected); border-radius: 9px; }
+.technical-import-preview summary { cursor: pointer; font-size: 14px; }
+.technical-import-change { padding: 12px 0; border-top: 1px solid var(--ui-border); overflow-wrap: anywhere; }
+.technical-import-history-list { display: grid; gap: 16px; }
+.technical-import-history { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--ui-border); padding-bottom: 16px; overflow-wrap: anywhere; }
+.technical-import-history small { display: block; color: var(--ui-muted); margin-top: 6px; font-size: 12px; }
+.technical-import-empty { display: grid; justify-items: center; gap: 12px; padding: 36px 12px; text-align: center; color: var(--ui-muted); }
+.technical-import-footer { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--ui-border); padding: 18px 28px; }
+@media(max-width:640px) { .technical-admin-heading { align-items: flex-start; flex-direction: column; } .technical-admin-actions { flex-wrap: wrap; } .technical-import-header { padding: 22px 20px 16px; } .technical-import-tabs { padding: 0 20px; } .technical-import-body { padding: 20px; } .technical-import-footer { padding: 16px 20px; } .technical-import-footer .ui-button { flex: 1 1 auto; } }

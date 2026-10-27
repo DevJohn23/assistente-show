@@ -19,6 +19,7 @@ export interface CommercialRules {
 }
 
 export interface Tecnico {
+  is_active?: boolean;
   id: number;
   nome: string;
   categoria: string;

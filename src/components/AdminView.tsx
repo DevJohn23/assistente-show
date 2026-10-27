@@ -7,6 +7,8 @@ import { Settings, Package, MapPin, Plus, Edit2, Trash2, X, Check, ArrowLeft, Se
 import { QuoteDialog } from './QuoteControls';
 import { usePendingAction } from '@/lib/usePendingAction';
 import { useRouter } from 'next/navigation';
+import { TechnicalNetworkImport } from './TechnicalNetworkImport';
+import { loadTechnicalNetwork } from '@/lib/technicalNetwork';
 
 type Tab = 'products' | 'tecnicos';
 
@@ -132,10 +134,10 @@ export default function AdminView() {
     try {
       const [prodRes, tecRes] = await Promise.all([
         supabase.from('products').select('*').order('name'),
-        supabase.from('tecnicos').select('*').order('nome')
+        loadTechnicalNetwork()
       ]);
-      if (prodRes.error || tecRes.error) throw new Error();
-      setProducts(prodRes.data || []); setTecnicos(tecRes.data || []);
+      if (prodRes.error) throw new Error();
+      setProducts(prodRes.data || []); setTecnicos(tecRes.sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR')));
     } catch { setLoadError('Não foi possível atualizar os registros. Tente novamente.'); }
     finally { setLoading(false); }
   };
@@ -325,8 +327,9 @@ export default function AdminView() {
             {/* TAB TÉCNICOS */}
             {activeTab === 'tecnicos' && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="technical-admin-heading">
                   <h2 className="text-lg font-bold">Gestão de Técnicos</h2>
+                  <div className="technical-admin-actions"><TechnicalNetworkImport onUpdated={async message=>{setNotice(message);await fetchData();}} />
                   <button
                     onClick={() => {
                       setEditingTecnico({ lat: 0, lng: 0 });
@@ -340,6 +343,7 @@ export default function AdminView() {
                     <Plus className="w-4 h-4" />
                     Novo Técnico
                   </button>
+                  </div>
                 </div>
 
                 <div className="relative">
@@ -368,7 +372,7 @@ export default function AdminView() {
                         {filteredTecnicos.length===0 && <tr><td colSpan={4} className="admin-empty">{tecnicoSearch ? 'Nenhum técnico encontrado para esta busca.' : 'Nenhum técnico cadastrado.'}</td></tr>}
                         {filteredTecnicos.map(t => (
                           <tr key={t.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
-                            <td className="px-4 py-3 font-medium max-w-[200px] truncate" title={t.nome}>{t.nome}</td>
+                            <td className="px-4 py-3 font-medium max-w-[200px] truncate" title={t.nome}>{t.nome}{t.is_active === false && <small className="block text-amber-600">Inativo</small>}</td>
                             <td className="px-4 py-3 text-slate-500 text-xs">
                               {t.categoria} • {t.tipo}
                             </td>
