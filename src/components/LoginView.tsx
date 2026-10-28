@@ -4,9 +4,10 @@ import { useAuth } from '@/context/AuthContext';
 import { usePendingAction } from '@/lib/usePendingAction';
 import { authErrorMessage, requestPasswordReset } from '@/lib/accountAuth';
 import { PasswordField } from './AccountView';
+import { ShowParticleLogo } from './ShowParticleLogo';
 
-export function AuthLayout({ children }: { children: React.ReactNode }) {
-  return <main className="auth-page"><div className="auth-brand"><span className="brand-signature">omnilink<span className="brand-dot">.</span></span><span>Assistente comercial · Show Tecnologia</span></div><section className="ui-panel auth-card">{children}</section></main>;
+export function AuthLayout({ children, desktopArt = false }: { children: React.ReactNode; desktopArt?: boolean }) {
+  return <main className={`auth-page${desktopArt ? ' auth-page-with-art' : ''}`}>{desktopArt && <aside className="auth-art-panel"><ShowParticleLogo /></aside>}<div className="auth-form-column"><div className="auth-brand"><span className="brand-signature">omnilink<span className="brand-dot">.</span></span><span>Assistente comercial · Show Tecnologia</span></div><section className="ui-panel auth-card">{children}</section></div></main>;
 }
 
 export const LoginView = ({ onLoginSuccess }: { onLoginSuccess?: () => void }) => {
@@ -44,7 +45,7 @@ export const LoginView = ({ onLoginSuccess }: { onLoginSuccess?: () => void }) =
       } catch(err) { setError(authErrorMessage(err, mode === 'forgot' ? 'Não foi possível solicitar o link. Tente novamente em alguns minutos.' : 'Não foi possível continuar. Confira sua conexão e os dados informados.')); return false; }
     });
   };
-  return <AuthLayout><header className="auth-heading"><h1>{mode === 'login' ? 'Bem-vindo ao Assistente Omnilink' : mode === 'register' ? 'Crie sua conta' : 'Recuperar senha'}</h1><p>{mode === 'login' ? 'Acesse seus orçamentos, vendas e comissões.' : mode === 'register' ? 'Preencha seus dados para começar.' : 'Informe o e-mail usado para acessar o assistente.'}</p></header>
+  return <AuthLayout desktopArt><header className="auth-heading"><h1>{mode === 'login' ? 'Bem-vindo ao Assistente Omnilink' : mode === 'register' ? 'Crie sua conta' : 'Recuperar senha'}</h1><p>{mode === 'login' ? 'Acesse seus orçamentos, vendas e comissões.' : mode === 'register' ? 'Preencha seus dados para começar.' : 'Informe o e-mail usado para acessar o assistente.'}</p></header>
     <form onSubmit={submit}><fieldset disabled={isPending} className="auth-fields">
       {mode === 'register' && <label className="quote-field">Nome completo<input className="ui-input" required maxLength={100} autoComplete="name" value={fullName} onChange={e => setFullName(e.target.value)} /></label>}
       <label className="quote-field">E-mail<input className="ui-input" required type="email" autoComplete="email" placeholder="seu@email.com.br" value={email} onChange={e => { setEmail(e.target.value); setResetRequested(false); setSuccess(''); }} /></label>

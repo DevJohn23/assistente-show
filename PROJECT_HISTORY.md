@@ -4,6 +4,13 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 27/10/2026 — Login desktop com símbolo em partículas
+
+- Layout desktop a partir de 1024px: símbolo Show à esquerda e formulário à direita, sem assinatura acima do formulário. Fundo em gradiente com o azul principal do sistema (#0759ed) e azul-escuro, e partículas brancas, incluindo a versão estática. Em telas menores, permanece a apresentação compacta existente.
+- Símbolo reconstruído aprovado pelo usuário, com transparência, usado como máscara de pontos no Canvas 2D. Movimento de repulsão próximo ao cursor e retorno suave à forma original.
+- Sem biblioteca gráfica adicional, sem estado React por quadro, resolução limitada e animação interrompida ao estabilizar ou ocultar a página. Preferência de movimento reduzido mostra símbolo estático.
+- Alteração de apresentação; login, cadastro e recuperação preservam seus campos e lógica. Build de produção (incluindo checagem de tipos), diff e as três suítes de `npm test` aprovados; teste em navegador confirmou desenho, distorção, retorno exato à forma, acesso à recuperação de senha, movimento reduzido e manutenção do layout compacto. Publicação autorizada pelo usuário após aprovação visual. Partículas brancas com raio ampliado para maior destaque.
+
 ## 26/10/2026 — Importação administrativa da rede técnica
 
 - Refinamento visual: botão de importação no cabeçalho ao lado de “Novo Técnico”; janela com abas Importar arquivo/Histórico, seletor de arquivo amplo, instruções recolhidas e espaçamento responsivo.

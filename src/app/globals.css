@@ -772,3 +772,20 @@ button, input, select, textarea { font: inherit; }
 .technical-import-empty { display: grid; justify-items: center; gap: 12px; padding: 36px 12px; text-align: center; color: var(--ui-muted); }
 .technical-import-footer { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--ui-border); padding: 18px 28px; }
 @media(max-width:640px) { .technical-admin-heading { align-items: flex-start; flex-direction: column; } .technical-admin-actions { flex-wrap: wrap; } .technical-import-header { padding: 22px 20px 16px; } .technical-import-tabs { padding: 0 20px; } .technical-import-body { padding: 20px; } .technical-import-footer { padding: 16px 20px; } .technical-import-footer .ui-button { flex: 1 1 auto; } }
+
+/* Desktop-only particle identity: the existing compact login remains on smaller screens. */
+.auth-form-column { width: 100%; max-width: 440px; }
+.auth-art-panel { display: none; }
+@media (min-width: 1024px) {
+  .auth-page-with-art { background: radial-gradient(ellipse at 15% 38%, #0759ed 0%, transparent 65%), linear-gradient(125deg, #103f96 0%, #0b2351 55%, #071326 100%); display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(380px, 0.85fr); gap: clamp(40px, 6vw, 100px); padding: 64px clamp(48px, 7vw, 120px); }
+  .auth-page-with-art .auth-form-column { justify-self: center; }
+  .auth-page-with-art .auth-brand { display: none; }
+  .auth-art-panel { display: flex; align-items: center; justify-content: center; min-width: 0; position: relative; }
+  .auth-art-panel::before { content: ''; position: absolute; inset: 5%; background: radial-gradient(ellipse, #0759ed0c, transparent 70%); pointer-events: none; }
+  .show-particle-art { position: relative; width: 100%; max-width: 660px; aspect-ratio: 1; }
+  .show-particle-art canvas, .show-particle-fallback { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .show-particle-fallback { background: #ffffff; mask: url('/brand/show-symbol-reconstructed-v1.png') center / 96% auto no-repeat; -webkit-mask: url('/brand/show-symbol-reconstructed-v1.png') center / 96% auto no-repeat; }
+  .show-particle-art.is-ready .show-particle-fallback { visibility: hidden; }
+  .show-particle-art canvas { opacity: 0; }
+  .show-particle-art.is-ready canvas { opacity: 1; }
+}
