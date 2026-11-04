@@ -4,6 +4,19 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 03/11/2026 — Exclusão de oportunidades em lote
+
+- Seleção individual em tabela/cards, seleção da página com estado parcial, seleção explícita de todos os resultados filtrados e limpeza da seleção ao mudar busca/filtro/usuário.
+- Barra contextual com quantidade, excluir selecionadas e limpar seleção. Confirmação informa o total incluindo outras páginas; cancelamento preserva a carteira.
+- Gravação por uma única operação DELETE, limitada ao usuário e aos IDs selecionados, respeitando RLS. Nenhuma renovação em lote adicionada.
+- Publicação autorizada após validação local. Testes de navegador verificaram seleção por página, entre páginas, todos os filtrados, cancelamento e exclusão. Nenhum dado real foi excluído nos testes.
+- Checkboxes de 16px e coluna de seleção de 36px, corrigindo a largura mínima herdada da primeira coluna.
+
+## 03/11/2026 — Ajustes da prévia e seleção
+
+- Novas oportunidades e registros com diferenças vêm selecionados por padrão. Selecionar todas abrange os dois grupos; registros idênticos/ inválidos exibem indicação sem checkbox inativo. Recálculo de prazo permanece separado e desmarcado.
+- Prévia ampliada para até 1.000px, com espaço aproximado para dez linhas comuns; a altura não é mais comprimida pela janela. O corpo do modal possui rolagem externa e a lista mantém a rolagem interna para registros adicionais. Cabeçalho e ações permanecem acessíveis.
+
 ## 03/11/2026 — Importação de oportunidades
 
 - Botão Importar oportunidades ao lado de Nova Oportunidade, seleção PJ/PF, prévia com vencimento original, escolha individual e correção de tipo. Status do CSV ignorados conforme solicitado.

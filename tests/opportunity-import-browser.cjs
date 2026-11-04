@@ -12,10 +12,22 @@ const original=header+Array.from({length:32},(_,i)=>`${i+1},Cliente ${String(i+1
  await page.getByRole('heading',{name:'Oportunidades',exact:true}).waitFor();
  const open=async(csv)=>{await page.getByRole('button',{name:'Importar oportunidades',exact:true}).click();const d=page.getByRole('dialog');await d.getByLabel('Arquivo CSV').setInputFiles({name:'carteira.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});await d.getByText('32 novas',{exact:false}).waitFor();return d;};
  let d=await open(original);
+ const firstCheckbox=d.getByLabel('Importar Cliente 01 ID 1',{exact:true});
+ assert.equal(await firstCheckbox.isChecked(),true);
+ await firstCheckbox.click();assert.equal(await firstCheckbox.isChecked(),false);
+ await firstCheckbox.click();assert.equal(await firstCheckbox.isChecked(),true);
+ const selectAll=d.getByLabel('Selecionar todas as disponíveis');
+ await selectAll.uncheck();assert.equal(await firstCheckbox.isChecked(),false);
+ await selectAll.check();assert.equal(await firstCheckbox.isChecked(),true);
  const region=d.getByRole('region',{name:'Prévia das oportunidades — lista com rolagem'});
  for(const viewport of [{width:1440,height:1000},{width:1100,height:700}]) {
    await page.setViewportSize(viewport);
    assert.ok(await region.evaluate(e=>e.scrollHeight>e.clientHeight));
+   assert.ok(await region.evaluate(e=>e.clientHeight>=800),'preview retains space for about ten rows');
+   const outer=d.locator('.opportunity-import-body');
+   assert.ok(await outer.evaluate(e=>e.scrollHeight>e.clientHeight),'outer content scrolls independently');
+   await outer.evaluate(e=>{e.scrollTop=e.scrollHeight;});
+   assert.ok(await outer.evaluate(e=>e.scrollTop>0));
    await region.hover();await page.mouse.wheel(0,500);await page.waitForTimeout(300);
    assert.ok(await region.evaluate(e=>e.scrollTop>0),'mouse wheel scrolls preview');
    await region.focus();await page.keyboard.press('Control+End');await page.waitForTimeout(300);
@@ -42,8 +54,8 @@ const original=header+Array.from({length:32},(_,i)=>`${i+1},Cliente ${String(i+1
  await page.getByRole('button',{name:'Importar oportunidades',exact:true}).click();d=page.getByRole('dialog');await d.getByLabel('Arquivo CSV').setInputFiles({name:'carteira.csv',mimeType:'text/csv',buffer:Buffer.from(original)});await d.getByText('32 já importadas',{exact:false}).waitFor();assert.equal(await d.getByRole('button',{name:'Confirmar importação'}).isDisabled(),true);await d.getByRole('button',{name:'Cancelar'}).click();
  await page.getByRole('button',{name:'Importar oportunidades',exact:true}).click();d=page.getByRole('dialog');const changed=header+'1,Cliente 01 atualizado,2026-10-28 10:00:00,Ganha\n99,Novo cliente,2026-10-28 10:00:00,Prospecção';
  await d.getByLabel('Arquivo CSV').setInputFiles({name:'carteira.csv',mimeType:'text/csv',buffer:Buffer.from(changed)});await d.getByText('Diferenças encontradas',{exact:false}).waitFor();
- assert.equal(await d.getByLabel('Importar Cliente 01 atualizado ID 1',{exact:true}).isDisabled(),true);
- await d.getByLabel('Revisar atualizações das existentes',{exact:false}).check();await d.getByLabel('Importar Cliente 01 atualizado ID 1',{exact:true}).check();
+ assert.equal(await d.getByLabel('Importar Cliente 01 atualizado ID 1',{exact:true}).isChecked(),true);
+ await d.getByLabel('Incluir atualizações das existentes',{exact:false}).check();await d.getByLabel('Importar Cliente 01 atualizado ID 1',{exact:true}).check();
  assert.equal(await d.getByLabel('Recalcular prazo',{exact:true}).isChecked(),false);
  await d.getByRole('button',{name:'Confirmar importação'}).click();await d.getByText('Importação concluída').waitFor();await d.getByRole('button',{name:'Concluir'}).click();
  stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('opportunity-local-preview-v1')));const first=stored.find(r=>r.external_id==='1');assert.equal(stored.length,33);assert.equal(first.expiration_date,'2026-12-26');assert.equal(first.notes,'Preservar nota');assert.equal(first.client_name,'Cliente 01 atualizado');

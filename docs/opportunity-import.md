@@ -9,7 +9,7 @@ A implementação está disponível em `/teste-oportunidades` quando o Next.js r
 3. Clicar em Importar oportunidades, selecionar o CSV e escolher PJ (30 dias) ou PF (15 dias).
 4. Conferir a prévia e confirmar. O prazo começa na data original do arquivo.
 5. Reenviar o mesmo arquivo: os registros idênticos ficam desabilitados. Um arquivo com novos IDs permite acrescentar somente os novos.
-6. Para diferenças, habilitar a revisão e selecionar cada atualização. O prazo existente é mantido, salvo quando “Recalcular prazo” for marcado.
+6. Novas e diferenças vêm selecionadas por padrão; desmarque as que não deseja importar ou desative a inclusão das atualizações. O prazo existente é mantido, salvo quando “Recalcular prazo” for marcado.
 
 ## Formato e limites
 

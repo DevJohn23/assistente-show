@@ -13,6 +13,7 @@ export function OpportunityLocalPreview() {
     <OpportunitiesView opportunities={rows} preferenceKey="local-preview" isModalOpen={modal} setIsModalOpen={setModal}
       onAddOpportunity={async value=>{persist([{...value,id:crypto.randomUUID(),user_id:'local-preview',created_at:new Date().toISOString()},...rows]);return true;}}
       onEditOpportunity={async(id,value)=>{persist(rows.map(o=>o.id===id?{...o,...value}:o));return true;}}
+      onDeleteOpportunities={async ids=>{persist(rows.filter(o=>!ids.includes(o.id)));return true;}}
       onDeleteOpportunity={async id=>{persist(rows.filter(o=>o.id!==id));return true;}}
       onRenewOpportunity={async id=>{persist(rows.map(o=>o.id===id?{...o,expiration_date:expirationFor(o.expiration_date,o.type),status:'renewed'}:o));return true;}}
       onImportOpportunities={async items=>{

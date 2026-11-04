@@ -20,6 +20,7 @@ import {
   createOpportunity,
   updateOpportunity,
   deleteOpportunity,
+  deleteOpportunities,
   fetchCommissions,
   createCommission,
   updateCommission,
@@ -338,6 +339,13 @@ export default function Home() {
             initialFilter={opportunitiesFilter}
             onAddOpportunity={handleAddOpportunity}
             onEditOpportunity={handleEditOpportunity}
+            onDeleteOpportunities={async ids=>{
+              if(!await deleteOpportunities(user.id,ids)) return false;
+              const removed=new Set(ids);
+              setOpportunities(prev=>prev.filter(o=>!removed.has(o.id)));
+              showToast('Oportunidades selecionadas excluídas.');
+              return true;
+            }}
             onDeleteOpportunity={handleDeleteOpportunity}
             onRenewOpportunity={handleRenewOpportunity}
             isModalOpen={isOppModalOpen}

@@ -797,7 +797,7 @@ button, input, select, textarea { font: inherit; }
 .opportunity-list-controls .ui-input { width:auto; }
 .opportunity-pagination { justify-content:space-between; font-size:12px; color:var(--ui-muted); padding:16px 0; }
 .opportunity-import-dialog { width:min(1000px,calc(100vw - 32px)); max-width:1000px; }
-.opportunity-import-body { padding:24px 28px; display:grid; gap:20px; min-width:0; }
+.opportunity-import-body { padding:24px 28px; display:grid; grid-auto-rows:max-content; align-content:start; gap:20px; min-width:0; }
 .opportunity-import-controls { display:grid; grid-template-columns:1.2fr 1fr; align-items:center; gap:24px; border:0; min-width:0; padding:0; }
 .opportunity-file-picker { display:grid; gap:8px; justify-items:center; text-align:center; border:1px dashed var(--ui-border); border-radius:12px; padding:22px; background:var(--ui-bg); cursor:pointer; min-width:0; }
 .opportunity-file-picker strong { overflow-wrap:anywhere; }
@@ -808,7 +808,7 @@ button, input, select, textarea { font: inherit; }
 .opportunity-import-summary { display:flex; flex-wrap:wrap; gap:12px 24px; padding:16px; background:var(--ui-bg); border-radius:10px; font-size:12px; }
 .opportunity-import-summary strong { font-size:17px; margin-right:4px; }
 .opportunity-import-option { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px; }
-.opportunity-import-table-wrap { overflow:auto; max-height:46vh; border:1px solid var(--ui-border); border-radius:10px; }
+.opportunity-import-table-wrap { overflow:auto; max-height:1000px; border:1px solid var(--ui-border); border-radius:10px; }
 .opportunity-import-table-wrap table { min-width:720px; }
 .opportunity-import-table-wrap small { display:block; margin-top:6px; color:var(--ui-muted); }
 .opportunity-import-table-wrap td { vertical-align:top; }
@@ -818,7 +818,7 @@ button, input, select, textarea { font: inherit; }
 @media(max-width:640px) { .opportunity-heading-actions { width:100%; } .opportunity-heading-actions .ui-button { flex:1; } .opportunity-import-controls { grid-template-columns:1fr; gap:16px; } .opportunity-import-body { padding:20px; } .opportunity-list-controls { padding:16px; } .opportunity-list-controls label { flex-wrap:wrap; } .opportunity-pagination > div { width:100%; justify-content:space-between; } }
 .opportunity-import-dialog { display:flex; flex-direction:column; max-height:calc(100dvh - 40px); overflow:hidden; }
 .opportunity-import-dialog > header, .opportunity-import-dialog > footer { flex-shrink:0; }
-.opportunity-import-body { overflow-y:auto; }
+.opportunity-import-body { overflow-y:auto; scrollbar-gutter:stable; scrollbar-color:var(--ui-muted) var(--ui-bg); }
 .opportunity-import-table-wrap .commission-table th:first-child, .opportunity-import-table-wrap .commission-table td:first-child { width:44px; min-width:44px; }
 .opportunity-file-picker { position:relative; }
 .opportunity-file-picker input { position:absolute; width:1px; height:1px; padding:0; border:0; overflow:hidden; clip-path:inset(50%); }
@@ -839,3 +839,10 @@ button, input, select, textarea { font: inherit; }
 .opportunity-import-table-wrap::-webkit-scrollbar-track { background:var(--ui-bg); }
 html .opportunity-import-table-wrap::-webkit-scrollbar-thumb { background:var(--ui-muted); border:2px solid var(--ui-bg); border-radius:8px; }
 .opportunity-import-table-wrap:focus-visible { outline:2px solid var(--ui-blue); outline-offset:2px; }
+.opportunity-import-dialog input[type="checkbox"] { width:18px; height:18px; flex-shrink:0; accent-color:#0759ed; cursor:pointer; }
+.opportunity-import-dialog input[type="checkbox"]:disabled { cursor:not-allowed; }
+.opportunity-bulk-bar { display:flex; align-items:center; flex-wrap:wrap; gap:12px; padding:16px; border:1px solid var(--ui-border); border-radius:10px; background:var(--ui-surface); }
+.opportunity-table th.opportunity-select-cell, .opportunity-table td.opportunity-select-cell { width:36px; min-width:36px; max-width:36px; padding-left:10px; padding-right:10px; }
+.opportunities-page input[type="checkbox"] { width:16px; height:16px; accent-color:#0759ed; cursor:pointer; }
+.opportunity-card-selection { display:flex; align-items:center; gap:8px; margin-bottom:12px; color:var(--ui-muted); font-size:12px; }
+@media(max-width:640px) { .opportunity-table td.opportunity-select-cell { width:auto; min-width:0; max-width:none; padding:6px 0; } }

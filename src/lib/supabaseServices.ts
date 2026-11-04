@@ -60,6 +60,13 @@ export async function updateOpportunity(id: string, updated: Partial<Opportunity
   }
 }
 
+export async function deleteOpportunities(userId: string, ids: string[]): Promise<boolean> {
+  if(!ids.length) return false;
+  // A single SQL DELETE: no partial batch, scoped to the authenticated owner's portfolio by RLS.
+  const {error} = await supabase.from('opportunities').delete().eq('user_id',userId).in('id',[...new Set(ids)]);
+  return !error;
+}
+
 export async function deleteOpportunity(id: string): Promise<boolean> {
   try {
     const { data, error } = await supabase
