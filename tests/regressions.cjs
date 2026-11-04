@@ -167,7 +167,7 @@ test('quotation models preserve totals and restrict cabin components to complete
   assert.match(detailed,/✅ \*O kit Omnidual contempla:\*/);
   assert.equal((detailed.match(/Antena satélite/g)||[]).length,1);
   assert.equal((detailed.match(/O kit Omni(?:turbo|dual) contempla/g)||[]).length,2);
-  assert.match(detailed,/360,00/);assert.match(detailed,/Saldo após entrada: R\$ 260,00/);
+  assert.match(detailed,/360,00/);assert.doesNotMatch(detailed,/Saldo após entrada/);
   assert.doesNotMatch(quoteMessage(q,'basic'),/O kit .* contempla/);
   const formal=quoteMessage(q,'formal');
   assert.doesNotMatch(formal,/\p{Extended_Pictographic}/u);
@@ -186,7 +186,7 @@ test('discounted item prices preserve quote totals and reconcile rounding in eve
     assert.match(text,/1x B — R\$ 45,00/);
     assert.match(text,/Desconto já incluído nos itens/);
     assert.match(text,/Total Equipamentos \(À Vista\):\* R\$ 135,00/);
-    assert.match(text,/Saldo após entrada: R\$ 115,00/);
+    assert.doesNotMatch(text,/Saldo após entrada/);
     assert.equal(quoteMessage(q,model,false,true),quoteMessage(q,model,false,false));
     const zero = {...q,discountPercent:0,discount:0,total:150};
     assert.equal(quoteMessage(zero,model,true,true),quoteMessage(zero,model,true,false));
@@ -197,4 +197,19 @@ test('discounted item prices preserve quote totals and reconcile rounding in eve
   const cents = [...quoteMessage(tiny,'basic',true,true).matchAll(/ — R\$ 0,(\d{2})/g)].reduce((sum,m)=>sum+Number(m[1]),0);
   assert.equal(cents,14);
   assert.equal(JSON.stringify(q),before);
+});
+
+test('entry note is scoped to boleto and financing and omitted for pix/card only', () => {
+  const {quoteEntryNote,quoteMessage} = load('src/lib/quotePresentation.ts');
+  const q = {client:'',lines:[],subtotal:4950,discountPercent:0,discount:0,total:4950,entry:550,balance:4400,monthly:0,payments:[{label:'Boleto Sem Juros',installments:3,amount:4400/3}],financing:[]};
+  for (const model of ['basic','detailed','formal']) {
+    const text = quoteMessage(q,model);
+    assert.equal(text.split('Entrada necessária:* R$ 550,00').length-1,1);
+    assert.doesNotMatch(text,/Saldo após entrada|Entrada Mínima/);
+    assert.match(text, /\n_Obs\.: as parcelas dessas modalidades já consideram esse valor abatido\._\n/);
+    assert.match(text,/1.466,67/);
+  }
+  assert.equal(quoteEntryNote({...q,entry:0}),'');
+  assert.equal(quoteEntryNote({...q,payments:[{label:'PIX à vista',amount:4950}]}),'');
+  assert.match(quoteEntryNote({...q,payments:[],financing:[{label:'Financiamento',installments:36,amount:200}]}),/Entrada necessária: R\$ 550,00/);
 });

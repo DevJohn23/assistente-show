@@ -4,6 +4,13 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 03/11/2026 — Entrada por modalidade de pagamento
+
+- Entrada de R$ 550 abate apenas o principal de boleto e financiamento; PIX e cartão usam o total integral dos equipamentos, já considerando o desconto comercial. Rótulo “Entrada” preservado.
+- Sem modalidades elegíveis selecionadas, a entrada não é exibida nem bloqueia o orçamento. Mensagem e PDF mostram uma única observação explicando as modalidades, sem saldo genérico no resumo. Texto refinado para “Entrada necessária”, seguido da observação em itálico em uma segunda linha.
+- Validados TypeScript, regressões, navegação e cópia com dados simulados, valores por modalidade e geração/renderização do PDF. Publicação autorizada pelo usuário.
+
+
 ## 03/11/2026 — Reorganização opcional dos produtos
 
 - Preferência “Permitir reorganizar produtos”, desativada por padrão. Alça discreta de 14px, exibida apenas com dois ou mais produtos; suporte a ponteiro e setas do teclado, indicação de destino e cancelamento com Escape.

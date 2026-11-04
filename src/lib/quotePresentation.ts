@@ -11,6 +11,11 @@ export interface QuoteSnapshot {
   total: number; entry: number; balance: number; monthly: number;
   payments: QuotePayment[]; financing: QuotePayment[];
 }
+export const quoteEntryObservation = 'Obs.: as parcelas dessas modalidades já consideram esse valor abatido.';
+export function quoteEntryNote(q: QuoteSnapshot): string {
+  if (!q.entry || (!q.payments.some(payment => payment.label.startsWith('Boleto')) && !q.financing.length)) return '';
+  return `Entrada necessária: R$ ${money(q.entry)} - para modalidade boleto e financiamento`;
+}
 export const quoteBenefits = ['Garantia de 12 meses', 'Entrega e instalação gratuita', 'Treinamento completo para uso dos equipamentos e sistema'];
 export const money = (value: number) => value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 // Stable IDs identify the complete kits; do not match accessories or "sem teclado" variants by substring.
@@ -48,10 +53,10 @@ export function quoteMessage(q: QuoteSnapshot, model: QuoteModel = 'basic', show
     }
   }
   if (q.discountPercent > 0) text += '\n' + title('🏷️', `${discountedItems ? 'Desconto já incluído nos itens' : 'Desconto Especial'} (${q.discountPercent}%):`) + ` -R$ ${money(q.discount)}\n`;
-  if (q.entry) text += '\n' + title('💵', 'Entrada Mínima:') + ` R$ ${money(q.entry)}\n`;
   text += '\n' + title('💰', 'Total Equipamentos (À Vista):') + ` R$ ${money(q.total)}\n`;
-  if (q.entry) text += `Saldo após entrada: R$ ${money(q.balance)}\n`;
   if (q.monthly > 0) text += '\n' + title('📡', 'Mensalidade:') + ` R$ ${money(q.monthly)}/mês\n`;
+  const entryNote = quoteEntryNote(q);
+  if (entryNote) text += `\n*Entrada necessária:* ${entryNote.substring('Entrada necessária: '.length)}\n_${quoteEntryObservation}_\n`;
   if (q.payments.length) {
     text += '\n' + title('💳', 'Formas de Pagamento:') + '\n';
     q.payments.forEach(p => { text += `• *${p.label}:* ${p.installments ? `${p.installments}x de ` : ''}R$ ${money(p.amount)}\n`; });

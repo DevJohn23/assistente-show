@@ -391,7 +391,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
   const discountAmount = (subtotalWithMarkup * (discountPercent || 0)) / 100;
   const finalEquipmentPrice = Math.max(0, subtotalWithMarkup - discountAmount);
 
-  const entryDeduction = requireEntryFee ? 550 : 0;
+  const entryDeduction = requireEntryFee && (payBoleto || (payFinancing && financingInstallments.length > 0)) ? 550 : 0;
   const balanceAfterEntry = finalEquipmentPrice - entryDeduction;
   const invalidEntry = cart.length > 0 && balanceAfterEntry < 0;
   const quantityTotal = cart.reduce((total, item) => total + item.quantity, 0);
@@ -432,9 +432,9 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     subtotal: subtotalWithMarkup, discountPercent, discount: discountAmount, total: finalEquipmentPrice,
     entry: entryDeduction, balance: balanceAfterEntry, monthly: includeMonthlyFee ? totalMonthlyFee : 0,
     payments: [
-      ...(payPix ? [{ label: 'PIX à vista', amount: balanceAfterEntry }] : []),
+      ...(payPix ? [{ label: 'PIX à vista', amount: finalEquipmentPrice }] : []),
       ...(payBoleto && boletoInstallments > 0 ? [{ label: 'Boleto Sem Juros', installments: boletoInstallments, amount: balanceAfterEntry / boletoInstallments }] : []),
-      ...(payCard && cardInstallments > 0 ? [{ label: 'Cartão Sem Juros', installments: cardInstallments, amount: balanceAfterEntry / cardInstallments }] : []),
+      ...(payCard && cardInstallments > 0 ? [{ label: 'Cartão Sem Juros', installments: cardInstallments, amount: finalEquipmentPrice / cardInstallments }] : []),
     ],
     financing: payFinancing ? financingResults.map(({ n, result }) => ({ label: 'Financiamento', installments: n, amount: result.valorParcela })) : [],
   };
@@ -533,7 +533,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     <footer className="quote-panel-footer">
       <dl className="quote-totals"><div><dt>Equipamentos</dt><dd data-testid="quote-equipment-total">R$ {formatCurrency(finalEquipmentPrice)}</dd></div>
         {includeMonthlyFee && totalMonthlyFee > 0 && <div><dt>Mensalidade</dt><dd>R$ {formatCurrency(totalMonthlyFee)}/mês</dd></div>}
-        {requireEntryFee && cart.length > 0 && <><div className="quote-entry"><dt>Entrada</dt><dd>R$ 550,00</dd></div><div><dt>Saldo após entrada</dt><dd>R$ {formatCurrency(Math.max(0,balanceAfterEntry))}</dd></div></>}
+        {entryDeduction > 0 && cart.length > 0 && <><div className="quote-entry"><dt>Entrada</dt><dd>R$ 550,00</dd></div><div><dt>Saldo para boleto/financiamento</dt><dd>R$ {formatCurrency(Math.max(0,balanceAfterEntry))}</dd></div></>}
       </dl>
       {invalidEntry && <p className="quote-error" role="alert">A entrada supera o total dos equipamentos. Ajuste o orçamento ou desmarque a entrada.</p>}
       {copyError && <p className="quote-error" role="alert">Não foi possível copiar. Verifique a permissão de cópia do navegador e tente novamente.</p>}

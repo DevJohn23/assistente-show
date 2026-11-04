@@ -1,6 +1,6 @@
 import React from 'react';
 import { Document, Page, Text, View, Image, StyleSheet, pdf } from '@react-pdf/renderer';
-import { money, quoteBenefits, QuoteSnapshot } from '@/lib/quotePresentation';
+import { money, quoteBenefits, quoteEntryNote, quoteEntryObservation, QuoteSnapshot } from '@/lib/quotePresentation';
 
 export interface ProposalDetails { client: string; issued: string; validUntil: string; includeSeller: boolean; seller: string; contact: string; notes: string }
 const styles = StyleSheet.create({
@@ -36,10 +36,10 @@ export function ProposalDocument({ quote: q, details: d, logo = '/brand/omnilink
     <View style={styles.summary} wrap={false}><View style={styles.amountRow}><Text>Subtotal dos equipamentos</Text><Text>R$ {money(q.subtotal)}</Text></View>
       {q.discount > 0 && <View style={styles.amountRow}><Text>Desconto especial · {q.discountPercent}%</Text><Text>- R$ {money(q.discount)}</Text></View>}
       <View style={[styles.amountRow, styles.total]}><Text>Total dos equipamentos</Text><Text>R$ {money(q.total)}</Text></View>
-      {q.entry > 0 && <><View style={styles.amountRow}><Text>Entrada</Text><Text>R$ {money(q.entry)}</Text></View><View style={styles.amountRow}><Text>Saldo após entrada</Text><Text>R$ {money(q.balance)}</Text></View></>}
     </View>
     {q.monthly > 0 && <View style={styles.monthly} wrap={false}><View style={styles.amountRow}><Text style={styles.bold}>Mensalidade do serviço</Text><Text style={styles.bold}>R$ {money(q.monthly)}/mês</Text></View><Text style={styles.muted}>Cobrança recorrente, separada do valor dos equipamentos.</Text></View>}
-    {q.payments.length > 0 && <View wrap={false}><Text style={styles.heading}>Condições de pagamento</Text><Text style={styles.muted}>{q.entry ? 'Alternativas para o saldo após a entrada.' : 'Alternativas para os equipamentos.'}</Text>
+    {quoteEntryNote(q) && <View style={{ marginTop: 10 }} wrap={false} minPresenceAhead={45}><Text style={styles.bold}>{quoteEntryNote(q)}</Text><Text style={[styles.muted, { fontFamily: 'Helvetica-Oblique', marginTop: 3 }]}>{quoteEntryObservation}</Text></View>}
+    {q.payments.length > 0 && <View wrap={false}><Text style={styles.heading}>Condições de pagamento</Text><Text style={styles.muted}>Alternativas para os equipamentos.</Text>
       {q.payments.map(p => <View key={p.label} style={styles.payment}><Text>{p.label}</Text><Text style={styles.bold}>{p.installments ? `${p.installments}x de ` : ''}R$ {money(p.amount)}</Text></View>)}
     </View>}
     {q.financing.length > 0 && <View wrap={false}>
@@ -51,7 +51,6 @@ export function ProposalDocument({ quote: q, details: d, logo = '/brand/omnilink
           return <View key={column} style={[styles.financeCell, column ? styles.financeRight : styles.financeLeft]}>{option ? <><Text>{option.installments} meses</Text><Text style={styles.bold}>R$ {money(option.amount)}</Text></> : null}</View>;
         })}
       </View>)}
-      {q.entry > 0 && <Text style={[styles.muted, { marginTop: 6 }]}>Valores calculados sobre o saldo após a entrada.</Text>}
     </View>}
     <View wrap={false}><Text style={styles.heading}>Benefícios incluídos</Text>{quoteBenefits.map(b => <Text key={b}>• {b}</Text>)}</View>
     {Boolean(d.notes.trim()) && <><Text style={styles.heading} minPresenceAhead={30}>Observações</Text><Text>{d.notes.trim()}</Text></>}

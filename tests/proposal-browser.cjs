@@ -116,6 +116,26 @@ let metadata={full_name:'Teste'}, failPreferences=false;
  await page.keyboard.press('ArrowDown');
  assert.deepEqual(await rows.evaluateAll(nodes=>nodes.map(node=>node.dataset.quoteItem)),['prod-1','sensor','prod-2']);
  assert.equal(await total().innerText(),originalTotal);
+ await panel.getByRole('checkbox',{name:/^Entrada/}).check();
+ await panel.getByRole('checkbox',{name:'Financiamento',exact:true}).check();
+ await panel.getByRole('button',{name:/Copiar mensagem|Mensagem copiada/}).click();
+ await page.waitForFunction(()=>window.__copied?.includes('Entrada necessária:* R$ 550,00'));
+ const entryMessage = await page.evaluate(()=>window.__copied);
+ assert.match(entryMessage,/PIX à vista:\* R\$ 4.950,00/);
+ assert.match(entryMessage,/Cartão Sem Juros:\* 12x de R\$ 412,50/);
+ assert.match(entryMessage,/Boleto Sem Juros:\* 3x de R\$ 1.466,67/);
+ assert.doesNotMatch(entryMessage,/Saldo após entrada/);
+ const financingWithEntry = await panel.locator('.quote-financing-result strong').first().innerText();
+ await panel.getByRole('checkbox',{name:/^Entrada/}).uncheck();
+ assert.notEqual(await panel.locator('.quote-financing-result strong').first().innerText(),financingWithEntry);
+ await panel.getByRole('checkbox',{name:/^Entrada/}).check();
+ await panel.getByRole('checkbox',{name:'Boleto sem juros',exact:true}).uncheck();
+ await panel.getByRole('checkbox',{name:'Financiamento',exact:true}).uncheck();
+ await panel.getByRole('button',{name:/Copiar mensagem|Mensagem copiada/}).click();
+ await page.waitForFunction(()=>window.__copied && !window.__copied.includes('Entrada necessária:'));
+ assert.doesNotMatch(await page.evaluate(()=>window.__copied),/entrada/i);
+ await panel.getByRole('checkbox',{name:'Boleto sem juros',exact:true}).check();
+
 
  await panel.getByRole('button',{name:'Copiar mensagem',exact:true}).click();
  await panel.getByRole('button',{name:'Mensagem copiada'}).waitFor();
