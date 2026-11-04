@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { usePendingAction } from '@/lib/usePendingAction';
 import { quotePreferences, quoteModelLabels, quoteMessage, QuoteModel, QuoteSnapshot } from '@/lib/quotePresentation';
 
-const example: QuoteSnapshot = { client: 'Cliente exemplo', lines: [{ id: 'prod-1', name: 'OMNITURBO (Kit Omniturbo)', quantity: 1, unitPrice: 6930, total: 6930 }], subtotal: 6930, discountPercent: 0, discount: 0, total: 6930, entry: 0, balance: 6930, monthly: 205.86, payments: [{ label: 'PIX à vista', amount: 6930 }], financing: [] };
+const example: QuoteSnapshot = { client: 'Cliente exemplo', lines: [{ id: 'prod-1', name: 'OMNITURBO (Kit Omniturbo)', quantity: 1, unitPrice: 6930, total: 6930 }], subtotal: 6930, discountPercent: 10, discount: 693, total: 6237, entry: 0, balance: 6237, monthly: 205.86, payments: [{ label: 'PIX à vista', amount: 6237 }], financing: [] };
 export function QuotePreferences() {
   const { user } = useAuth();
   const [draft, setDraft] = useState(() => quotePreferences(user?.user_metadata?.quote_preferences));
@@ -30,7 +30,9 @@ export function QuotePreferences() {
         <span><strong>{quoteModelLabels[model]}</strong><small>{model === 'basic' ? 'Mensagem atual, objetiva e com emojis.' : model === 'detailed' ? 'Inclui os componentes dos kits Omniturbo e Omnidual.' : 'Linguagem direta, sem emojis.'}</small></span>
       </label>)}
       <label className="quote-model-choice"><input type="checkbox" checked={draft.showItemPrices} onChange={event => { setDraft({ ...draft, showItemPrices: event.target.checked }); setMessage(''); }} /><span><strong>Mostrar preços individuais na mensagem</strong><small>Inclui o valor de cada produto nos três modelos. O total do orçamento sempre aparece.</small></span></label>
-      <details className="quote-model-preview"><summary>Ver exemplo da mensagem</summary><pre>{quoteMessage(example, draft.model, draft.showItemPrices)}</pre></details>
+      {draft.showItemPrices && <label className="quote-model-choice ml-6"><input type="checkbox" checked={draft.discountItemPrices} onChange={event => { setDraft({ ...draft, discountItemPrices: event.target.checked }); setMessage(''); }} /><span><strong>Aplicar desconto aos preços individuais</strong><small>Exibe os itens com o desconto do orçamento já aplicado, sem alterar o total.</small></span></label>}
+      <label className="quote-model-choice"><input type="checkbox" checked={draft.reorderItems} onChange={event => { setDraft({ ...draft, reorderItems: event.target.checked }); setMessage(''); }} /><span><strong>Permitir reorganizar produtos</strong><small>Exibe uma alça discreta para arrastar. A ordem também será usada na mensagem e no PDF.</small></span></label>
+      <details className="quote-model-preview"><summary>Ver exemplo da mensagem</summary><pre>{quoteMessage(example, draft.model, draft.showItemPrices, draft.discountItemPrices)}</pre></details>
       <label className="quote-model-choice"><input type="checkbox" checked={draft.pdfEnabled} onChange={event => { setDraft({ ...draft, pdfEnabled: event.target.checked }); setMessage(''); }} /><span><strong>Habilitar proposta em PDF</strong><small>Exibe “Gerar proposta PDF” abaixo de “Copiar mensagem”.</small></span></label>
     </fieldset>
     {error && <p role="alert" className="auth-error">{error}</p>}{message && <p role="status" className="auth-success">{message}</p>}

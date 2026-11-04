@@ -846,3 +846,15 @@ html .opportunity-import-table-wrap::-webkit-scrollbar-thumb { background:var(--
 .opportunities-page input[type="checkbox"] { width:16px; height:16px; accent-color:#0759ed; cursor:pointer; }
 .opportunity-card-selection { display:flex; align-items:center; gap:8px; margin-bottom:12px; color:var(--ui-muted); font-size:12px; }
 @media(max-width:640px) { .opportunity-table td.opportunity-select-cell { width:auto; min-width:0; max-width:none; padding:6px 0; } }
+
+/* Optional quote sorting: small glyph, comfortable pointer/focus target. */
+.quote-drag-handle { width: 22px; height: 28px; padding: 0; margin-left: -5px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--ui-muted); background: transparent; border: 0; border-radius: 4px; cursor: grab; touch-action: none; }
+.quote-drag-handle:hover { color: var(--ui-text); }
+.quote-drag-handle:active { cursor: grabbing; }
+.quote-drag-handle:focus-visible { outline: 2px solid var(--ui-blue); outline-offset: 2px; }
+.quote-drag-handle + strong { flex: 1; }
+.quote-items > li { position: relative; }
+.quote-items > li.quote-item-dragging { opacity: .65; box-shadow: 0 5px 16px #0002; }
+.quote-drop-before::before, .quote-drop-after::after { content: ''; position: absolute; left: 0; right: 0; height: 2px; background: var(--ui-blue); border-radius: 2px; pointer-events: none; }
+.quote-drop-before::before { top: -6px; }
+.quote-drop-after::after { bottom: -6px; }

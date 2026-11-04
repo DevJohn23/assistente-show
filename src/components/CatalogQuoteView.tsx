@@ -12,6 +12,7 @@ import {
   Search, ShoppingBag, Check, Plus, Minus, Trash2, Copy, Calculator,
   BookmarkPlus, FileText, X, CheckCircle, Layers, Edit3, PanelRightClose, PanelRightOpen,
 } from 'lucide-react';
+import { QuoteItemList } from './QuoteItemList';
 import { QuoteDialog, QuantityControl, ProductImage, UnitPriceInput } from './QuoteControls';
 
 interface CatalogQuoteViewProps {
@@ -437,7 +438,7 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
     ],
     financing: payFinancing ? financingResults.map(({ n, result }) => ({ label: 'Financiamento', installments: n, amount: result.valorParcela })) : [],
   };
-  const generateMessageText = () => quoteMessage(quoteSnapshot, preferences.model, preferences.showItemPrices);
+  const generateMessageText = () => quoteMessage(quoteSnapshot, preferences.model, preferences.showItemPrices, preferences.discountItemPrices);
 
   const handleCopyMessage = async () => {
     if (cart.length === 0 || invalidEntry || isCopying) return;
@@ -489,11 +490,18 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
       </div>
       <label className="quote-field">Cliente<input className="ui-input" placeholder="Digite o nome..." value={clientName} onChange={event => setClientName(event.target.value)} /></label>
       {cart.length === 0 ? <div className="quote-empty"><ShoppingBag size={28} strokeWidth={1.5} /><p>Seu orçamento começa aqui</p><span className="ui-muted text-sm">Adicione produtos pelo catálogo.</span></div>
-      : <ul className="quote-items">{cart.map(item => <li key={item.product.id}>
-        <div className="quote-item-heading"><strong>{item.product.name}</strong><button className="ui-icon-button quote-remove" aria-label={`Remover ${item.product.name}`} onClick={() => toggleCartItem(item.product)}><Trash2 size={15} /></button></div>
-        <div className="quote-item-controls"><UnitPriceInput name={item.product.name} value={item.customPrice ?? item.product.default_price}
-          onCommit={value => updateItemCustomPrice(item.product.id, value)} /><QuantityControl name={item.product.name} quantity={item.quantity} onChange={delta => updateQuantity(item.product.id, delta)} /></div>
-      </li>)}</ul>}
+      : <QuoteItemList items={cart} enabled={preferences.reorderItems} onMove={(id, targetId, after) => {
+        setCart(previous => {
+          const item = previous.find(entry => entry.product.id === id);
+          if (!item || id === targetId || !previous.some(entry => entry.product.id === targetId)) return previous;
+          const next = previous.filter(entry => entry.product.id !== id);
+          const target = next.findIndex(entry => entry.product.id === targetId);
+          next.splice(target + (after ? 1 : 0), 0, item);
+          return next;
+        });
+      }} renderHeading={item => <><strong>{item.product.name}</strong><button className="ui-icon-button quote-remove" aria-label={`Remover ${item.product.name}`} onClick={() => toggleCartItem(item.product)}><Trash2 size={15} /></button></>}
+        renderControls={item => <div className="quote-item-controls"><UnitPriceInput name={item.product.name} value={item.customPrice ?? item.product.default_price}
+          onCommit={value => updateItemCustomPrice(item.product.id, value)} /><QuantityControl name={item.product.name} quantity={item.quantity} onChange={delta => updateQuantity(item.product.id, delta)} /></div>} />}
       <section className="quote-conditions" aria-labelledby="quote-conditions-title"><h3 id="quote-conditions-title">Condições comerciais</h3>
         <div className="quote-adjustments">
           <label className="quote-field">Acréscimo (%)<input className="ui-input" type="number" min="0" step="1" value={markupPercent || ''} placeholder="0" onChange={event => setMarkupPercent(Math.max(0, Number(event.target.value) || 0))} /></label>

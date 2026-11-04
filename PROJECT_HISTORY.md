@@ -4,6 +4,21 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 03/11/2026 — Reorganização opcional dos produtos
+
+- Preferência “Permitir reorganizar produtos”, desativada por padrão. Alça discreta de 14px, exibida apenas com dois ou mais produtos; suporte a ponteiro e setas do teclado, indicação de destino e cancelamento com Escape.
+- Reordenação preserva os objetos do carrinho, incluindo preços personalizados e quantidades. Persistência local existente mantém a ordem, consumida também pela mensagem, PDF e kits salvos.
+- Implementação sem dependência adicional; edição de preços e quantidades continua independente da alça.
+- Validação: testes de regressão, organograma e relatórios; navegador com dados simulados para arraste desktop, teclado, persistência, PDF e gesto de toque emulado em 390px. Publicação autorizada após testes.
+
+
+## 03/11/2026 — Desconto nos preços individuais
+
+- Subopção nas preferências da mensagem, visível quando os preços individuais estão habilitados e desmarcada por padrão.
+- Nos três modelos, permite mostrar os valores dos itens com desconto já incluído. Rateio de centavos mantém a soma dos itens compatível com o total; entrada, mensalidade e condições de pagamento permanecem iguais.
+- Prévia das preferências inclui exemplo com desconto de 10%. Preferências antigas mantêm o comportamento anterior. PDF não alterado.
+
+
 ## 03/11/2026 — Exclusão de oportunidades em lote
 
 - Seleção individual em tabela/cards, seleção da página com estado parcial, seleção explícita de todos os resultados filtrados e limpeza da seleção ao mudar busca/filtro/usuário.

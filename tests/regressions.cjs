@@ -144,8 +144,8 @@ test('catalog keeps featured products first after photo edits and reordered resp
 
 test('quotation models preserve totals and restrict cabin components to complete kits', () => {
   const {quoteMessage, quotePreferences, cabinKit}=load('src/lib/quotePresentation.ts');
-  assert.deepEqual(quotePreferences(null),{model:'basic',pdfEnabled:false,showItemPrices:false});
-  assert.deepEqual(quotePreferences({model:'unknown',pdfEnabled:'true'}),{model:'basic',pdfEnabled:false,showItemPrices:false});
+  assert.deepEqual(quotePreferences(null),{model:'basic',pdfEnabled:false,showItemPrices:false,discountItemPrices:false,reorderItems:false});
+  assert.deepEqual(quotePreferences({model:'unknown',pdfEnabled:'true'}),{model:'basic',pdfEnabled:false,showItemPrices:false,discountItemPrices:false,reorderItems:false});
   assert.equal(cabinKit('prod-1').length,8);
   assert.equal(cabinKit('prod-2').length,7);
   assert.deepEqual(cabinKit('other'),[]);
@@ -172,4 +172,29 @@ test('quotation models preserve totals and restrict cabin components to complete
   const formal=quoteMessage(q,'formal');
   assert.doesNotMatch(formal,/\p{Extended_Pictographic}/u);
   assert.doesNotMatch(formal,/Cliente:|Formas de Pagamento|Financiamento/);
+});
+
+test('discounted item prices preserve quote totals and reconcile rounding in every model', () => {
+  const { quoteMessage, quotePreferences } = load('src/lib/quotePresentation.ts');
+  assert.equal(quotePreferences({discountItemPrices:'true'}).discountItemPrices, false);
+  assert.equal(quotePreferences({discountItemPrices:true}).discountItemPrices, true);
+  const q = {client:'Teste',lines:[{id:'a',name:'A',quantity:2,unitPrice:50,total:100},{id:'b',name:'B',quantity:1,unitPrice:50,total:50}],subtotal:150,discountPercent:10,discount:15,total:135,entry:20,balance:115,monthly:25,payments:[{label:'PIX',amount:115}],financing:[]};
+  const before = JSON.stringify(q);
+  for (const model of ['basic','detailed','formal']) {
+    const text = quoteMessage(q,model,true,true);
+    assert.match(text,/2x A — R\$ 90,00/);
+    assert.match(text,/1x B — R\$ 45,00/);
+    assert.match(text,/Desconto já incluído nos itens/);
+    assert.match(text,/Total Equipamentos \(À Vista\):\* R\$ 135,00/);
+    assert.match(text,/Saldo após entrada: R\$ 115,00/);
+    assert.equal(quoteMessage(q,model,false,true),quoteMessage(q,model,false,false));
+    const zero = {...q,discountPercent:0,discount:0,total:150};
+    assert.equal(quoteMessage(zero,model,true,true),quoteMessage(zero,model,true,false));
+    const full = quoteMessage({...q,discountPercent:100,discount:150,total:0},model,true,true);
+    assert.match(full,/2x A — R\$ 0,00/);
+  }
+  const tiny = {...q,lines:['A','B','C'].map(name=>({id:name,name,quantity:1,unitPrice:.05,total:.05})),subtotal:.15,discountPercent:10,discount:.015,total:.135};
+  const cents = [...quoteMessage(tiny,'basic',true,true).matchAll(/ — R\$ 0,(\d{2})/g)].reduce((sum,m)=>sum+Number(m[1]),0);
+  assert.equal(cents,14);
+  assert.equal(JSON.stringify(q),before);
 });
