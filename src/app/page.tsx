@@ -16,6 +16,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Opportunity, Commission, QuoteTemplate, Product } from '@/types';
 import {
   fetchOpportunities,
+  importOpportunities,
   createOpportunity,
   updateOpportunity,
   deleteOpportunity,
@@ -324,6 +325,16 @@ export default function Home() {
         {activeTab === 'opportunities' && (
           <OpportunitiesView
             opportunities={opportunities}
+            preferenceKey={user.id}
+            onImportOpportunities={async items => {
+              const result = await importOpportunities(items);
+              setOpportunities(prev => {
+                const merged = new Map(prev.map(o=>[o.id,o]));
+                result.records.forEach(o=>merged.set(o.id,o));
+                return [...merged.values()];
+              });
+              return result;
+            }}
             initialFilter={opportunitiesFilter}
             onAddOpportunity={handleAddOpportunity}
             onEditOpportunity={handleEditOpportunity}

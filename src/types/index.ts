@@ -46,6 +46,12 @@ export interface Product {
 }
 
 export interface Opportunity {
+  created_at?: string;
+  imported_at?: string | null;
+  source_system?: string | null;
+  external_id?: string | null;
+  source_name?: string | null;
+  source_registration_date?: string | null;
   id: string;
   user_id: string;
   client_name: string;

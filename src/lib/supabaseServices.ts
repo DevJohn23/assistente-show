@@ -1,16 +1,29 @@
 import { supabase } from './supabase';
+import type { ImportItem, ImportResult } from './opportunityImport';
 import { Opportunity, Commission, QuoteTemplate } from '@/types';
 
 // --- OPPORTUNITIES ---
 
 export async function fetchOpportunities(userId: string): Promise<Opportunity[]> {
-  const { data, error } = await supabase
-    .from('opportunities')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-  if (error) throw error;
-  return (data ?? []) as Opportunity[];
+  const rows: Opportunity[] = [];
+  const size = 500;
+  for(let offset=0;;offset+=size) {
+    const {data,error} = await supabase.from('opportunities').select('*').eq('user_id',userId)
+      .order('created_at',{ascending:false}).order('id').range(offset,offset+size-1);
+    if(error) throw error;
+    rows.push(...(data ?? []) as Opportunity[]);
+    if(!data || data.length<size) return rows;
+  }
+}
+
+export async function importOpportunities(items: ImportItem[]): Promise<ImportResult & {records:Opportunity[]}> {
+  const {data,error} = await supabase.rpc('import_opportunities_csv',{items});
+  if(error) {
+    if(error.code==='PGRST202') throw new Error('O serviço de importação está indisponível. Atualize a página e tente novamente.');
+    if(error.code==='P0001' && error.message.includes('carteira mudou')) throw new Error(error.message);
+    throw new Error('Não foi possível confirmar a importação. Atualize a carteira antes de tentar novamente; registros já importados serão identificados pelo ID.');
+  }
+  return data;
 }
 
 export async function createOpportunity(opp: Omit<Opportunity, 'id'>): Promise<Opportunity | null> {

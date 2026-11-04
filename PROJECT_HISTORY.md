@@ -4,6 +4,17 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 03/11/2026 — Importação de oportunidades
+
+- Botão Importar oportunidades ao lado de Nova Oportunidade, seleção PJ/PF, prévia com vencimento original, escolha individual e correção de tipo. Status do CSV ignorados conforme solicitado.
+- Deduplicação por usuário/origem/ID, alertas para nomes coincidentes e IDs repetidos, revisão explícita de diferenças e opção separada para recalcular prazo. Contatos, documentos, observações e renovações preservados por padrão.
+- Telefone e CPF/CNPJ opcionais; WhatsApp oculto sem número. Paginação 10/25/50/100, quatro ordenações e preferências locais por usuário; busca/exportação abrangem toda a carteira filtrada.
+- Migração `20261104011034_opportunity_csv_import.sql` aplicada ao Supabase, com índice único, RLS e proteção contra alteração concorrente. Tipos da função seguem as colunas reais do banco.
+- Prévia com barra de rolagem visível, foco de teclado e rodapé acessível; teste em duas alturas de janela confirmou navegação até o fim da lista.
+- Validação de publicação: build de produção aprovado; função verificada no banco real sob papel authenticated, em transação revertida, sem registros de teste persistidos.
+- Validação local: TypeScript e quatro suítes automatizadas aprovados; testes em PostgreSQL isolado cobriram deduplicação, RLS, rollback e renovação. Navegador validou importação, paginação, busca, preferências, atualização explícita e regressão dos fluxos manuais.
+- Rota `/teste-oportunidades` exclusiva do desenvolvimento permite testar com armazenamento no navegador, sem gravar na carteira real. Detalhes em `docs/opportunity-import.md`.
+
 ## 27/10/2026 — Login desktop com símbolo em partículas
 
 - Layout desktop a partir de 1024px: símbolo Show à esquerda e formulário à direita, sem assinatura acima do formulário. Fundo em gradiente com o azul principal do sistema (#0759ed) e azul-escuro, e partículas brancas, incluindo a versão estática. Em telas menores, permanece a apresentação compacta existente.

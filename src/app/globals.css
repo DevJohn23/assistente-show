@@ -789,3 +789,53 @@ button, input, select, textarea { font: inherit; }
   .show-particle-art canvas { opacity: 0; }
   .show-particle-art.is-ready canvas { opacity: 1; }
 }
+
+/* Opportunity import and portfolio navigation */
+.opportunity-heading-actions, .opportunity-list-controls, .opportunity-pagination, .opportunity-pagination > div { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.opportunity-list-controls { padding:20px 24px 0; justify-content:space-between; }
+.opportunity-list-controls label { display:flex; align-items:center; gap:10px; color:var(--ui-muted); font-size:12px; }
+.opportunity-list-controls .ui-input { width:auto; }
+.opportunity-pagination { justify-content:space-between; font-size:12px; color:var(--ui-muted); padding:16px 0; }
+.opportunity-import-dialog { width:min(1000px,calc(100vw - 32px)); max-width:1000px; }
+.opportunity-import-body { padding:24px 28px; display:grid; gap:20px; min-width:0; }
+.opportunity-import-controls { display:grid; grid-template-columns:1.2fr 1fr; align-items:center; gap:24px; border:0; min-width:0; padding:0; }
+.opportunity-file-picker { display:grid; gap:8px; justify-items:center; text-align:center; border:1px dashed var(--ui-border); border-radius:12px; padding:22px; background:var(--ui-bg); cursor:pointer; min-width:0; }
+.opportunity-file-picker strong { overflow-wrap:anywhere; }
+.opportunity-file-picker input { width:100%; font-size:12px; }
+.opportunity-import-help { font-size:12px; color:var(--ui-muted); }
+.opportunity-import-help summary { cursor:pointer; }
+.opportunity-import-help p { margin-top:10px; line-height:1.6; }
+.opportunity-import-summary { display:flex; flex-wrap:wrap; gap:12px 24px; padding:16px; background:var(--ui-bg); border-radius:10px; font-size:12px; }
+.opportunity-import-summary strong { font-size:17px; margin-right:4px; }
+.opportunity-import-option { display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px; }
+.opportunity-import-table-wrap { overflow:auto; max-height:46vh; border:1px solid var(--ui-border); border-radius:10px; }
+.opportunity-import-table-wrap table { min-width:720px; }
+.opportunity-import-table-wrap small { display:block; margin-top:6px; color:var(--ui-muted); }
+.opportunity-import-table-wrap td { vertical-align:top; }
+.opportunity-import-table-wrap th { position:sticky; top:0; background:var(--ui-surface); z-index:1; }
+.opportunity-import-warning { color:var(--ui-blue) !important; }
+.opportunity-import-success { display:grid; justify-items:center; text-align:center; gap:14px; padding:32px 0; }
+@media(max-width:640px) { .opportunity-heading-actions { width:100%; } .opportunity-heading-actions .ui-button { flex:1; } .opportunity-import-controls { grid-template-columns:1fr; gap:16px; } .opportunity-import-body { padding:20px; } .opportunity-list-controls { padding:16px; } .opportunity-list-controls label { flex-wrap:wrap; } .opportunity-pagination > div { width:100%; justify-content:space-between; } }
+.opportunity-import-dialog { display:flex; flex-direction:column; max-height:calc(100dvh - 40px); overflow:hidden; }
+.opportunity-import-dialog > header, .opportunity-import-dialog > footer { flex-shrink:0; }
+.opportunity-import-body { overflow-y:auto; }
+.opportunity-import-table-wrap .commission-table th:first-child, .opportunity-import-table-wrap .commission-table td:first-child { width:44px; min-width:44px; }
+.opportunity-file-picker { position:relative; }
+.opportunity-file-picker input { position:absolute; width:1px; height:1px; padding:0; border:0; overflow:hidden; clip-path:inset(50%); }
+.opportunity-file-picker:focus-within { outline:2px solid var(--ui-blue); outline-offset:3px; }
+.opportunity-file-picker::after { content:'Selecionar ou trocar arquivo'; color:var(--ui-blue); font-size:12px; font-weight:600; }
+.opportunity-import-dialog .quote-dialog-content { display:flex; flex-direction:column; min-height:0; max-height:calc(100dvh - 40px); }
+.opportunity-import-dialog .quote-dialog-content > header, .opportunity-import-dialog .quote-dialog-content > footer { flex-shrink:0; }
+.opportunity-import-body { min-height:0; }
+@media(max-width:640px) {
+  .opportunity-import-table-wrap table { min-width:0; }
+  .opportunity-import-table-wrap .commission-table td:first-child { width:auto; min-width:0; }
+  .opportunity-import-table-wrap .commission-table td[data-label="Cliente"] { display:block; }
+  .opportunity-import-table-wrap .commission-table td[data-label="Cliente"]::before { display:none; }
+}
+/* Keep preview scrolling discoverable with mouse, keyboard and touch. */
+.opportunity-import-table-wrap { overflow-y:scroll; scrollbar-gutter:stable; scrollbar-width:auto; scrollbar-color:var(--ui-muted) var(--ui-bg); overscroll-behavior:contain; }
+.opportunity-import-table-wrap::-webkit-scrollbar { width:10px; height:10px; }
+.opportunity-import-table-wrap::-webkit-scrollbar-track { background:var(--ui-bg); }
+html .opportunity-import-table-wrap::-webkit-scrollbar-thumb { background:var(--ui-muted); border:2px solid var(--ui-bg); border-radius:8px; }
+.opportunity-import-table-wrap:focus-visible { outline:2px solid var(--ui-blue); outline-offset:2px; }

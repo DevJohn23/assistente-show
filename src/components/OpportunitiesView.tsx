@@ -1,13 +1,14 @@
 'use client';
 import { getLocalDateString } from "@/lib/dateUtils";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePendingAction } from '@/lib/usePendingAction';
 import { Opportunity, ClientType } from '@/types';
 import { 
   Search, 
   Plus, 
-  Download, 
+  Download,
+  Upload,
   Calendar as CalendarIcon, 
   Table as TableIcon, 
   Edit2, 
@@ -18,8 +19,12 @@ import {
 import * as XLSX from 'xlsx';
 import { WhatsAppIcon } from './WhatsAppIcon';
 import { QuoteDialog } from './QuoteControls';
+import { OpportunityImportDialog } from './OpportunityImportDialog';
+import { sortOpportunities, type OpportunityOrder, type ImportItem, type ImportResult } from '@/lib/opportunityImport';
 
 interface OpportunitiesViewProps {
+  onImportOpportunities: (items: ImportItem[]) => Promise<ImportResult>;
+  preferenceKey?: string;
   initialFilter?: 'all' | 'today' | 'expired';
   opportunities: Opportunity[];
   onAddOpportunity: (opp: Omit<Opportunity, 'id' | 'user_id'>) => Promise<boolean>;
@@ -32,6 +37,8 @@ interface OpportunitiesViewProps {
 
 export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
   opportunities,
+  onImportOpportunities,
+  preferenceKey = 'default',
   initialFilter = 'all',
   onAddOpportunity,
   onEditOpportunity,
@@ -47,6 +54,23 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
   const [activeFilter, setActiveFilter] = useState<string>(initialFilter);
   const [viewMode, setViewMode] = useState<'table' | 'calendar'>('table');
   
+  const [importOpen,setImportOpen] = useState(false);
+  const [page,setPage] = useState(1);
+  const [pageSize,setPageSize] = useState(10);
+  const [order,setOrder] = useState<OpportunityOrder>('expiration');
+  useEffect(() => {
+    try {
+      const saved=JSON.parse(localStorage.getItem(`opportunity-view:${preferenceKey}`) || '{}');
+      setOrder(['expiration','registration','imported','name'].includes(saved.order)?saved.order:'expiration');
+      setPageSize([10,25,50,100].includes(saved.pageSize)?saved.pageSize:10);
+    } catch { /* Preferences are optional. */ }
+  },[preferenceKey]);
+  useEffect(()=>setPage(1),[searchTerm,activeFilter,pageSize,order,viewMode]);
+  const savePreference=(nextOrder:OpportunityOrder,nextSize:number)=>{
+    setOrder(nextOrder);setPageSize(nextSize);
+    try {localStorage.setItem(`opportunity-view:${preferenceKey}`,JSON.stringify({order:nextOrder,pageSize:nextSize}));} catch { /* Storage can be disabled. */ }
+  };
+
   // Edit & Delete state
   const [editingOpp, setEditingOpp] = useState<Opportunity | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -108,7 +132,7 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.client_name || !formData.phone) return;
+    if (!formData.client_name.trim()) return;
     await run(async () => {
       setFormError('');
       const saved = editingOpp
@@ -151,9 +175,14 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
     return true;
   });
 
+  const sortedOpportunities = sortOpportunities(filteredOpportunities,order);
+  const pages = Math.max(1,Math.ceil(sortedOpportunities.length/pageSize));
+  const currentPage = Math.min(page,pages);
+  const visibleOpportunities = sortedOpportunities.slice((currentPage-1)*pageSize,currentPage*pageSize);
+
   // Export Excel
   const handleExportExcel = () => {
-    const dataToExport = filteredOpportunities.map((o) => ({
+    const dataToExport = sortedOpportunities.map((o) => ({
       Nome: o.client_name,
       Empresa: o.company_name || 'N/A',
       'CPF/CNPJ': o.cpf_cnpj,
@@ -184,34 +213,37 @@ export const OpportunitiesView: React.FC<OpportunitiesViewProps> = ({
     return { label: 'No prazo', tone: 'active' };
   };
   const actions = (opp: Opportunity) => <div className="opportunity-actions">
-    <a className="ui-icon-button opportunity-whatsapp" href={`https://wa.me/55${opp.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" title="Abrir no WhatsApp" aria-label={`WhatsApp de ${opp.client_name}`}><WhatsAppIcon size={17} /></a>
+    {opp.phone.replace(/\D/g, '') && <a className="ui-icon-button opportunity-whatsapp" href={`https://wa.me/55${opp.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" title="Abrir no WhatsApp" aria-label={`WhatsApp de ${opp.client_name}`}><WhatsAppIcon size={17} /></a>}
     <button className="ui-icon-button" title={`Renovar Oportunidade (+${opp.type === 'PF' ? '15' : '30'} dias)`} aria-label={`Renovar ${opp.client_name}`} onClick={() => { setFormError(''); setRenewingOpp(opp); }}><RefreshCw size={17} /></button>
     <button className="ui-icon-button" title="Editar Oportunidade" aria-label={`Editar ${opp.client_name}`} onClick={() => handleOpenEditModal(opp)}><Edit2 size={17} /></button>
     <button className="ui-icon-button opportunity-delete" title="Excluir Oportunidade" aria-label={`Excluir ${opp.client_name}`} onClick={() => { setFormError(''); setDeletingId(opp.id); }}><Trash2 size={17} /></button>
   </div>;
   const badge = (opp: Opportunity) => { const state = situation(opp); return <span className={`opportunity-status status-${state.tone}`}>{state.label}</span>; };
   return <div className="opportunities-page">
-    <header className="commissions-heading"><div><h1>Oportunidades</h1><p className="ui-muted">Organize seus contatos e acompanhe os vencimentos.</p></div><button className="ui-button ui-button-primary" onClick={handleOpenAddModal}><Plus size={18} />Nova Oportunidade</button></header>
+    <header className="commissions-heading"><div><h1>Oportunidades</h1><p className="ui-muted">Organize seus contatos e acompanhe os vencimentos.</p></div><div className="opportunity-heading-actions"><button className="ui-button ui-button-secondary" onClick={()=>setImportOpen(true)}><Upload size={18}/>Importar oportunidades</button><button className="ui-button ui-button-primary" onClick={handleOpenAddModal}><Plus size={18} />Nova Oportunidade</button></div></header>
     <section className="ui-panel opportunity-filters" aria-label="Filtros de oportunidades">
       <div className="commission-search-row"><label className="commission-search"><Search size={18} /><input className="ui-input" aria-label="Pesquisar oportunidades" placeholder="Pesquisar por Nome, Empresa, CPF/CNPJ ou Telefone..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></label><button className="ui-button ui-button-secondary" disabled={!filteredOpportunities.length} onClick={handleExportExcel} title="Exportar os registros filtrados"><Download size={17} />Exportar Excel</button></div>
       <div className="opportunity-filter-row"><div className="opportunity-filter-options" role="group" aria-label="Filtrar oportunidades">{filters.map(([id,label]) => <button className="ui-button ui-button-secondary" key={id} aria-pressed={activeFilter === id} onClick={() => setActiveFilter(id)}>{label}</button>)}</div>{(searchTerm || activeFilter !== 'all') && <button className="auth-text-button" onClick={() => { setSearchTerm(''); setActiveFilter('all'); }}>Limpar filtros</button>}</div>
     </section>
     <section className="ui-panel opportunity-records" aria-label="Registros de oportunidades">
+      <div className="opportunity-list-controls"><label>Ordenar por<select className="ui-input" aria-label="Ordenar oportunidades" value={order} onChange={e=>savePreference(e.target.value as OpportunityOrder,pageSize)}><option value="expiration">Vencimento mais próximo</option><option value="registration">Cadastro mais recente</option><option value="imported">Importação mais recente</option><option value="name">Nome do cliente</option></select></label><label>Por página<select className="ui-input" aria-label="Oportunidades por página" value={pageSize} onChange={e=>savePreference(order,Number(e.target.value))}>{[10,25,50,100].map(n=><option key={n} value={n}>{n}</option>)}</select></label></div>
       <header className="opportunity-results-header"><span>{filteredOpportunities.length} {filteredOpportunities.length === 1 ? 'oportunidade' : 'oportunidades'}</span><div className="opportunity-view-options" role="group" aria-label="Visualização"><button aria-pressed={viewMode === 'table'} onClick={() => setViewMode('table')}><TableIcon size={16} />Tabela</button><button aria-pressed={viewMode === 'calendar'} onClick={() => setViewMode('calendar')}><CalendarIcon size={16} />Por vencimento</button></div></header>
-      {!filteredOpportunities.length ? <div className="commission-empty"><CalendarIcon size={30} /><h2>{opportunities.length ? 'Nenhuma oportunidade encontrada' : 'Sua carteira começa aqui'}</h2><p>{opportunities.length ? 'Ajuste a busca ou os filtros para consultar outros contatos.' : 'Cadastre um contato para acompanhar o prazo de renovação.'}</p><button className="ui-button ui-button-secondary" onClick={opportunities.length ? () => { setSearchTerm(''); setActiveFilter('all'); } : handleOpenAddModal}>{opportunities.length ? 'Limpar filtros' : 'Cadastrar oportunidade'}</button></div> : viewMode === 'table' ? <div className="commission-table-wrap"><table className="commission-table opportunity-table"><thead><tr><th>Cliente / empresa</th><th>Contato / documento</th><th>Vencimento</th><th>Observações</th><th>Ações</th></tr></thead><tbody>{filteredOpportunities.map(opp => <tr key={opp.id}>
+      {!filteredOpportunities.length ? <div className="commission-empty"><CalendarIcon size={30} /><h2>{opportunities.length ? 'Nenhuma oportunidade encontrada' : 'Sua carteira começa aqui'}</h2><p>{opportunities.length ? 'Ajuste a busca ou os filtros para consultar outros contatos.' : 'Cadastre um contato para acompanhar o prazo de renovação.'}</p><button className="ui-button ui-button-secondary" onClick={opportunities.length ? () => { setSearchTerm(''); setActiveFilter('all'); } : handleOpenAddModal}>{opportunities.length ? 'Limpar filtros' : 'Cadastrar oportunidade'}</button></div> : viewMode === 'table' ? <div className="commission-table-wrap"><table className="commission-table opportunity-table"><thead><tr><th>Cliente / empresa</th><th>Contato / documento</th><th>Vencimento</th><th>Observações</th><th>Ações</th></tr></thead><tbody>{visibleOpportunities.map(opp => <tr key={opp.id}>
         <td data-label="Cliente"><strong>{opp.client_name}</strong><div className="opportunity-secondary">{opp.type}{opp.company_name ? ` · ${opp.company_name}` : ''}</div></td>
-        <td data-label="Contato"><div>{opp.phone}<div className="opportunity-secondary">{opp.cpf_cnpj}</div></div></td>
+        <td data-label="Contato"><div>{opp.phone || 'Sem telefone'}<div className="opportunity-secondary">{opp.cpf_cnpj || 'Sem documento'}</div></div></td>
         <td data-label="Vencimento"><div><div className="opportunity-date">{dateLabel(opp.expiration_date)}</div>{badge(opp)}</div></td>
         <td data-label="Observações"><button className="commission-note" aria-label={`Observações de ${opp.client_name}`} onClick={() => setNotesOpp(opp)}><span>{opp.notes || 'Sem observações'}</span></button></td>
         <td data-label="Ações">{actions(opp)}</td>
-      </tr>)}</tbody></table></div> : <div className="opportunity-cards">{[...filteredOpportunities].sort((a,b) => a.expiration_date.localeCompare(b.expiration_date)).map(opp => <article key={opp.id}><header><span>{dateLabel(opp.expiration_date)}</span>{badge(opp)}</header><button className="opportunity-card-title" onClick={() => handleOpenEditModal(opp)}>{opp.client_name}</button><p className="opportunity-secondary">{opp.type}{opp.company_name ? ` · ${opp.company_name}` : ''}</p><p>{opp.phone}</p><button className="commission-note" aria-label={`Observações de ${opp.client_name}`} onClick={() => setNotesOpp(opp)}><span>{opp.notes || 'Sem observações'}</span></button>{actions(opp)}</article>)}</div>}
+      </tr>)}</tbody></table></div> : <div className="opportunity-cards">{visibleOpportunities.map(opp => <article key={opp.id}><header><span>{dateLabel(opp.expiration_date)}</span>{badge(opp)}</header><button className="opportunity-card-title" onClick={() => handleOpenEditModal(opp)}>{opp.client_name}</button><p className="opportunity-secondary">{opp.type}{opp.company_name ? ` · ${opp.company_name}` : ''}</p><p>{opp.phone}</p><button className="commission-note" aria-label={`Observações de ${opp.client_name}`} onClick={() => setNotesOpp(opp)}><span>{opp.notes || 'Sem observações'}</span></button>{actions(opp)}</article>)}</div>}
     </section>
+    <nav className="opportunity-pagination" aria-label="Paginação de oportunidades"><span>{sortedOpportunities.length ? `${(currentPage-1)*pageSize+1}–${Math.min(currentPage*pageSize,sortedOpportunities.length)} de ${sortedOpportunities.length} oportunidades` : '0 oportunidades'}</span><div><button className="ui-button ui-button-secondary" disabled={currentPage===1} onClick={()=>setPage(currentPage-1)}>Anterior</button><span>{currentPage} de {pages}</span><button className="ui-button ui-button-secondary" disabled={currentPage===pages} onClick={()=>setPage(currentPage+1)}>Próxima</button></div></nav>
+    {importOpen && <OpportunityImportDialog opportunities={opportunities} onClose={()=>setImportOpen(false)} onImport={onImportOpportunities}/>}
     {isModalOpen && <QuoteDialog className="commission-editor" label={editingOpp ? 'Editar Oportunidade' : 'Nova Oportunidade'} onClose={() => setIsModalOpen(false)} canClose={!isPending}>
       <header className="commission-editor-header"><div><h2>{editingOpp ? 'Editar oportunidade' : 'Nova oportunidade'}</h2><p className="ui-muted">Dados do contato e prazo para renovação.</p></div><button className="ui-icon-button" aria-label="Fechar oportunidade" disabled={isPending} onClick={() => setIsModalOpen(false)}><X size={20} /></button></header>
       <form className="commission-form" onSubmit={handleFormSubmit}><fieldset className="commission-form-body" disabled={isPending}>
         <label className="quote-field">Nome do cliente *<input className="ui-input" required placeholder="ex: Transportadora Alfa" value={formData.client_name} onChange={e => setFormData({...formData,client_name:e.target.value})} /></label>
-        <div className="commission-form-grid"><label className="quote-field">Tipo de pessoa<select className="ui-input" aria-label="Tipo de pessoa" value={formData.type} onChange={e => { const type=e.target.value as ClientType; setFormData({...formData,type,expiration_date:calcExpirationDate(type,formData.registration_date)}); }}><option value="PF">Pessoa física (15 dias)</option><option value="PJ">Pessoa jurídica (30 dias)</option></select></label><label className="quote-field">CPF ou CNPJ *<input className="ui-input" required value={formData.cpf_cnpj} onChange={e => setFormData({...formData,cpf_cnpj:e.target.value})} /></label></div>
-        <div className="commission-form-grid"><label className="quote-field">Telefone / WhatsApp *<input className="ui-input" type="tel" required placeholder="11999998888" value={formData.phone} onChange={e => setFormData({...formData,phone:e.target.value})} /></label><label className="quote-field">Empresa (opcional)<input className="ui-input" value={formData.company_name} onChange={e => setFormData({...formData,company_name:e.target.value})} /></label></div>
+        <div className="commission-form-grid"><label className="quote-field">Tipo de pessoa<select className="ui-input" aria-label="Tipo de pessoa" value={formData.type} onChange={e => { const type=e.target.value as ClientType; setFormData({...formData,type,expiration_date:calcExpirationDate(type,formData.registration_date)}); }}><option value="PF">Pessoa física (15 dias)</option><option value="PJ">Pessoa jurídica (30 dias)</option></select></label><label className="quote-field">CPF ou CNPJ (opcional)<input className="ui-input" value={formData.cpf_cnpj} onChange={e => setFormData({...formData,cpf_cnpj:e.target.value})} /></label></div>
+        <div className="commission-form-grid"><label className="quote-field">Telefone / WhatsApp (opcional)<input className="ui-input" type="tel" placeholder="11999998888" value={formData.phone} onChange={e => setFormData({...formData,phone:e.target.value})} /></label><label className="quote-field">Empresa (opcional)<input className="ui-input" value={formData.company_name} onChange={e => setFormData({...formData,company_name:e.target.value})} /></label></div>
         <div className="commission-form-grid"><label className="quote-field">Data de cadastro<input className="ui-input" type="date" required value={formData.registration_date} onChange={e => setFormData({...formData,registration_date:e.target.value,expiration_date:calcExpirationDate(formData.type,e.target.value)})} /></label><label className="quote-field">Data de vencimento *<input className="ui-input" type="date" required value={formData.expiration_date} onChange={e => setFormData({...formData,expiration_date:e.target.value})} /></label></div>
         <p className="auth-hint">Prazo sugerido: {formData.type === 'PF' ? '15' : '30'} dias após o cadastro. Você pode ajustar o vencimento.</p>
         <label className="quote-field">Observações<textarea className="ui-input" rows={3} placeholder="Ex: Cliente pediu retorno semana que vem..." value={formData.notes} onChange={e => setFormData({...formData,notes:e.target.value})} /></label>
