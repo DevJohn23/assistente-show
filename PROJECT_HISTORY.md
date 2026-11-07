@@ -4,6 +4,20 @@ Este documento mantém o histórico oficial de atualizações, funcionalidades c
 
 ---
 
+## 07/11/2026 — Percentuais decimais no orçamento
+
+- Desconto e acréscimo aceitam vírgula ou ponto e até duas casas decimais. Setas visuais e do teclado alteram 1 ponto percentual preservando a fração.
+- Desconto limitado a 0–100%; acréscimo não negativo. Atualização dos cálculos e persistência existentes mantidas; publicação autorizada após validação local.
+
+
+## 07/11/2026 — Exclusão em lote de comissões
+
+- Checkboxes compactos por registro, seleção da página com estado parcial e seleção explícita de todos os resultados filtrados. Seleção limpa ao mudar busca, período, operação ou usuário.
+- Confirmação informa a quantidade incluindo outras páginas e a remoção dos totais. Falha preserva seleção para nova tentativa; sucesso atualiza a lista e os indicadores.
+- Exclusão por uma operação filtrada por usuário e IDs selecionados, sem migração. Publicação autorizada após validação local.
+- TypeScript, regressões e teste de navegador com dados simulados aprovados: seleção entre páginas, estado parcial, filtros, cancelamento, falha/repetição, totais e mobile. Nenhum registro real excluído pelos testes.
+
+
 ## 03/11/2026 — Entrada por modalidade de pagamento
 
 - Entrada de R$ 550 abate apenas o principal de boleto e financiamento; PIX e cartão usam o total integral dos equipamentos, já considerando o desconto comercial. Rótulo “Entrada” preservado.

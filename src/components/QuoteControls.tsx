@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Minus, Plus, Package } from 'lucide-react';
+import { Minus, Plus, Package, ChevronUp, ChevronDown } from 'lucide-react';
 
 export function QuoteDialog({ children, label, onClose, canClose = true, fullScreen = false, className = '' }: {
   children: React.ReactNode; label: string; onClose: () => void; canClose?: boolean; fullScreen?: boolean; className?: string;
@@ -79,4 +79,42 @@ export function UnitPriceInput({ name, value, onCommit }: { name: string; value:
         else setDraft(String(value));
       }} />
   </label>;
+}
+
+/** Text input accepts either decimal separator; explicit steppers preserve fractions. */
+export function PercentageInput({ label, value, onChange, max }: {
+  label: string; value: number; onChange: (value: number) => void; max?: number;
+}) {
+  const format = (number: number) => number ? String(number).replace('.', ',') : '';
+  const [draft, setDraft] = useState(() => format(value));
+  const bound = (number: number) => Math.round(Math.min(max ?? Number.MAX_SAFE_INTEGER / 100, Math.max(0, number)) * 100) / 100;
+  useEffect(() => {
+    setDraft(previous => Number(previous.replace(',', '.')) === value ? previous : format(value));
+  }, [value]);
+  const step = (delta: number) => {
+    const next = bound(value + delta);
+    setDraft(format(next)); onChange(next);
+  };
+  return <label className="quote-field">{label}<span className="quote-percentage-control">
+    <input className="ui-input" type="text" inputMode="decimal" role="spinbutton" aria-label={label}
+      aria-valuemin={0} aria-valuemax={max} aria-valuenow={value} value={draft} placeholder="0"
+      onChange={event => {
+        const text = event.target.value;
+        if (!/^\d*(?:[.,]\d{0,2})?$/.test(text)) return;
+        const parsed = Number(text.replace(',', '.'));
+        if (!Number.isFinite(parsed)) { setDraft(text); return; }
+        const next = bound(parsed);
+        setDraft(next !== parsed ? format(next) : text);
+        onChange(next);
+      }}
+      onBlur={() => setDraft(format(value))}
+      onKeyDown={event => {
+        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); step(event.key === 'ArrowUp' ? 1 : -1); }
+        if (event.key === 'Enter') { event.preventDefault(); event.currentTarget.blur(); }
+      }} />
+    <span className="quote-percentage-steppers">
+      <button type="button" aria-label={`Aumentar ${label}`} disabled={max !== undefined && value >= max} onClick={() => step(1)}><ChevronUp size={12} /></button>
+      <button type="button" aria-label={`Diminuir ${label}`} disabled={value <= 0} onClick={() => step(-1)}><ChevronDown size={12} /></button>
+    </span>
+  </span></label>;
 }

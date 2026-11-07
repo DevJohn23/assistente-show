@@ -858,3 +858,21 @@ html .opportunity-import-table-wrap::-webkit-scrollbar-thumb { background:var(--
 .quote-drop-before::before, .quote-drop-after::after { content: ''; position: absolute; left: 0; right: 0; height: 2px; background: var(--ui-blue); border-radius: 2px; pointer-events: none; }
 .quote-drop-before::before { top: -6px; }
 .quote-drop-after::after { bottom: -6px; }
+
+.commission-selectable-table th.commission-select-cell, .commission-selectable-table td.commission-select-cell { width:36px; min-width:36px; max-width:36px; padding-left:10px; padding-right:10px; }
+.commission-selectable-table input[type="checkbox"] { width:16px; height:16px; accent-color:#0759ed; cursor:pointer; }
+.commission-selectable-table td[data-label="Cliente"] { min-width:165px; max-width:270px; overflow-wrap:anywhere; }
+@media(max-width:640px) {
+  .commission-selectable-table td.commission-select-cell { display:flex; width:auto; min-width:0; max-width:none; padding:6px 0; }
+  .commission-selectable-table td.commission-select-cell::before { display:block; }
+  .commission-selectable-table td[data-label="Cliente"] { display:block; min-width:0; max-width:none; }
+  .commission-selectable-table td[data-label="Cliente"]::before { display:none; }
+}
+
+.quote-percentage-control { position:relative; display:block; }
+.quote-percentage-control > input { padding-right:30px; width:100%; }
+.quote-percentage-steppers { position:absolute; right:3px; top:3px; bottom:3px; display:flex; flex-direction:column; width:24px; }
+.quote-percentage-steppers button { display:flex; align-items:center; justify-content:center; flex:1; border:0; background:transparent; color:var(--ui-muted); border-radius:3px; }
+.quote-percentage-steppers button:hover:not(:disabled) { color:var(--ui-blue); background:var(--ui-bg); }
+.quote-percentage-steppers button:focus-visible { outline:2px solid var(--ui-blue); }
+.quote-percentage-steppers button:disabled { opacity:.4; }

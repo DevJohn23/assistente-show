@@ -128,6 +128,14 @@ export async function updateCommission(id: string, updated: Partial<Commission>)
   }
 }
 
+export async function deleteCommissions(userId: string, ids: string[]): Promise<boolean> {
+  if (!userId || !ids.length) return false;
+  try {
+    const { error } = await supabase.from('commissions').delete().eq('user_id', userId).in('id', [...new Set(ids)]);
+    return !error;
+  } catch { return false; }
+}
+
 export async function deleteCommission(id: string): Promise<boolean> {
   try {
     const { data, error } = await supabase

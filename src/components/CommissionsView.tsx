@@ -9,6 +9,8 @@ import * as XLSX from 'xlsx';
 import { QuoteDialog } from './QuoteControls';
 
 interface CommissionsViewProps {
+  userId: string;
+  onDeleteCommissions: (ids: string[]) => Promise<boolean>;
   initialPeriod?: { start: string; end: string };
   commissions: Commission[];
   sellers: string[];
@@ -22,6 +24,8 @@ interface CommissionsViewProps {
 
 export const CommissionsView: React.FC<CommissionsViewProps> = ({
   commissions,
+  userId,
+  onDeleteCommissions,
   initialPeriod,
   sellers,
   onAddSeller,
@@ -38,6 +42,20 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
   const [startDate, setStartDate] = useState(initialPeriod?.start ?? '');
   const [endDate, setEndDate] = useState(initialPeriod?.end ?? '');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkConfirm, setBulkConfirm] = useState<string[] | null>(null);
+  const [bulkError, setBulkError] = useState('');
+  React.useEffect(() => { setSelectedIds(new Set()); setBulkConfirm(null); }, [searchTerm, startDate, endDate, operationFilter, userId]);
+  React.useEffect(() => {
+    const available = new Set(commissions.map(c => c.id));
+    setSelectedIds(previous => new Set([...previous].filter(id => available.has(id))));
+  }, [commissions]);
+  const toggleSelected = (id: string, checked: boolean) => setSelectedIds(previous => {
+    const next = new Set(previous);
+    if (checked) next.add(id); else next.delete(id);
+    return next;
+  });
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -328,9 +346,19 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
         <div className="commission-filter-row"><label className="quote-field">De<input className="ui-input" type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></label><label className="quote-field">Até<input className="ui-input" type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></label><label className="quote-field">Operação<select className="ui-input" aria-label="Operação" value={operationFilter} onChange={e => setOperationFilter(e.target.value)}><option value="all">Todas as operações</option><option value="own">Venda própria</option><option value="other_implanted_for_me">A receber</option><option value="implanted_for_other">A repassar</option></select></label><div className="commission-shortcuts"><button className="ui-button ui-button-secondary" onClick={() => setMonth(0)}>Este mês</button><button className="ui-button ui-button-secondary" onClick={() => setMonth(-1)}>Mês anterior</button>{hasFilters && <button className="ui-button ui-button-secondary" onClick={clearFilters}>Limpar filtros</button>}</div></div>
         {startDate && endDate && startDate > endDate && <p className="quote-error" role="alert">A data inicial deve ser anterior ou igual à data final.</p>}
     </section>
+    {selectedIds.size > 0 && <div className="opportunity-bulk-bar" role="region" aria-label="Ações das comissões selecionadas">
+      <strong>{selectedIds.size} {selectedIds.size === 1 ? 'selecionada' : 'selecionadas'}</strong>
+      <button className="ui-button commission-danger" onClick={() => { setBulkError(''); setBulkConfirm([...selectedIds]); }}><Trash2 size={16} />Excluir selecionadas</button>
+      <button className="ui-button ui-button-secondary" onClick={() => setSelectedIds(new Set())}>Limpar seleção</button>
+      {selectedIds.size < filteredCommissions.length && <button className="auth-text-button" onClick={() => setSelectedIds(new Set(filteredCommissions.map(c => c.id)))}>Selecionar todas as {filteredCommissions.length} comissões filtradas</button>}
+    </div>}
     <section className="ui-panel commission-records" aria-label="Registros de comissões">
       {!filteredCommissions.length ? <div className="commission-empty"><Coins size={30} /><h2>{hasFilters ? 'Nenhuma venda encontrada' : 'Suas comissões começam aqui'}</h2><p>{hasFilters ? 'Ajuste os filtros para consultar outros registros.' : 'Cadastre sua primeira venda para acompanhar os valores.'}</p><button className="ui-button ui-button-secondary" onClick={hasFilters ? clearFilters : handleOpenAddModal}>{hasFilters ? 'Ver todos os registros' : 'Cadastrar Venda'}</button></div> : <>
-      <div className="commission-table-wrap"><table className="commission-table"><thead><tr><th>Cliente / operação</th><th>Data</th><th className="money">Valor da venda</th><th className="money">Comissão</th><th>Observações</th><th>Ações</th></tr></thead><tbody>{paginatedCommissions.map(c => <tr key={c.id}>
+      <div className="commission-table-wrap"><table className="commission-table commission-selectable-table"><thead><tr><th className="commission-select-cell"><input type="checkbox" aria-label="Selecionar comissões desta página"
+        checked={paginatedCommissions.length > 0 && paginatedCommissions.every(c => selectedIds.has(c.id))}
+        ref={node => { if (node) node.indeterminate = paginatedCommissions.some(c => selectedIds.has(c.id)) && !paginatedCommissions.every(c => selectedIds.has(c.id)); }}
+        onChange={event => { const checked = event.target.checked; setSelectedIds(previous => { const next = new Set(previous); paginatedCommissions.forEach(c => checked ? next.add(c.id) : next.delete(c.id)); return next; }); }} /></th><th>Cliente / operação</th><th>Data</th><th className="money">Valor da venda</th><th className="money">Comissão</th><th>Observações</th><th>Ações</th></tr></thead><tbody>{paginatedCommissions.map(c => <tr key={c.id}>
+        <td className="commission-select-cell" data-label="Selecionar"><input type="checkbox" aria-label={`Selecionar comissão de ${c.client_name}`} checked={selectedIds.has(c.id)} onChange={event => toggleSelected(c.id, event.target.checked)} /></td>
         <td data-label="Cliente"><strong>{c.client_name}</strong><div className={`commission-operation operation-${c.registration_type}`}>{c.registration_type === 'own' ? 'Venda própria' : c.registration_type === 'implanted_for_other' ? 'A repassar' : 'A receber'}{c.other_installer_name && c.registration_type !== 'own' ? ` · ${c.other_installer_name}` : ''}</div></td>
         <td data-label="Data">{dateLabel(c.sale_date)}</td><td data-label="Venda" className="money">{money(c.sale_amount)}</td><td data-label="Comissão" className="money commission-value">{money(c.commission_amount)}</td>
         <td data-label="Observações"><button className="commission-note" onClick={() => c.notes ? setViewingNotesComm(c) : handleOpenEditModal(c)} aria-label={`Observações de ${c.client_name}`}><FileText size={15} /><span>{c.notes || 'Adicionar nota'}</span></button></td>
@@ -352,6 +380,17 @@ export const CommissionsView: React.FC<CommissionsViewProps> = ({
       </fieldset><footer className="commission-form-footer">{formError && <p className="quote-error" role="alert">{formError}</p>}<div><button type="button" className="ui-button ui-button-secondary" disabled={isPending} onClick={() => setIsModalOpen(false)}>Cancelar</button><button className="ui-button ui-button-primary" type="submit" disabled={isPending}>{isPending ? 'Salvando...' : editingComm ? 'Salvar Alterações' : 'Salvar Venda'}</button></div></footer></form>
     </QuoteDialog>}
     {viewingNotesComm && <QuoteDialog label="Observações da venda" onClose={() => setViewingNotesComm(null)}><div className="quote-preview"><header className="quote-modal-heading"><div><h2>Observações</h2><p className="ui-muted">{viewingNotesComm.client_name}</p></div><button className="ui-icon-button" aria-label="Fechar observações" onClick={() => setViewingNotesComm(null)}><X size={20} /></button></header><p className="commission-notes-text">{viewingNotesComm.notes || 'Nenhuma observação informada.'}</p><footer className="quote-modal-actions"><button className="ui-button ui-button-secondary" onClick={() => setViewingNotesComm(null)}>Fechar</button><button className="ui-button ui-button-primary" onClick={() => { handleOpenEditModal(viewingNotesComm); setViewingNotesComm(null); }}>Editar Venda / Nota</button></footer></div></QuoteDialog>}
+    {bulkConfirm && <QuoteDialog label="Excluir comissões selecionadas" canClose={!isPending} onClose={() => setBulkConfirm(null)}><div className="quote-preview">
+      <h2>Excluir {bulkConfirm.length} {bulkConfirm.length === 1 ? 'comissão' : 'comissões'}?</h2><p className="ui-muted my-4">Os registros selecionados serão removidos do histórico e dos totais, inclusive os de outras páginas. Esta ação não pode ser desfeita.</p>
+      {bulkError && <p className="quote-error" role="alert">{bulkError}</p>}
+      <footer className="quote-modal-actions"><button className="ui-button ui-button-secondary" disabled={isPending} onClick={() => setBulkConfirm(null)}>Cancelar</button><button className="ui-button commission-danger" disabled={isPending} onClick={async () => {
+        setBulkError('');
+        try {
+          if (await run(() => onDeleteCommissions(bulkConfirm))) { setSelectedIds(new Set()); setBulkConfirm(null); }
+          else setBulkError('Não foi possível confirmar a exclusão. Atualize os registros e tente novamente.');
+        } catch { setBulkError('Não foi possível confirmar a exclusão. Atualize os registros e tente novamente.'); }
+      }}>{isPending ? 'Excluindo…' : 'Confirmar exclusão'}</button></footer>
+    </div></QuoteDialog>}
     {deletingId && <QuoteDialog label="Excluir Registro de Comissão" canClose={!isPending} onClose={() => setDeletingId(null)}><div className="quote-preview"><h2>Excluir registro de comissão?</h2><p className="ui-muted my-4">A venda de {commissions.find(c => c.id === deletingId)?.client_name} será removida do histórico e dos totais.</p>{formError && <p className="quote-error" role="alert">{formError}</p>}<footer className="quote-modal-actions"><button className="ui-button ui-button-secondary" disabled={isPending} onClick={() => setDeletingId(null)}>Cancelar</button><button className="ui-button commission-danger" disabled={isPending} onClick={async () => { if(await run(() => onDeleteCommission(deletingId))) setDeletingId(null); else setFormError('Não foi possível excluir. Tente novamente.'); }}>{isPending ? 'Aguarde...' : 'Confirmar'}</button></footer></div></QuoteDialog>}
   </div>;
 };

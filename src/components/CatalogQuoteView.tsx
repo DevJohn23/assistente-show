@@ -13,7 +13,7 @@ import {
   BookmarkPlus, FileText, X, CheckCircle, Layers, Edit3, PanelRightClose, PanelRightOpen,
 } from 'lucide-react';
 import { QuoteItemList } from './QuoteItemList';
-import { QuoteDialog, QuantityControl, ProductImage, UnitPriceInput } from './QuoteControls';
+import { QuoteDialog, PercentageInput, QuantityControl, ProductImage, UnitPriceInput } from './QuoteControls';
 
 interface CatalogQuoteViewProps {
   userId: string;
@@ -504,8 +504,8 @@ export const CatalogQuoteView: React.FC<CatalogQuoteViewProps> = ({
           onCommit={value => updateItemCustomPrice(item.product.id, value)} /><QuantityControl name={item.product.name} quantity={item.quantity} onChange={delta => updateQuantity(item.product.id, delta)} /></div>} />}
       <section className="quote-conditions" aria-labelledby="quote-conditions-title"><h3 id="quote-conditions-title">Condições comerciais</h3>
         <div className="quote-adjustments">
-          <label className="quote-field">Acréscimo (%)<input className="ui-input" type="number" min="0" step="1" value={markupPercent || ''} placeholder="0" onChange={event => setMarkupPercent(Math.max(0, Number(event.target.value) || 0))} /></label>
-          <label className="quote-field">Desconto (%)<input className="ui-input" type="number" min="0" max="100" step="1" value={discountPercent || ''} placeholder="0" onChange={event => setDiscountPercent(Math.min(100, Math.max(0, Number(event.target.value) || 0)))} /></label>
+          <PercentageInput label="Acréscimo (%)" value={markupPercent} onChange={setMarkupPercent} />
+          <PercentageInput label="Desconto (%)" value={discountPercent} max={100} onChange={setDiscountPercent} />
         </div>
         {(markupPercent > 0 || discountPercent > 0) && <dl className="quote-adjustment-summary">
           <div><dt>Subtotal</dt><dd>R$ {formatCurrency(rawEquipmentTotal)}</dd></div>

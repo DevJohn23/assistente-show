@@ -25,6 +25,7 @@ import {
   createCommission,
   updateCommission,
   deleteCommission,
+  deleteCommissions,
   fetchSellers,
   createSeller,
   fetchQuoteTemplates,
@@ -223,6 +224,14 @@ export default function Home() {
     return true;
   };
 
+  const handleDeleteCommissions = async (ids: string[]) => {
+    if (!await deleteCommissions(user.id, ids)) return failed('excluir as vendas selecionadas');
+    const removed = new Set(ids);
+    setCommissions(previous => previous.filter(c => !removed.has(c.id)));
+    showToast(`${removed.size} ${removed.size === 1 ? 'registro excluído' : 'registros excluídos'}.`);
+    return true;
+  };
+
   const handleAddSeller = async (name: string) => {
     const trimmed = name.trim();
     if (!trimmed) return failed('salvar o vendedor');
@@ -355,6 +364,8 @@ export default function Home() {
 
         {activeTab === 'commissions' && (
           <CommissionsView
+            userId={user.id}
+            onDeleteCommissions={handleDeleteCommissions}
             commissions={commissions}
             initialPeriod={commissionPeriod}
             sellers={sellers}
